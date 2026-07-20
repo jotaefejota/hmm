@@ -4,7 +4,7 @@
 
 ## 12. Organic-node dynamics investigation
 
-**Status:** In progress. The first directed DOM/SVG prototype was evaluated and intentionally reverted because its selected node visibly returned to its authored slot after commitment. A narrow Phase 3 SVG-membrane spike now bridges the selected question and answer through semantic commitment; it requires reference-led visual review before wider adoption.
+**Status:** Planned. The first directed DOM/SVG prototype was evaluated and intentionally reverted because its selected node visibly returned to its authored slot after commitment, rather than creating the desired sense of material continuity.
 
 **Next decision:** Use the staged experiments in `docs/06-organic-node-dynamics.md`: begin with a snapshot-plus-SVG-membrane prototype, then compare bounded local-force and Canvas/Pixi overlay spikes only if the first experiment does not meet the visual bar.
 

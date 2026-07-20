@@ -1,6 +1,6 @@
 # Hmm… — Organic Node Dynamics Plan
 
-**Status:** Approved gradual direction. The first directed prototype was reverted; an initial Phase 3 SVG-membrane spike is now under evaluation and has not yet achieved the reference’s fluid continuity.
+**Status:** Approved gradual direction; the first directed prototype is implemented, but it has not yet achieved the reference’s fluid continuity.
 
 **Purpose:** Evolve the persistent cellular canvas toward a magnetic, liquid-feeling interaction without replacing accessible HTML controls, the deterministic substrate, or the bounded session model with a global physics engine.
 
@@ -149,11 +149,9 @@ Use stable, asymmetric targets for lenses, an active question, three answers, se
 
 ### Phase 3 — visual-continuity transition
 
-**Status:** Initial desktop mock spike implemented; visual review in progress.
+**Status:** Next required phase.
 
-Replace the current temporary answer offset with a transition controller and snapshot/membrane overlay. The first spike derives a deterministic source/target pair from semantic projection, uses the SVG membrane as the visual completion signal, and keeps that geometry available through `answer-selected` and `transitioning`. This is the minimum correction required to prevent the pull-then-return effect.
-
-It remains a deliberately small experiment: narrow layout and reduced motion retain their simple semantic treatment, no local collision response exists yet, and the result must be compared against the recording before this approach is adopted for the complete experience.
+Replace the current temporary answer offset with a transition controller and snapshot/membrane overlay. This is the minimum correction required to prevent the pull-then-return effect.
 
 **Acceptance:**
 
