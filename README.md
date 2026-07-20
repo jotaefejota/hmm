@@ -1,47 +1,107 @@
-# hmm
+# Hmm…
 
-Hmm… is a curious companion that helps you think through a bounded decision—not decide for you.
+Hmm… is a curious companion for thinking through a bounded decision. It asks one useful question at a time, offers exactly three possible directions, and leaves the chosen path visible without deciding for the user.
 
-## Run
+**Live demo:** [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/)
+
+## What is implemented
+
+- a complete four-to-five-round reflection session;
+- one persistent cellular field whose camera follows choice-dependent routes;
+- a stable **Your thread** card containing the original dilemma and committed answers;
+- early finishing, a structured summary, one optional remaining-doubt extension, and restart;
+- deterministic mock content, live OpenAI generation, and automatic fallback;
+- a local, deterministic **Continue in ChatGPT** handoff;
+- recoverable timeout and refusal states that preserve session context.
+
+Sessions live only in browser memory. There is no login, database, analytics layer, or saved history.
+
+## Run locally
+
+Requirements: a current Node.js release and npm.
 
 ```bash
 npm install
 VITE_CONTENT_MODE=mock npm run dev
 ```
 
-Open [http://127.0.0.1:5173/](http://127.0.0.1:5173/).
+Open [http://127.0.0.1:5173/](http://127.0.0.1:5173/). Forced mock mode completes the curated team-lead journey without a network request or API key.
 
-Forced mock mode completes the curated team-lead demo without network calls. For live generation:
+### Run with live generation
+
+Copy `.env.example` to `.env.local`, then add the server-only values:
+
+```dotenv
+VITE_CONTENT_MODE=auto
+OPENAI_API_KEY=your_key_here
+OPENAI_MODEL=gpt-4.1-mini
+```
+
+Do not put the key in `.env.example`, a `VITE_` variable, or any file under `src/`.
 
 ```bash
-# .env.local
-OPENAI_API_KEY=…
-OPENAI_MODEL=gpt-4.1-mini
-VITE_CONTENT_MODE=auto
 npm run dev:full
 ```
 
-`dev:full` starts Vite and mounts the same `/api/reflect` handler used in production. It loads `OPENAI_API_KEY` and `OPENAI_MODEL` from `.env.local` into server-side code only. Use `VITE_CONTENT_MODE=auto` to fall back to the prepared journey when the endpoint is unavailable, or `VITE_CONTENT_MODE=live` to expose a recoverable error for diagnostics.
+`dev:full` starts Vite and mounts the same `/api/reflect` handler used by Vercel. Content modes are:
 
-## Checks
-
-```bash
-npm run check
-```
+- `mock`: validated fixtures only; never calls the endpoint;
+- `auto`: tries live generation, then safely falls back to prepared content;
+- `live`: surfaces a recoverable error instead of silently falling back.
 
 ## Demo path
 
-1. Start with a thought → keep the prefilled team-lead dilemma → Think it through  
-2. Choose the first suggestion four times  
-3. See what’s emerging → Continue in ChatGPT / Explore one remaining doubt / Start over
+1. Select **Start with a thought**.
+2. Keep the prefilled team-lead dilemma and select **Think it through**.
+3. Choose one of the three bubbles in each of four rounds; different positions create different routes.
+4. Select **See what’s emerging**.
+5. Show the direction, reasons, remaining doubts, and next step.
+6. Demonstrate **Continue in ChatGPT** or **Start over**.
 
-If clipboard access is blocked, the ChatGPT handoff reveals the complete prepared prompt so it can be copied manually.
+If clipboard access is blocked, the handoff reveals the complete prepared prompt for manual copying.
 
-## Development error checks
+## Commands
 
-Development builds support deterministic recovery-state checks:
+```bash
+npm run dev         # client only
+npm run dev:full    # client plus local /api/reflect
+npm test
+npm run test:watch
+npm run lint
+npm run typecheck
+npm run build
+npm run preview
+npm run check       # lint + types + tests + production build
+```
 
-- `/?simulateError=timeout` keeps the current path visible and offers retry or prepared content.
-- `/?simulateError=refusal` keeps the current path visible and offers only restart.
+## Test recovery states
 
-These query parameters are ignored in production builds.
+Development builds support deterministic error checks:
+
+- `http://127.0.0.1:5173/?simulateError=timeout` preserves the current path and offers retry or prepared content;
+- `http://127.0.0.1:5173/?simulateError=refusal` preserves the current path and offers restart only.
+
+These parameters are deliberately ignored by production builds.
+
+## Deployment
+
+The app is deployed as one Vercel project: Vite serves the client and `api/reflect.ts` runs as a serverless function. Configure these environment variables in Vercel:
+
+- `OPENAI_API_KEY` — encrypted, server-side only;
+- `OPENAI_MODEL` — currently `gpt-4.1-mini`;
+- `VITE_CONTENT_MODE` — `auto` for the live demo or `mock` for a deterministic deployment.
+
+Production has been smoke-tested through two consecutive live rounds. The complete API-free journey remains the reliable presentation path.
+
+## Project map
+
+- `api/`: secret-bearing serverless endpoint;
+- `shared/`: Zod request and response contracts shared by client and server;
+- `src/session/`: reducer, events, and selectors;
+- `src/layout/`: deterministic cell field, route, and camera projection;
+- `src/services/`: mock, live, and resilient providers;
+- `src/content/`: validated demo fixtures;
+- `src/components/` and `src/styles/`: experience and visual presentation;
+- `docs/`: product, experience, technical, AI, and build decisions.
+
+Start with [`docs/01-product-and-mvp.md`](docs/01-product-and-mvp.md), then follow the numbered documents. Contributor rules and the definition of done live in [`AGENTS.md`](AGENTS.md).

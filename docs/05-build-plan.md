@@ -1,6 +1,6 @@
 # Hmm… — Two-Day Build Plan
 
-**Status:** Blocks 1–6 complete including Task 3.3 packed-soup substrate and Block 6.1 ending extension; Blocks 7–10 implemented for P0 (live API, resilient fallback, ChatGPT handoff, narrow/a11y polish, demo docs). Rehearse Task 10.1 before the event.
+**Status:** All P0 implementation blocks are complete. The Vercel production deployment and live endpoint were verified on 2026-07-20. The deterministic mock rehearsal is complete; the deliberately skipped full cross-viewport/accessibility release pass remains an acknowledged pre-event check.
 
 **Purpose:** Build the smallest complete, visually memorable session through demonstrable vertical slices.
 
@@ -501,7 +501,7 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 
 ### Task 7.1 — P0: Protected, validated live endpoint
 
-**Implementation status:** Complete and locally exercised — 2026-07-20. `POST /api/reflect` validates input, calls OpenAI Structured Outputs server-side, re-validates output, and returns contract payloads or public errors with `no-store`. `npm run dev:full` now mounts that production handler in Vite; endpoint tests cover valid round/summary responses and the required public error mappings.
+**Implementation status:** Complete locally and on Vercel — 2026-07-20. `POST /api/reflect` validates input, calls OpenAI Structured Outputs server-side, re-validates output, and returns contract payloads or public errors with `no-store`. `npm run dev:full` mounts the production handler in Vite; endpoint tests cover valid round/summary responses and required public error mappings. The deployed endpoint returned validated live rounds at [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/).
 
 **Observable outcome**
 
@@ -716,7 +716,7 @@ The narrow history strip smoothly keeps the active end visible and allows old no
 
 ### Task 10.1 — P0: Rehearsed, stable 90-second demo
 
-**Implementation status:** Reliability rehearsal complete — 2026-07-20. Three consecutive forced-mock sessions completed all four rounds, summary, ChatGPT handoff fallback, and confirmed restart. An automatic-mode run with no API key returned the public `AI_UNAVAILABLE` response, displayed the recovery notice, preserved the path, and reached the curated ending. A credentialed live-model smoke run generated two consecutive validated rounds through the local serverless handler.
+**Implementation status:** Reliability rehearsal and production smoke test complete — 2026-07-20. Three consecutive forced-mock sessions completed all four rounds, summary, ChatGPT handoff fallback, and confirmed restart. An automatic-mode run with no API key returned the public `AI_UNAVAILABLE` response, displayed the recovery notice, preserved the path, and reached the curated ending. Credentialed smoke runs generated consecutive validated rounds through both the local serverless handler and the Vercel production endpoint. The full desktop/narrow/keyboard/reduced-motion release pass was intentionally deferred and must not be inferred from this status.
 
 **Observable outcome**
 
@@ -820,6 +820,8 @@ flowchart LR
 The API is intentionally late. Blocks 1–6 must produce a complete creature in mock mode before live generation can threaten the schedule.
 
 ## Final P0 release gate
+
+**Current delivery note (2026-07-20):** implementation, automated checks, mock/fallback rehearsal, production build, deployment, and live endpoint smoke testing are complete. The remaining manual release item is the comprehensive desktop/narrow/keyboard/reduced-motion pass that was explicitly skipped during the deployment sequence. Preview deployment authentication also prevented an external browser pass of a separate forced-mock preview; forced mock and fallback behavior were verified locally instead.
 
 P0 is complete only when:
 

@@ -1,6 +1,6 @@
 # Hmm… — Technical Design
 
-**Status:** Implementation-ready architecture proposal
+**Status:** Implemented architecture; production deployment verified 2026-07-20
 
 **Depends on:** `docs/01-product-and-mvp.md`, `docs/02-experience-design.md`, and `docs/04-ai-contract.md`
 
@@ -38,9 +38,11 @@ The semantic session—not the canvas—is the source of truth. The cell field i
 | Validation | Zod in a root `shared/` module | One schema can validate browser requests, server input, model output, and mock fixtures. An exact-length array enforces three answers while producing JSON Schema accepted by Structured Outputs. |
 | AI server | One TypeScript Vercel Function in `api/reflect.ts` | Vercel supports Vite projects with functions in an `api` directory, so the frontend and secret-bearing endpoint can deploy together without a separate server. |
 | Model API | Official OpenAI JavaScript SDK, Responses API, and Structured Outputs | The SDK can parse a response directly against a Zod schema. Structured Outputs provides schema adherence rather than merely valid JSON. |
-| Default model | `gpt-5.6-terra`, configurable with `OPENAI_MODEL` | Current official guidance describes Terra as the balance of intelligence and cost. Use low reasoning effort for this short, latency-sensitive task; keep the model configurable so the contract is not coupled to one release. |
+| Deployed model | `gpt-4.1-mini`, configurable with server-only `OPENAI_MODEL` | It is sufficient for the strict, short structured contract and keeps the prototype responsive. The contract remains model-independent. |
 | Tests | Vitest for reducer, schema, layout, and mock-provider tests | These are the failure-prone pure functions. A full end-to-end suite is not necessary for the two-day prototype. |
 | Deployment | Vercel | One static frontend plus one same-repository function is the shortest path to a shareable demo. |
+
+The production deployment is [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). Vercel serves the Vite client and the colocated `api/reflect.ts` function; the deployed endpoint has returned validated live rounds with `Cache-Control: no-store`. Forced mock mode remains the deterministic demonstration and outage fallback.
 
 ### Graph-library assessment
 
