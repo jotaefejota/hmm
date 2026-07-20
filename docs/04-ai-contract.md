@@ -56,7 +56,7 @@ type HistoryItem = {
 Rules enforced before the model call:
 
 - for a core request, `roundNumber` equals `history.length + 1` and is at most 5;
-- for an extension request, the session must already have ended, `focus` contains one remaining doubt, and only one extension is allowed;
+- for an extension request, the session must already have ended with fewer than five committed answers, `focus` contains one remaining doubt, and only one extension is allowed;
 - `history` is ordered and its round numbers are contiguous;
 - a suggested historical answer is at most 40 characters;
 - a custom historical answer is at most 160 characters;

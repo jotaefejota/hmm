@@ -1,5 +1,6 @@
 import type { SessionEvent, SessionState } from "./session-types";
 import { createInitialSessionState } from "./session-types";
+import { MAX_CORE_ROUNDS } from "../../shared/limits";
 
 const revealPendingRound = (state: SessionState): SessionState => {
   if (!state.pendingRound) return { ...state, transitionFinished: true };
@@ -93,7 +94,12 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
           }
         : state;
     case "REQUEST_EXTENSION": {
-      if (state.phase !== "ending" || state.extensionUsed || !state.summary) return state;
+      if (
+        state.phase !== "ending" ||
+        state.history.length >= MAX_CORE_ROUNDS ||
+        state.extensionUsed ||
+        !state.summary
+      ) return state;
       const focus = event.focus.trim();
       if (!focus) return state;
       return {

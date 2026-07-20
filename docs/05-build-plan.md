@@ -483,7 +483,7 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 - **See what’s emerging** displays direction, 2–3 reasons, 1–2 doubts, and one next step.
 - The result is tentative and contains no confidence score.
 - **One more question** reveals the held fifth round.
-- **Explore one remaining doubt** permits exactly one extension, then returns to summary.
+- **Explore one remaining doubt** permits exactly one extension before the five-answer ceiling, then returns to summary; it is absent after round five.
 - **Start over** confirms, clears in-memory state, and returns to welcome.
 - The complete chosen trail remains marked on the same cellular field, visible but subordinate at the ending.
 - **Your thread** remains visible with **Ready to reflect**, the original dilemma, and the ordered committed answers.

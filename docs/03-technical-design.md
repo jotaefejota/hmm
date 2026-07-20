@@ -219,7 +219,7 @@ type SessionState = {
 - An `AbortController` cancels the previous request on restart or retry.
 - Derive round number as `history.length + 1`; do not trust a visual component to count rounds.
 - After a fifth core answer, generate the summary without requesting another round.
-- `extensionUsed` permits exactly one post-ending question; after its answer, regenerate the summary immediately.
+- `extensionUsed` permits exactly one post-ending question only while fewer than five answers are committed; after its answer, regenerate the summary immediately. The action is absent and the reducer rejects it once the five-round ceiling is reached.
 - Restart creates the initial state in one reducer event.
 
 `useReducer` is sufficient because this state is local, synchronous except for two service methods, and never shared between browser tabs or persisted.

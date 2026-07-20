@@ -232,4 +232,33 @@ describe("sessionReducer", () => {
     });
     expect(sessionReducer(state, { type: "REQUEST_EXTENSION", focus, requestId: 7 })).toBe(state);
   });
+
+  it("rejects an extension after all five core rounds are complete", () => {
+    let state = readyAtFirstRound();
+    state = completeRound(state, 0, 2, 1);
+    state = completeRound(state, 0, 3, 2);
+    state = completeRound(state, 0, 4, 3);
+    state = completeRound(state, 0, 5, 4);
+    state = sessionReducer(state, { type: "CONTINUE_AFTER_CLARITY" });
+    state = sessionReducer(state, {
+      type: "SELECT_ANSWER",
+      answer: { text: rounds[4].answers[0], source: "suggested", choiceIndex: 0 },
+      requestId: 6,
+    });
+    state = sessionReducer(state, { type: "COMMIT_SELECTION" });
+    state = sessionReducer(state, {
+      type: "SUMMARY_LOADED",
+      summary: mockDataset.scenarios[0].summary,
+      requestId: 6,
+    });
+
+    const attempted = sessionReducer(state, {
+      type: "REQUEST_EXTENSION",
+      focus: state.summary!.doubts[0],
+      requestId: 7,
+    });
+    expect(attempted).toBe(state);
+    expect(state).toMatchObject({ phase: "ending", extensionUsed: false });
+    expect(state.history).toHaveLength(5);
+  });
 });

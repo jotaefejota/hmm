@@ -147,7 +147,7 @@ The result remains framed as a reflection of the user’s path, never as the mod
 The ending actions are:
 
 - **Continue in ChatGPT** — copies the prepared context and opens ChatGPT;
-- **Explore one remaining doubt** — adds exactly one user-initiated question and then returns to an updated ending;
+- **Explore one remaining doubt** — when fewer than five answers have been committed, adds exactly one user-initiated question and then returns to an updated ending; it is absent after the fifth core answer;
 - **Start over** — asks for confirmation before clearing the current in-memory path.
 
 An explicitly resumed question does not violate the five-round automatic stop: Hmm… has already paused and will not continue without the user asking it to.
