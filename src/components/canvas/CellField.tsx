@@ -11,6 +11,7 @@ type CellFieldProps = {
   onSelect?: (answer: string) => void;
   onCommit?: () => void;
   ending?: boolean;
+  reviewCellId?: string | null;
 };
 
 function CellContent({
@@ -82,7 +83,15 @@ function CellContent({
   );
 }
 
-export function CellField({ projection, phase, questionRef, onSelect, onCommit, ending = false }: CellFieldProps) {
+export function CellField({
+  projection,
+  phase,
+  questionRef,
+  onSelect,
+  onCommit,
+  ending = false,
+  reviewCellId = null,
+}: CellFieldProps) {
   const focus = getCellSlot(projection.focusCellId);
 
   useEffect(() => {
@@ -91,9 +100,18 @@ export function CellField({ projection, phase, questionRef, onSelect, onCommit, 
     return () => window.clearTimeout(safetyCommit);
   }, [onCommit, phase]);
 
+  useEffect(() => {
+    if (!reviewCellId || typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 900px)").matches) return;
+    const node = document.querySelector(`[data-cell-slot="${reviewCellId}"]`);
+    if (node instanceof HTMLElement) {
+      node.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    }
+  }, [reviewCellId]);
+
   return (
     <div
-      className={`cell-field ${ending ? "is-ending" : ""}`}
+      className={`cell-field ${ending ? "is-ending" : ""} ${reviewCellId ? "is-reviewing" : ""}`}
       style={{
         "--field-width": `${FIELD_WIDTH}vw`,
         "--field-height": `${FIELD_HEIGHT}vw`,
@@ -106,8 +124,9 @@ export function CellField({ projection, phase, questionRef, onSelect, onCommit, 
       <ConnectionLayer edges={projection.edges} />
       {projection.cells.map((slot) => {
         const item = projection.occupancy.find((candidate) => candidate.cellId === slot.id);
+        const isReviewTarget = reviewCellId === slot.id;
         const cellClass = item
-          ? `is-occupied is-${item.kind} is-${item.status}`
+          ? `is-occupied is-${item.kind} is-${item.status}${isReviewTarget ? " is-review-focus" : ""}`
           : "is-empty";
         return (
           <div

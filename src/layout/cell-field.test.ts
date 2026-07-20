@@ -7,6 +7,7 @@ import {
   FIELD_START_ROW,
   cellDistance,
   getCellSlot,
+  getHistoryAnswerCellId,
   getQuestionCellId,
   getSuggestionCellIds,
   rowAfterChoices,
@@ -49,5 +50,14 @@ describe("cell-field packed soup", () => {
     const middle = getSuggestionCellIds(1, []);
     expect(middle[0]).not.toBe(middle[2]);
     expect(getQuestionCellId(2, [0])).not.toBe(getQuestionCellId(2, [2]));
+  });
+
+  it("maps committed history indexes to marked answer cells", () => {
+    const history = [
+      { round: 1, choiceIndex: 0 as const },
+      { round: 2, choiceIndex: 2 as const },
+    ];
+    expect(getHistoryAnswerCellId(history, 0)).toBe(getSuggestionCellIds(1, [])[0]);
+    expect(getHistoryAnswerCellId(history, 1)).toBe(getSuggestionCellIds(2, [0])[2]);
   });
 });

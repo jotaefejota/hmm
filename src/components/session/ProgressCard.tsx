@@ -4,9 +4,15 @@ import type { ProgressView } from "../../session/session-selectors";
 export function ProgressCard({
   progress,
   openByDefault = false,
+  onFocusAnswer,
+  onReturnToNow,
+  reviewing = false,
 }: {
   progress: ProgressView;
   openByDefault?: boolean;
+  onFocusAnswer?: (stepIndex: number) => void;
+  onReturnToNow?: () => void;
+  reviewing?: boolean;
 }) {
   const panelId = useId();
   const [userOpen, setUserOpen] = useState<boolean | null>(null);
@@ -33,10 +39,31 @@ export function ProgressCard({
         <p className="progress-dilemma">{progress.dilemma}</p>
         <p className="progress-label">What you’ve chosen so far</p>
         {progress.answers.length ? (
-          <ol>{progress.answers.map((answer) => <li key={answer}>{answer}</li>)}</ol>
+          <ol className="progress-answers">
+            {progress.answers.map((answer, index) => (
+              <li key={`${index}-${answer}`}>
+                {onFocusAnswer ? (
+                  <button
+                    className="progress-answer-action"
+                    type="button"
+                    onClick={() => onFocusAnswer(index)}
+                  >
+                    {answer}
+                  </button>
+                ) : (
+                  answer
+                )}
+              </li>
+            ))}
+          </ol>
         ) : (
           <p className="progress-empty">Your choices will gather here.</p>
         )}
+        {reviewing && onReturnToNow ? (
+          <button className="progress-return" type="button" onClick={onReturnToNow}>
+            Back to now
+          </button>
+        ) : null}
       </div>
     </aside>
   );

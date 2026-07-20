@@ -425,6 +425,32 @@ After four selections, the initial dilemma and every selected question/answer pa
 - `npm run check`
 - Manual four-round demo at desktop width, confirming that the camera travels away from the origin and that different selections bend the route differently.
 
+### Task 5.2 — P1: Progress-card trail review focus
+
+**Implementation status:** Complete — 2026-07-20. Progress-card answer activation focuses the marked trail cell; Back to now restores active focus.
+
+**Observable outcome**
+
+Activating an item under **What you’ve chosen so far** pans the desktop camera (or scrolls the narrow thread) to that committed amber answer cell. **Back to now** or the next session advance restores the active neighbourhood. History is not edited.
+
+**Files likely to be affected**
+
+- `ProgressCard.tsx`, `ThoughtCanvas.tsx`, `EndingExperience.tsx`, `CellField.tsx`
+- `cell-field.ts` / `projectCanvas.ts`, canvas styles, focused tests
+
+**Acceptance criteria**
+
+- Review focus is local presentation state, not reducer history.
+- Focus target is the marked answer cell for that committed step.
+- No free pan/zoom controls are introduced.
+- Narrow layouts use scroll-into-view without stealing keyboard focus from controls unexpectedly.
+
+**Checks Codex must run**
+
+- Pure test mapping history index → answer cell ID.
+- Component/interaction test for focus override and clear.
+- `npm run check`
+
 **Day 1 exit gate:** forced mock mode completes four selections on one persistent cellular field and shows a stable marked path. If this gate is not green, do not begin live API work.
 
 ---

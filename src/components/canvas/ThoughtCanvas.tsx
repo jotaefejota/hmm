@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { SessionState } from "../../session/session-types";
 import { selectCanFinish, selectProgress } from "../../session/session-selectors";
+import { useTrailReviewFocus } from "../../session/useTrailReviewFocus";
 import { projectCanvas } from "../../layout/projectCanvas";
 import { CellField } from "./CellField";
 import { ProgressCard } from "../session/ProgressCard";
@@ -43,17 +44,19 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
   const { state } = props;
   const questionRef = useRef<HTMLHeadingElement>(null);
   const progress = selectProgress(state);
+  const { reviewCellId, isReviewing, focusHistoryAnswer, clearReviewFocus } = useTrailReviewFocus(state);
   const projection = projectCanvas({
     dilemma: state.dilemma,
     history: state.history,
     currentRound: state.currentRound,
     phase: state.phase,
     selectedAnswer: state.selectedAnswer,
+    focusOverrideCellId: reviewCellId,
   });
 
   useEffect(() => {
-    if (state.phase === "round-ready") questionRef.current?.focus();
-  }, [state.phase, state.currentRound?.question]);
+    if (state.phase === "round-ready" && !isReviewing) questionRef.current?.focus();
+  }, [state.phase, state.currentRound?.question, isReviewing]);
 
   const fieldPhase = state.phase === "round-ready" || state.phase === "writing-custom-answer" || state.phase === "answer-selected"
     ? state.phase
@@ -67,14 +70,23 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
       aria-labelledby={state.phase === "round-ready" ? "active-question" : undefined}
       aria-label={state.phase === "transitioning" ? "Following the selected path" : undefined}
     >
-      <ProgressCard progress={progress} />
+      <ProgressCard
+        progress={progress}
+        onFocusAnswer={focusHistoryAnswer}
+        onReturnToNow={clearReviewFocus}
+        reviewing={isReviewing}
+      />
       <p className="stage-kicker">Follow what has weight. There is no right branch.</p>
       <CellField
         projection={projection}
         phase={fieldPhase}
         questionRef={questionRef}
-        onSelect={props.onSelectAnswer}
+        onSelect={(answer) => {
+          clearReviewFocus();
+          props.onSelectAnswer(answer);
+        }}
         onCommit={props.onCommitSelection}
+        reviewCellId={reviewCellId}
       />
 
       {state.phase === "round-ready" || state.phase === "writing-custom-answer" ? (

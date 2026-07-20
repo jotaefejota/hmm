@@ -44,6 +44,7 @@ The recommended direction is therefore a warm off-white cellular field with ink 
 - Starting a new round does not create a new visible cluster. Content clears from unused cells, the next question and suggestions occupy the next preset cells, and the camera travels to that neighbourhood.
 - A selected cell keeps its amber mark and selected text as part of the trail. A rejected cell loses its suggestion text and returns to its quiet neutral state.
 - The active neighbourhood comes forward through scale, contrast, sharpness, halo, and a controlled camera pan. Recent cells remain near the viewport edge before slipping away; the progress card preserves the complete textual route.
+- Choosing an item under **What you’ve chosen so far** is a review affordance: the camera (or narrow scroll) briefly focuses that committed amber answer cell. It does not edit history or enable free pan/zoom. The next selection, phase change, or **Back to now** returns focus to the active neighbourhood.
 - The three suggestions occupy forward cells above, level with, and below the current direction. The selected position determines the row of the next question, so repeated choices create a distinct rising, level, falling, or mixed path.
 - Semantic connectors join only selected relationships. Empty substrate cells never receive decorative cross-links.
 
@@ -94,7 +95,7 @@ The user can:
 
 Selecting an answer is a commitment for this linear MVP. The occupied cell changes from a suggestion into a user-marked cell, receives a check mark, and becomes connected to the question. The two unchosen texts soften and dissolve while their cells return to the neutral field. The selected cell then becomes the launch point for the next question in a nearby existing cell.
 
-When the selection commits, the progress card appends that answer once under **What you’ve chosen so far** and updates its round/status line. The card never updates on hover, focus, or the temporary pressed state.
+When the selection commits, the progress card appends that answer once under **What you’ve chosen so far** and updates its round/status line. The card never updates on hover, focus, or the temporary pressed state. Each listed answer is activatable for trail review: activating it focuses the matching marked cell on the canvas without changing the session.
 
 ### 2.5 Progress through the path
 
@@ -183,9 +184,10 @@ Content:
 - label: **You’re thinking through**;
 - the original dilemma, unchanged;
 - label: **What you’ve chosen so far**;
-- an ordered list of committed answer text, using a small check marker;
+- an ordered list of committed answer text, using a small check marker; each item focuses its trail cell for review when activated;
 - a factual round count: **{completed} of up to 5**;
-- one qualitative session status.
+- one qualitative session status;
+- while reviewing a past cell, a quiet **Back to now** action restores the active neighbourhood focus.
 
 Status rules:
 

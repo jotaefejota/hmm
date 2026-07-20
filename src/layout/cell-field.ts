@@ -86,6 +86,18 @@ export function getSuggestionCellIds(roundNumber: number, priorChoices: readonly
   ] as const;
 }
 
+export function getHistoryAnswerCellId(
+  history: readonly { round: number; choiceIndex: 0 | 1 | 2 }[],
+  stepIndex: number,
+) {
+  if (stepIndex < 0 || stepIndex >= history.length) {
+    throw new Error(`History step out of range: ${stepIndex}.`);
+  }
+  const priorChoices = history.slice(0, stepIndex).map((step) => step.choiceIndex);
+  const step = history[stepIndex];
+  return getSuggestionCellIds(step.round, priorChoices)[step.choiceIndex];
+}
+
 export function getCellSlot(id: string) {
   const slot = CELL_SLOTS.find((candidate) => candidate.id === id);
   if (!slot) throw new Error(`Unknown cell slot: ${id}.`);

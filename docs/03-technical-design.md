@@ -226,6 +226,8 @@ type SessionState = {
 
 The progress card adds no canonical state. A selector derives its items and status from `dilemma`, `history`, `phase`, `currentRound.suggestEnding`, and `extensionUsed`. Tests must prove that it never includes `selectedAnswer` before commitment or an unchosen suggestion.
 
+Trail review is local presentation state only: activating a committed answer in the card sets a temporary `focusOverrideCellId` resolved from history + `choiceIndex` via the same occupancy helpers. Clearing that override (next selection, phase change, or **Back to now**) restores the derived active focus. This is not stored in the session reducer and must not change history.
+
 ## 5. Representation of cells, occupancy, and connections
 
 The canvas combines stable authored geometry with a derived semantic projection. These are deliberately different layers.
@@ -469,7 +471,7 @@ The server may log a request ID, error code, duration, and model name. It should
 | Cellular environment | One low-contrast authored SVG/background texture, not generated tessellation |
 | Breathing membrane | CSS opacity/scale on one or two pseudo-elements, disabled for reduced motion |
 | Physical selection | A small press-and-expand transform, not collision or mass simulation |
-| Camera movement | Translate the fixed world so the active question stays near the focal point; no user pan/zoom or physics camera |
+| Camera movement | Translate the fixed world so the active question stays near the focal point; optional one-shot review focus from the progress card; no free pan/zoom or physics camera |
 | Trail compression | Reduce content emphasis from semantic age while keeping stable slot geometry |
 | Clarity detection | Strict model boolean after round 4 plus a hard round-5 stop, not a confidence score |
 | Sense of progress | Client-derived round count and named status in a stable card, not an AI-generated certainty score |

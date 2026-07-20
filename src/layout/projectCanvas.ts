@@ -41,13 +41,21 @@ type ProjectCanvasInput = {
   currentRound: RoundPayload | null;
   phase: SessionPhase;
   selectedAnswer: SelectedAnswer | null;
+  focusOverrideCellId?: string | null;
 };
 
 function edge(id: string, fromCellId: string, toCellId: string, status: CanvasEdge["status"]): CanvasEdge {
   return { id, from: getCellSlot(fromCellId), to: getCellSlot(toCellId), status };
 }
 
-export function projectCanvas({ dilemma, history, currentRound, phase, selectedAnswer }: ProjectCanvasInput): CanvasProjection {
+export function projectCanvas({
+  dilemma,
+  history,
+  currentRound,
+  phase,
+  selectedAnswer,
+  focusOverrideCellId = null,
+}: ProjectCanvasInput): CanvasProjection {
   const occupancy: CanvasOccupancy[] = [{
     cellId: DILEMMA_CELL_ID,
     semanticId: "dilemma",
@@ -140,10 +148,15 @@ export function projectCanvas({ dilemma, history, currentRound, phase, selectedA
   const nextRound = Math.min(history.length + 1, 5);
   const focusChoices = committedChoices.slice(0, nextRound - 1);
   const settlesOnTrailEnd = phase === "clarity-offered" || phase === "generating-summary" || phase === "ending";
+  const derivedFocusCellId = settlesOnTrailEnd
+    ? previousCellId
+    : getQuestionCellId(nextRound, focusChoices);
   return {
     cells: CELL_SLOTS,
     occupancy,
     edges,
-    focusCellId: settlesOnTrailEnd ? previousCellId : getQuestionCellId(nextRound, focusChoices),
+    focusCellId: focusOverrideCellId && CELL_SLOTS.some((slot) => slot.id === focusOverrideCellId)
+      ? focusOverrideCellId
+      : derivedFocusCellId,
   };
 }

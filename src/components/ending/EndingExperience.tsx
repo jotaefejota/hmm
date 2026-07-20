@@ -1,5 +1,6 @@
 import type { SessionState } from "../../session/session-types";
 import { selectCanExtend, selectProgress } from "../../session/session-selectors";
+import { useTrailReviewFocus } from "../../session/useTrailReviewFocus";
 import { projectCanvas } from "../../layout/projectCanvas";
 import { ProgressCard } from "../session/ProgressCard";
 import { CellField } from "../canvas/CellField";
@@ -12,19 +13,32 @@ type EndingExperienceProps = {
 };
 
 export function EndingExperience({ state, onRestart, onExploreDoubt }: EndingExperienceProps) {
+  const { reviewCellId, isReviewing, focusHistoryAnswer, clearReviewFocus } = useTrailReviewFocus(state);
   const projection = projectCanvas({
     dilemma: state.dilemma,
     history: state.history,
     currentRound: null,
     phase: state.phase,
     selectedAnswer: null,
+    focusOverrideCellId: reviewCellId,
   });
   const canExtend = selectCanExtend(state);
 
   return (
     <section className="ending-stage" aria-live="polite" aria-busy={state.phase === "generating-summary"}>
-      <ProgressCard progress={selectProgress(state)} openByDefault={state.phase === "ending"} />
-      <CellField projection={projection} phase={state.phase === "ending" ? "ending" : "generating-summary"} ending />
+      <ProgressCard
+        progress={selectProgress(state)}
+        openByDefault={state.phase === "ending"}
+        onFocusAnswer={focusHistoryAnswer}
+        onReturnToNow={clearReviewFocus}
+        reviewing={isReviewing}
+      />
+      <CellField
+        projection={projection}
+        phase={state.phase === "ending" ? "ending" : "generating-summary"}
+        ending
+        reviewCellId={reviewCellId}
+      />
       {state.phase === "generating-summary" ? (
         <div className="gathering-lens">
           <span aria-hidden="true">✦</span>

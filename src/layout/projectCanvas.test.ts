@@ -112,4 +112,24 @@ describe("projectCanvas", () => {
       selectedAnswer: null,
     })).toEqual(upperPath);
   });
+
+  it("can temporarily override camera focus for trail review", () => {
+    const scenario = mockDataset.scenarios[0];
+    const history: ReflectionStep[] = scenario.rounds.slice(0, 2).map((round, index) => ({
+      round: index + 1,
+      question: round.question,
+      answer: round.answers[0],
+      answerSource: "suggested",
+      choiceIndex: 0,
+    }));
+    const reviewed = projectCanvas({
+      dilemma: scenario.dilemma,
+      history,
+      currentRound: scenario.rounds[2],
+      phase: "round-ready",
+      selectedAnswer: null,
+      focusOverrideCellId: "cell-c2-r4",
+    });
+    expect(reviewed.focusCellId).toBe("cell-c2-r4");
+  });
 });

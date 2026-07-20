@@ -72,6 +72,7 @@ Scaffolding must provide and preserve these commands:
 
 - One active Hmm… question, exactly three generated suggestions, and one separate **None quite fit** action.
 - Keep a stable progress card showing the original dilemma, selected answers, round count, and a qualitative session status derived from state.
+- Choosing a committed answer in **Your thread** may focus the camera on that trail cell for review; it must not enable free pan/zoom or mutate history.
 - Treat the canvas as one persistent, authored field of reusable cells. A new round changes which stable cells hold content; it does not spawn a fresh set of bubbles.
 - Keep the empty field packed so neighbouring quiet cells appear to touch (deterministic hex-offset lattice, diameter ≈ pitch, isotropic vw world units)—not a sparse diagram grid.
 - Key rendered cells by stable cell-slot ID, not by question or answer ID. Selected cells keep a permanent semantic mark; rejected suggestion content clears while the underlying cells remain.
