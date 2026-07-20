@@ -1,6 +1,6 @@
 # Hmm… — Two-Day Build Plan
 
-**Status:** Blocks 1–5 complete, including the P0 persistent-world and choice-dependent route revision; later blocks remain as documented
+**Status:** Blocks 1–6 complete including Task 3.3 packed-soup substrate and Block 6.1 ending extension; Blocks 7–10 implemented for P0 (live API, resilient fallback, ChatGPT handoff, narrow/a11y polish, demo docs). Rehearse Task 10.1 before the event.
 
 **Purpose:** Build the smallest complete, visually memorable session through demonstrable vertical slices.
 
@@ -266,6 +266,40 @@ The canvas reads as one organic cellular world larger than the viewport. The fir
 - `npm run check`
 - Inspect upper, middle, and lower choice paths at approximately 1440×900; verify that the same world pans to three different routes without a new cluster appearing.
 
+### Task 3.3 — P0: Packed soup substrate
+
+**Implementation status:** Complete — 2026-07-20. Hex-offset packing with diameter≈pitch makes empty neighbours appear to kiss; route IDs and camera behaviour unchanged.
+
+**Observable outcome**
+
+At approximately 1440×900 the empty cellular field reads as a packed soup: neighbouring quiet cells appear to touch or nearly touch. Questions and suggestions still occupy the same stable slots and choice-dependent routes; the denser pack makes options feel latent in the world rather than floating in a diagram grid.
+
+**Files likely to be affected**
+
+- `src/layout/cell-field.ts`, layout tests
+- `src/components/canvas/CellField.tsx`
+- `src/styles/canvas.css`
+- `docs/01-product-and-mvp.md`, `docs/02-experience-design.md`, `docs/03-technical-design.md`
+
+**Dependencies**
+
+- Task 3.2.
+
+**Acceptance criteria**
+
+- Centres use a deterministic hex-offset lattice computed once as constants (no runtime physics).
+- Empty-cell diameter is approximately the lattice pitch, with only a small membrane gap so neighbours kiss.
+- Stable slot IDs, count, and relative geometry are preserved across rounds.
+- Upper, middle, and lower choice sequences still produce distinct legal routes within the authored field.
+- Occupied/active cells may scale slightly for emphasis; empty cells stay packed and visually subordinate.
+- Progress-card exclusion area remains clear; narrow layout is unchanged.
+
+**Checks Codex must run**
+
+- Pure tests for neighbour distance ≈ pitch, stable IDs/count, and divergent routes.
+- `npm run check`
+- Manual inspect at approximately 1440×900 confirming the packed soup read.
+
 ---
 
 ## 4. Selection and transitions between simulated rounds
@@ -399,7 +433,7 @@ After four selections, the initial dilemma and every selected question/answer pa
 
 ### Task 6.1 — P0: Clarity prompt, result lens, restart, and one extension
 
-**Implementation status:** In progress — clarity prompt, early/suggested/max-round summaries, result lens, and confirmed restart are complete. The post-ending extension remains unimplemented and is not marked complete.
+**Implementation status:** Complete — 2026-07-20. Clarity prompt, early/suggested/max-round summaries, result lens, confirmed restart, and exactly one post-ending extension are implemented.
 
 **Observable outcome**
 
@@ -441,6 +475,8 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 
 ### Task 7.1 — P0: Protected, validated live endpoint
 
+**Implementation status:** Complete — 2026-07-20. `POST /api/reflect` validates input, calls OpenAI Structured Outputs server-side, re-validates output, and returns contract payloads or public errors with `no-store`.
+
 **Observable outcome**
 
 With server credentials configured, `POST /api/reflect` returns one validated live round or summary. With credentials absent, it returns a small public error and exposes no secret.
@@ -478,6 +514,8 @@ With server credentials configured, `POST /api/reflect` returns one validated li
 
 ### Task 7.2 — P0: Resilient live/mock provider
 
+**Implementation status:** Complete — 2026-07-20. `VITE_CONTENT_MODE` selects mock/live/auto; auto falls back to mock with a recovery notice; refusals bypass generic fallback.
+
 **Observable outcome**
 
 `auto` mode uses live content when available and transparently returns validated generic mock content after timeout, network failure, rate limit, or invalid output without losing the path.
@@ -514,6 +552,8 @@ With server credentials configured, `POST /api/reflect` returns one validated li
 ## 8. Continue in ChatGPT
 
 ### Task 8.1 — P0: Deterministic context handoff
+
+**Implementation status:** Complete — 2026-07-20. Ending **Continue in ChatGPT** builds a local prompt, copies it, opens ChatGPT, and falls back to a manual-copy textarea.
 
 **Observable outcome**
 
@@ -575,6 +615,8 @@ The user can copy the concise result without opening ChatGPT.
 ## 9. Responsive design, accessibility, and error handling
 
 ### Task 9.1 — P0: Narrow vertical thread and resilient interaction
+
+**Implementation status:** Complete — 2026-07-20 for P0 essentials. Narrow CSS thread, progress disclosure, 16px body text, recovery/boundary notices, and reduced-motion kill-switch are in place. Further trail-strip refinement remains P1.
 
 **Observable outcome**
 
@@ -645,6 +687,8 @@ The narrow history strip smoothly keeps the active end visible and allows old no
 ## 10. Demo polish
 
 ### Task 10.1 — P0: Rehearsed, stable 90-second demo
+
+**Implementation status:** Ready for rehearsal — 2026-07-20. Forced mock mode, README demo steps, and `npm run check` are green; complete three timed rehearsals before the event.
 
 **Observable outcome**
 

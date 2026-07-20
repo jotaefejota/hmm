@@ -11,14 +11,35 @@ export type CellSlot = {
   role: "cell";
 };
 
-export const FIELD_COLUMN_COUNT = 12;
-export const FIELD_ROW_COUNT = 11;
-export const FIELD_START_ROW = Math.floor(FIELD_ROW_COUNT / 2);
-export const FIELD_WIDTH = 222;
-export const FIELD_HEIGHT = 150;
+/**
+ * Centre-to-centre distance for kissing neighbours.
+ * All world coordinates are expressed in viewport-width units so packing is isotropic.
+ */
+export const CELL_PITCH = 9.2;
+/** Empty-cell diameter as a fraction of pitch (small membrane gap). */
+export const CELL_MEMBRANE_GAP = 0.96;
+export const CELL_DIAMETER = CELL_PITCH * CELL_MEMBRANE_GAP;
 
-const xForColumn = (column: number) => 12 + column * 18;
-const yForRow = (row: number) => 10 + row * 13;
+export const FIELD_COLUMN_COUNT = 14;
+export const FIELD_ROW_COUNT = 13;
+export const FIELD_START_ROW = Math.floor(FIELD_ROW_COUNT / 2);
+
+const COL_STEP = CELL_PITCH * (Math.sqrt(3) / 2);
+const ROW_STEP = CELL_PITCH;
+const ORIGIN_X = 8;
+const ORIGIN_Y = 10;
+
+export const FIELD_WIDTH =
+  ORIGIN_X * 2 + (FIELD_COLUMN_COUNT - 1) * COL_STEP + CELL_PITCH;
+export const FIELD_HEIGHT =
+  ORIGIN_Y * 2 + (FIELD_ROW_COUNT - 1) * ROW_STEP + CELL_PITCH + ROW_STEP / 2;
+
+/** Ratio of empty-cell diameter to field width — used by CSS. */
+export const CELL_SIZE_RATIO = CELL_DIAMETER / FIELD_WIDTH;
+
+const xForColumn = (column: number) => ORIGIN_X + column * COL_STEP;
+const yForCell = (column: number, row: number) =>
+  ORIGIN_Y + row * ROW_STEP + (column % 2 === 1 ? ROW_STEP / 2 : 0);
 const idFor = (column: number, row: number) => `cell-c${column}-r${row}`;
 
 export const CELL_SLOTS: readonly CellSlot[] = Array.from(
@@ -31,7 +52,7 @@ export const CELL_SLOTS: readonly CellSlot[] = Array.from(
       column,
       row,
       x: xForColumn(column),
-      y: yForRow(row),
+      y: yForCell(column, row),
       size: "medium",
       shape: (column * 3 + row) % 4 as CellShape,
       role: "cell",
@@ -69,4 +90,9 @@ export function getCellSlot(id: string) {
   const slot = CELL_SLOTS.find((candidate) => candidate.id === id);
   if (!slot) throw new Error(`Unknown cell slot: ${id}.`);
   return slot;
+}
+
+/** Euclidean distance between two cell centres in world units. */
+export function cellDistance(a: CellSlot, b: CellSlot) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
 }

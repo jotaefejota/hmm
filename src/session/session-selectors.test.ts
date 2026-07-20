@@ -9,5 +9,12 @@ describe("selectProgress", () => {
     expect(selectProgress({ ...base, dilemma: "A question", phase: "round-ready" }).status).toBe("Starting out");
     expect(selectProgress({ ...base, dilemma: "A question", phase: "round-ready", history: [step] })).toMatchObject({ status: "Exploring", answers: ["Because it matters"] });
     expect(selectProgress({ ...base, dilemma: "A question", phase: "ending", history: [step] }).status).toBe("Ready to reflect");
+    expect(selectProgress({
+      ...base,
+      dilemma: "A question",
+      phase: "round-ready",
+      history: [step, { ...step, round: 2 }],
+      extensionUsed: true,
+    }).status).toBe("Looking once more");
   });
 });

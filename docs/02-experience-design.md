@@ -38,6 +38,8 @@ The recommended direction is therefore a warm off-white cellular field with ink 
 ### Persistent field model
 
 - The stage is a window onto a finite preset lattice of softly irregular cells that extends beyond the viewport; cell positions and identities remain stable for the session.
+- The empty field reads as a packed “soup”: neighbouring cells appear to touch or nearly touch, so possibilities feel already present rather than spaced like a diagram. Packing is deterministic and precomputed in isotropic viewport-width world units—not a live physics simulation.
+- Content occupancy uncovers questions and answers inside cells that were already part of that soup. The screen must not fill with edge-to-edge *meaningful* nodes; quiet empty cells remain subordinate substrate.
 - A cell can be empty, hold active content, hold an unchosen suggestion, or retain a selected/previous mark. These are states of the same cell, not different layers of bubbles.
 - Starting a new round does not create a new visible cluster. Content clears from unused cells, the next question and suggestions occupy the next preset cells, and the camera travels to that neighbourhood.
 - A selected cell keeps its amber mark and selected text as part of the trail. A rejected cell loses its suggestion text and returns to its quiet neutral state.

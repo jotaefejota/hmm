@@ -105,4 +105,53 @@ describe("sessionReducer", () => {
     expect(stale).toBe(restarted);
     expect(restarted).toMatchObject({ phase: "welcome", history: [], activeRequestId: 3 });
   });
+
+  it("allows exactly one post-ending extension then regenerates the summary", () => {
+    let state = readyAtFirstRound();
+    state = completeRound(state, 0, 2, 1);
+    state = completeRound(state, 0, 3, 2);
+    state = sessionReducer(state, { type: "REQUEST_FINISH", reason: "user", requestId: 4 });
+    state = sessionReducer(state, {
+      type: "SUMMARY_LOADED",
+      summary: mockDataset.scenarios[0].summary,
+      requestId: 4,
+    });
+    expect(state.phase).toBe("ending");
+
+    const focus = mockDataset.scenarios[0].summary.doubts[0];
+    state = sessionReducer(state, { type: "REQUEST_EXTENSION", focus, requestId: 5 });
+    expect(state).toMatchObject({
+      phase: "generating-round",
+      extensionUsed: true,
+      extensionFocus: focus,
+      summary: null,
+    });
+
+    state = sessionReducer(state, {
+      type: "ROUND_LOADED",
+      round: {
+        kind: "round",
+        question: "What would make that remaining doubt feel clearer?",
+        answers: ["A concrete conversation", "A small time-boxed test", "More information first"],
+        transition: "Let’s look at that doubt once more.",
+        suggestEnding: false,
+      },
+      requestId: 5,
+    });
+    state = sessionReducer(state, {
+      type: "SELECT_ANSWER",
+      answer: { text: "A concrete conversation", source: "suggested", choiceIndex: 0 },
+      requestId: 6,
+    });
+    state = sessionReducer(state, { type: "COMMIT_SELECTION" });
+    expect(state).toMatchObject({ phase: "generating-summary", finishReason: "extension" });
+    expect(state.history).toHaveLength(3);
+
+    state = sessionReducer(state, {
+      type: "SUMMARY_LOADED",
+      summary: mockDataset.scenarios[0].summary,
+      requestId: 6,
+    });
+    expect(sessionReducer(state, { type: "REQUEST_EXTENSION", focus, requestId: 7 })).toBe(state);
+  });
 });

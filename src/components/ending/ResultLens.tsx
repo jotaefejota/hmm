@@ -1,9 +1,41 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import type { SummaryPayload } from "../../../shared/ai-contract";
+import type { ReflectionStep } from "../../session/session-types";
+import { handoffToChatGpt } from "../../utils/chatgpt-handoff";
 
-export function ResultLens({ summary, onRestart }: { summary: SummaryPayload; onRestart: () => void }) {
+type ResultLensProps = {
+  summary: SummaryPayload;
+  dilemma: string;
+  history: ReflectionStep[];
+  canExtend?: boolean;
+  onExploreDoubt?: (focus: string) => void;
+  onRestart: () => void;
+};
+
+export function ResultLens({
+  summary,
+  dilemma,
+  history,
+  canExtend = false,
+  onExploreDoubt,
+  onRestart,
+}: ResultLensProps) {
   const [confirmingRestart, setConfirmingRestart] = useState(false);
+  const [handoffMessage, setHandoffMessage] = useState<string | null>(null);
+  const [manualPrompt, setManualPrompt] = useState<string | null>(null);
+  const primaryDoubt = summary.doubts[0];
+
+  const continueInChatGpt = async () => {
+    const result = await handoffToChatGpt(dilemma, history, summary);
+    if (result.status === "copied") {
+      setManualPrompt(null);
+      setHandoffMessage("Context copied. Paste it into ChatGPT when the new tab opens.");
+      return;
+    }
+    setHandoffMessage("Clipboard access was blocked. Copy the prompt below and paste it into ChatGPT.");
+    setManualPrompt(result.prompt);
+  };
 
   return (
     <motion.article
@@ -32,6 +64,11 @@ export function ResultLens({ summary, onRestart }: { summary: SummaryPayload; on
         <p>{summary.nextStep}</p>
       </section>
 
+      {handoffMessage ? <p className="handoff-feedback" role="status">{handoffMessage}</p> : null}
+      {manualPrompt ? (
+        <textarea className="handoff-prompt" readOnly value={manualPrompt} aria-label="ChatGPT context prompt" />
+      ) : null}
+
       <div className="result-actions">
         {confirmingRestart ? (
           <div className="restart-confirmation" role="group" aria-label="Confirm start over">
@@ -40,10 +77,25 @@ export function ResultLens({ summary, onRestart }: { summary: SummaryPayload; on
             <button className="quiet-action" type="button" onClick={() => setConfirmingRestart(false)}>Keep this result</button>
           </div>
         ) : (
-          <button className="quiet-action restart-action" type="button" onClick={() => setConfirmingRestart(true)}>Start over</button>
+          <>
+            <button className="primary-action" type="button" onClick={() => void continueInChatGpt()}>
+              Continue in ChatGPT
+            </button>
+            {canExtend && primaryDoubt && onExploreDoubt ? (
+              <button
+                className="quiet-action"
+                type="button"
+                onClick={() => onExploreDoubt(primaryDoubt)}
+              >
+                Explore one remaining doubt
+              </button>
+            ) : null}
+            <button className="quiet-action restart-action" type="button" onClick={() => setConfirmingRestart(true)}>
+              Start over
+            </button>
+          </>
         )}
       </div>
     </motion.article>
   );
 }
-

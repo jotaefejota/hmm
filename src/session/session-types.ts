@@ -26,7 +26,7 @@ export type SelectedAnswer = {
   choiceIndex: 0 | 1 | 2;
 };
 
-export type FinishReason = "user" | "suggested" | "max_rounds";
+export type FinishReason = "user" | "suggested" | "max_rounds" | "extension";
 
 export type SessionState = {
   phase: SessionPhase;
@@ -38,6 +38,8 @@ export type SessionState = {
   transitionFinished: boolean;
   summary: SummaryPayload | null;
   finishReason: FinishReason | null;
+  extensionUsed: boolean;
+  extensionFocus: string | null;
   dataSource: "mock" | null;
   activeRequestId: number;
 };
@@ -54,7 +56,8 @@ export type SessionEvent =
   | { type: "COMMIT_SELECTION" }
   | { type: "TRANSITION_COMPLETE" }
   | { type: "CONTINUE_AFTER_CLARITY" }
-  | { type: "REQUEST_FINISH"; reason: Exclude<FinishReason, "max_rounds">; requestId: number }
+  | { type: "REQUEST_FINISH"; reason: Exclude<FinishReason, "max_rounds" | "extension">; requestId: number }
+  | { type: "REQUEST_EXTENSION"; focus: string; requestId: number }
   | { type: "SUMMARY_LOADED"; summary: SummaryPayload; requestId: number }
   | { type: "RESTART"; requestId: number };
 
@@ -68,6 +71,8 @@ export const createInitialSessionState = (activeRequestId = 0): SessionState => 
   transitionFinished: false,
   summary: null,
   finishReason: null,
+  extensionUsed: false,
+  extensionFocus: null,
   dataSource: null,
   activeRequestId,
 });

@@ -23,7 +23,7 @@ The product does not predict outcomes, optimize the user’s life, or make a dec
 1. **The user is the source of truth.** Hmm… helps articulate a choice; it does not declare the correct choice.
 2. **One thought at a time.** The interface avoids forms, dashboards, and walls of text.
 3. **Visible thinking.** The recent path remains around the active area, while a compact progress card keeps the original dilemma and complete chosen sequence easy to review when older cells travel off-screen.
-4. **One world, moving attention.** Rounds travel across a stable cellular field larger than the viewport. Content changes and the camera follows; the interface does not manufacture a new molecule after every choice.
+4. **One world, moving attention.** Rounds travel across a stable cellular field larger than the viewport. The quiet cells pack like a soup of latent possibilities—touching their neighbours—while content occupancy and the camera uncover the path; the interface does not manufacture a new molecule after every choice.
 5. **Finite by design.** A useful session reaches a natural pause within a few rounds.
 6. **Alive, not elaborate.** Motion, scale, lines, blur, and colour create an organic character without complex physics or 3D.
 7. **Graceful without AI.** A complete, convincing session remains demonstrable when the generation API is unavailable.
@@ -158,7 +158,7 @@ The MVP is a single-user, responsive web experience designed for a reliable 2–
 
 - one landing state with a text input for a single decision, question, or idea;
 - one visual exploration canvas built from simple DOM/SVG shapes and connecting lines;
-- one stable deterministic field of reusable cell slots extending beyond the viewport; rounds change content occupancy and camera focus rather than adding new bubble geometry;
+- one stable deterministic field of reusable cell slots extending beyond the viewport, packed so empty neighbours appear to touch; rounds change content occupancy and camera focus rather than adding new bubble geometry;
 - a choice-dependent route in which selecting the upper, middle, or lower possibility produces a different next segment;
 - one active central question with exactly three suggested answer options per round;
 - a separate “None quite fit” action for entering one brief custom answer;

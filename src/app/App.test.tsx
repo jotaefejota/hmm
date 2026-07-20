@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { reflectionProvider } from "../services/mock-provider";
+import { reflectionProvider } from "../services/resilient-provider";
 import { App } from "./App";
 
 afterEach(() => {

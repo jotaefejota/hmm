@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { CanvasOccupancy, CanvasProjection } from "../../layout/projectCanvas";
-import { FIELD_HEIGHT, FIELD_WIDTH, getCellSlot } from "../../layout/cell-field";
+import { CELL_SIZE_RATIO, FIELD_HEIGHT, FIELD_WIDTH, getCellSlot } from "../../layout/cell-field";
 import { ConnectionLayer } from "./ConnectionLayer";
 
 type CellFieldProps = {
@@ -96,9 +96,10 @@ export function CellField({ projection, phase, questionRef, onSelect, onCommit, 
       className={`cell-field ${ending ? "is-ending" : ""}`}
       style={{
         "--field-width": `${FIELD_WIDTH}vw`,
-        "--field-height": `${FIELD_HEIGHT}vh`,
+        "--field-height": `${FIELD_HEIGHT}vw`,
+        "--cell-size-ratio": String(CELL_SIZE_RATIO),
         "--field-shift-x": `calc(54vw - ${focus.x}vw)`,
-        "--field-shift-y": `calc(50vh - ${focus.y}vh)`,
+        "--field-shift-y": `calc(50vh - ${focus.y}vw)`,
       } as React.CSSProperties}
       data-cell-count={projection.cells.length}
     >

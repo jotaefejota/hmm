@@ -1,7 +1,7 @@
 import type { RoundRequest, SummaryRequest } from "../../shared/ai-contract";
 import { roundPayloadSchema, summaryPayloadSchema } from "../../shared/ai-contract";
 import { mockDataset, TEAM_LEAD_DILEMMA } from "../content/mock-dataset";
-import type { ReflectionProvider } from "./reflection-provider";
+import type { ContentResult, ReflectionProvider } from "./reflection-provider";
 
 const findScenario = (dilemma: string) =>
   mockDataset.scenarios.find((scenario) => scenario.dilemma === dilemma) ??
@@ -16,19 +16,31 @@ const followsCuratedPath = (input: SummaryRequest) => {
 };
 
 export class MockReflectionProvider implements ReflectionProvider {
-  async getRound(input: RoundRequest, signal?: AbortSignal) {
+  async getRound(input: RoundRequest, signal?: AbortSignal): Promise<ContentResult<ReturnType<typeof roundPayloadSchema.parse>>> {
     signal?.throwIfAborted();
+    if (input.requestMode === "extension") {
+      return {
+        source: "mock",
+        data: roundPayloadSchema.parse({
+          kind: "round",
+          question: "What would make that remaining doubt feel clearer?",
+          answers: ["A concrete conversation", "A small time-boxed test", "More information first"],
+          transition: "Let’s look at that doubt once more.",
+          suggestEnding: false,
+        }),
+      };
+    }
     const scenario = findScenario(input.dilemma);
     const index = Math.min(input.roundNumber - 1, scenario.rounds.length - 1);
-    return roundPayloadSchema.parse(scenario.rounds[index]);
+    return { source: "mock", data: roundPayloadSchema.parse(scenario.rounds[index]) };
   }
 
-  async getSummary(input: SummaryRequest, signal?: AbortSignal) {
+  async getSummary(input: SummaryRequest, signal?: AbortSignal): Promise<ContentResult<ReturnType<typeof summaryPayloadSchema.parse>>> {
     signal?.throwIfAborted();
     const scenario = followsCuratedPath(input)
       ? mockDataset.scenarios[0]
       : mockDataset.scenarios[1];
-    return summaryPayloadSchema.parse(scenario.summary);
+    return { source: "mock", data: summaryPayloadSchema.parse(scenario.summary) };
   }
 }
 

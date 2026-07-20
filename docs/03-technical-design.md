@@ -266,9 +266,9 @@ type CanvasProjection = {
 };
 ```
 
-`cell-field.ts` owns a finite deterministic lattice of stable slot IDs and world coordinates. `projectOccupancy.ts` maps semantic IDs such as `question-2` and `suggestion-2-1` into those slots by replaying the selected option indices. React keys the outer cell elements by `cellId`, never by `semanticId` or an array index.
+`cell-field.ts` owns a finite deterministic **hex-offset packed** lattice of stable slot IDs and world coordinates. Packing is computed once as module constants—no runtime physics. Odd columns are vertically offset by half a row pitch so each empty cell has six near-neighbours. Empty-cell diameter is set to approximately the pitch (with a small membrane gap of about 2–4% of pitch) so neighbours appear to kiss. `projectOccupancy.ts` (or the equivalent projection inside `projectCanvas.ts`) maps semantic IDs such as `question-2` and `suggestion-2-1` into those slots by replaying the selected option indices. React keys the outer cell elements by `cellId`, never by `semanticId` or an array index.
 
-Question cells occupy alternating lattice columns after the origin. Their three suggestions occupy the next column at `row - 1`, `row`, and `row + 1`; the chosen suggestion row becomes the next question row two columns forward. Starting from the middle row leaves enough vertical capacity for any five-round sequence. A development assertion must reject duplicate active occupancy, an unknown slot, or a route outside the authored lattice.
+Question cells occupy alternating lattice columns after the origin. Their three suggestions occupy the next column at `row - 1`, `row`, and `row + 1`; the chosen suggestion row becomes the next question row two columns forward. Starting from the middle row leaves enough vertical capacity for any five-round sequence. Occupied or active cells may scale slightly above the pack for emphasis; empty substrate cells stay packed and quiet. A development assertion must reject duplicate active occupancy, an unknown slot, or a route outside the authored lattice.
 
 Edges are derived in one selector from occupied/marked cell IDs:
 
@@ -284,7 +284,7 @@ Unchosen suggestions are never added to history. Their content and temporary edg
 
 ### Shared coordinate model
 
-Use world coordinates across a field approximately two viewport widths wide. Every `CellSlot` has a fixed column, row, centre, size tier, and shape variant. Cell centres and SVG endpoints use the same world coordinate system; semantic occupancy never owns coordinates.
+Use world coordinates across a field approximately two viewport widths wide, expressed entirely in viewport-width units so packing remains isotropic. Every `CellSlot` has a fixed column, row, centre, size tier, and shape variant on the hex-offset pack. Cell centres and SVG endpoints use the same world coordinate system; semantic occupancy never owns coordinates. Column and row pitch, and the matching empty-cell diameter, are shared constants so CSS sizing and layout tests agree.
 
 Connect SVG paths from centre to centre and render them behind opaque node surfaces. The node covers the part of the path inside its body, creating the appearance that the line meets the membrane edge without calculating shape intersections.
 
@@ -295,9 +295,9 @@ Use four authored irregular `border-radius` presets assigned to stable cell IDs.
 For windows at least 900 px wide:
 
 - reserve a 280–320 px upper-left rectangle for the progress card and keep semantic nodes outside it;
-- reserve `x = 0.06–0.40` below the progress-card exclusion rectangle for the compressed selected trail;
-- place the active question near `(0.54, 0.50)`;
-- place the three suggestions near `(0.75, 0.23)`, `(0.82, 0.50)`, and `(0.74, 0.78)`;
+- render the full packed soup of empty cells so neighbours appear to touch; only occupied cells carry readable meaning;
+- place the active question near the desktop focal area while its world position advances along the packed route;
+- place the three suggestions in the next forward column’s upper, middle, and lower packed neighbours;
 - preset enough columns and rows for every five-round combination;
 - derive the current row from the prior `choiceIndex` sequence (`0 = up`, `1 = straight`, `2 = down`) rather than from randomness;
 - reduce older occupied-cell emphasis to a minimum of `0.58`, while the underlying cell geometry remains present;

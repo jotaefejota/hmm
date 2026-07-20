@@ -1,11 +1,15 @@
 import type { SessionState } from "../session/session-types";
+import type { ContentNotice } from "../services/reflection-provider";
 import { WelcomeSeed } from "../components/session/WelcomeSeed";
 import { GenerationStatus } from "../components/session/GenerationStatus";
 import { ThoughtCanvas } from "../components/canvas/ThoughtCanvas";
 import { EndingExperience } from "../components/ending/EndingExperience";
+import { RecoveryNotice } from "../components/session/RecoveryNotice";
 
 type AppShellProps = {
   state: SessionState;
+  notice: ContentNotice | null;
+  boundaryMessage: string | null;
   onOpenEntry: () => void;
   onCancelEntry: () => void;
   onSubmitDilemma: (dilemma: string) => Promise<void>;
@@ -17,6 +21,7 @@ type AppShellProps = {
   onTransitionComplete: () => void;
   onContinueAfterClarity: () => void;
   onFinish: (reason: "user" | "suggested") => void;
+  onExploreDoubt: (focus: string) => void;
   onRestart: () => void;
 };
 
@@ -39,6 +44,16 @@ export function AppShell(props: AppShellProps) {
         </a>
         <span className="mode-chip">Demo path</span>
       </header>
+
+      {props.notice ? <RecoveryNotice message={props.notice.message} /> : null}
+      {props.boundaryMessage ? (
+        <div className="boundary-notice" role="alert">
+          <p>{props.boundaryMessage}</p>
+          <button className="primary-action" type="button" onClick={props.onRestart}>
+            Start over
+          </button>
+        </div>
+      ) : null}
 
       {isWelcome ? (
         <WelcomeSeed
@@ -66,9 +81,12 @@ export function AppShell(props: AppShellProps) {
       ) : null}
 
       {state.phase === "generating-summary" || state.phase === "ending" ? (
-        <EndingExperience state={state} onRestart={props.onRestart} />
+        <EndingExperience
+          state={state}
+          onRestart={props.onRestart}
+          onExploreDoubt={props.onExploreDoubt}
+        />
       ) : null}
     </main>
   );
 }
-

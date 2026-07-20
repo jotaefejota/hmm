@@ -4,7 +4,7 @@ import { createInitialSessionState } from "./session-types";
 const revealPendingRound = (state: SessionState): SessionState => {
   if (!state.pendingRound) return { ...state, transitionFinished: true };
 
-  const offerClarity = state.history.length >= 4 && state.pendingRound.suggestEnding;
+  const offerClarity = state.history.length >= 4 && state.pendingRound.suggestEnding && !state.extensionUsed;
   return {
     ...state,
     phase: offerClarity ? "clarity-offered" : "round-ready",
@@ -65,13 +65,15 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
         choiceIndex: state.selectedAnswer.choiceIndex,
       } as const;
       const history = [...state.history, step];
-      const reachedLimit = history.length >= 5;
+      const reachedCoreLimit = !state.extensionUsed && history.length >= 5;
+      const finishedExtension = state.extensionUsed;
+      const shouldSummarize = reachedCoreLimit || finishedExtension;
       return {
         ...state,
-        phase: reachedLimit ? "generating-summary" : "transitioning",
+        phase: shouldSummarize ? "generating-summary" : "transitioning",
         history,
-        currentRound: reachedLimit ? null : state.currentRound,
-        finishReason: reachedLimit ? "max_rounds" : state.finishReason,
+        currentRound: shouldSummarize ? null : state.currentRound,
+        finishReason: finishedExtension ? "extension" : reachedCoreLimit ? "max_rounds" : state.finishReason,
       };
     }
     case "TRANSITION_COMPLETE":
@@ -90,6 +92,23 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
             activeRequestId: event.requestId,
           }
         : state;
+    case "REQUEST_EXTENSION": {
+      if (state.phase !== "ending" || state.extensionUsed || !state.summary) return state;
+      const focus = event.focus.trim();
+      if (!focus) return state;
+      return {
+        ...state,
+        phase: "generating-round",
+        summary: null,
+        currentRound: null,
+        pendingRound: null,
+        selectedAnswer: null,
+        extensionUsed: true,
+        extensionFocus: focus,
+        finishReason: null,
+        activeRequestId: event.requestId,
+      };
+    }
     case "SUMMARY_LOADED":
       return state.phase === "generating-summary" && event.requestId === state.activeRequestId
         ? { ...state, phase: "ending", summary: event.summary, dataSource: "mock" }

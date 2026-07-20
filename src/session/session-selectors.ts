@@ -3,7 +3,13 @@ import type { SessionState } from "./session-types";
 export type ProgressView = {
   dilemma: string;
   completed: number;
-  status: "Starting out" | "Exploring" | "Connecting the dots" | "A direction is forming" | "Ready to reflect";
+  status:
+    | "Starting out"
+    | "Exploring"
+    | "Connecting the dots"
+    | "A direction is forming"
+    | "Looking once more"
+    | "Ready to reflect";
   answers: string[];
 };
 
@@ -12,6 +18,9 @@ export const selectProgress = (state: SessionState): ProgressView => {
   if (state.history.length === 1) status = "Exploring";
   if (state.history.length >= 2) status = "Connecting the dots";
   if (state.phase === "clarity-offered") status = "A direction is forming";
+  if (state.extensionUsed && state.phase !== "ending" && state.phase !== "generating-summary") {
+    status = "Looking once more";
+  }
   if (state.phase === "generating-summary" || state.phase === "ending") status = "Ready to reflect";
 
   return {
@@ -23,4 +32,7 @@ export const selectProgress = (state: SessionState): ProgressView => {
 };
 
 export const selectCanFinish = (state: SessionState) =>
-  state.phase === "round-ready" && state.history.length >= 2;
+  state.phase === "round-ready" && state.history.length >= 2 && !state.extensionUsed;
+
+export const selectCanExtend = (state: SessionState) =>
+  state.phase === "ending" && !state.extensionUsed && Boolean(state.summary?.doubts[0]);

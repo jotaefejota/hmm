@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "motion": "latest",
+    "openai": "^6.48.0",
     "react": "latest",
     "react-dom": "latest",
     "zod": "latest"
@@ -28,7 +29,9 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@vercel/node": "^5.8.26",
     "@vitejs/plugin-react": "latest",
+    "concurrently": "^10.0.3",
     "eslint": "latest",
     "eslint-plugin-react-hooks": "latest",
     "eslint-plugin-react-refresh": "latest",
