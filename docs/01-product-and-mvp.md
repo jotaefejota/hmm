@@ -153,10 +153,11 @@ The MVP is a single-user, responsive web experience designed for a reliable 2–
 
 - one landing state with a text input for a single decision, question, or idea;
 - one visual exploration canvas built from simple DOM/SVG shapes and connecting lines;
-- one active central question with exactly three answer options per round;
+- one active central question with exactly three suggested answer options per round;
+- a separate “None quite fit” action for entering one brief custom answer;
 - selection animation that promotes the chosen answer and reveals the next question;
 - a persistent, non-interactive trail of the selected path;
-- 3–5 answered questions per session;
+- a standard 3–5 answered-question journey, with an explicit user-controlled finish available after round 2;
 - a user-controlled “I think I’ve got it” finish action from round 2;
 - an automatic finish after round 5;
 - a final reflection containing an emerging direction, reasons, remaining doubts, and one next step;
@@ -180,7 +181,7 @@ For each round, generation returns one concise question, exactly three concise a
 
 - The path is linear: only the chosen answer persists; unchosen branches disappear.
 - A previous step cannot be edited or revisited.
-- The user chooses from the three offered answers; free-text responses after the initial input are deferred.
+- The user chooses one of three suggestions or writes one brief custom answer through a separate “None quite fit” action.
 - Refreshing the page resets the session.
 - English is the only supported language for the hackathon build.
 - The visual network uses authored transitions, not a physics engine.
@@ -194,6 +195,7 @@ For each round, generation returns one concise question, exactly three concise a
 - Organic node-and-connection visual language with unmistakable question/answer hierarchy.
 - Smooth selection and transition between rounds.
 - Exactly three answer directions per question.
+- A compact custom-answer path when none of the three suggestions fits.
 - Visible trail of chosen thoughts.
 - Complete 3–5 round session with a finite ending.
 - Final reflection with direction, reasons, doubts, and next step.
@@ -210,7 +212,7 @@ For each round, generation returns one concise question, exactly three concise a
 - Manual choice between live and demo content in a hidden presenter control.
 - Copy the final reflection independently of the ChatGPT prompt.
 - Basic client-side session restoration after an accidental refresh.
-- Optional fourth answer such as “None of these” leading to a short free-text response.
+- More expressive validation and coaching for overly long custom answers.
 - More curated mock scenarios.
 - Lightweight, privacy-conscious event instrumentation for demo evaluation.
 - Improved small-screen trail navigation or zoom-to-active behaviour.
@@ -274,7 +276,8 @@ The MVP is successful when all of the following can be demonstrated in a clean b
 - A first-time viewer can identify the active question, the three possible answers, and the previously selected path without explanation.
 - A user can start from a blank landing state and reach a final reflection in no more than 5 answered questions.
 - “I think I’ve got it” is available after the second answer, and the session always ends after the fifth.
-- At no point is more than one question or more than three current answers presented as active.
+- At no point is more than one question or more than three generated answer suggestions presented as active; the separate custom-answer action does not create a fourth suggestion.
+- A user can choose “None quite fit,” enter a brief answer in their own words, and continue through the same selected-answer transition.
 - The recommended demo path can be completed in 90 seconds or less by a presenter.
 
 ### Output quality
@@ -310,10 +313,10 @@ None of these decisions blocks initial design or implementation; the defaults be
 | Decision | Recommended MVP default | Why it still merits confirmation |
 | --- | --- | --- |
 | Public name and punctuation | Use **Hmm…** in the interface and `hmm` in technical identifiers. | Trademark/domain checks and final brand styling have not been done. |
-| Visual palette | Use a dark, calm field with luminous but restrained question/answer colours. | Brand colours and desired emotional tone may change after the first visual prototype. |
+| Visual palette | Use a warm off-white cellular field, ink text, violet for Hmm…, amber for the user, and neutral suggestions. | Exact colour values and contrast need validation in the first visual prototype. |
 | Live AI provider/model | Use one low-latency model behind a server-side endpoint. | Provider access, hackathon credits, latency, and deployment target need confirmation. |
 | Hosting target | Use a static frontend host with one small serverless function. | The team’s preferred platform and available accounts are unknown. |
-| Input freedom during exploration | P0 uses only three generated answers; free text becomes P1. | Three choices make the demo legible but may occasionally fail to represent the user. |
+| Custom-answer length | P0 allows a custom answer of up to 160 characters through a separate “None quite fit” action. | The limit should be validated with real prompts so it stays expressive without breaking node layouts. |
 | Automatic ending logic | Offer a soft ending after round 4 and force the summary after round 5. | Live testing may show that 3 or 4 rounds feels better. |
 | Sensitive-topic handling | Display a brief boundary message and avoid guidance for crisis or professional-advice scenarios. | Exact wording and whether to block or redirect such sessions require a product decision. |
 | ChatGPT handoff | Copy context, open ChatGPT in a new tab, and instruct the user to paste. | Browser behaviour and the preferred ChatGPT destination URL should be verified. |
