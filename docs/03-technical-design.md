@@ -1,6 +1,10 @@
 # Hmm… — Technical Design
 
-**Status:** Implementation-ready architecture proposal
+> **Contract v2 revision:** A round request returns one discovery payload containing exactly two complete lenses. Each lens includes a short theme, one question, and exactly three answers. Lens switching is local state work and never performs a second request. The stable lattice route is derived from both the chosen lens index and answer index.
+
+The validated discovery payload includes one contextual `fortune` string. Projection maps it to a deterministic nearby cell-slot ID; opened state remains component-local and deliberately absent from canonical session history. Mock and live providers return the same field.
+
+**Status:** Implemented architecture; production deployment verified 2026-07-20
 
 **Depends on:** `docs/01-product-and-mvp.md`, `docs/02-experience-design.md`, and `docs/04-ai-contract.md`
 
@@ -35,12 +39,14 @@ The semantic session—not the canvas—is the source of truth. The cell field i
 | Cells | A persistent set of absolutely positioned HTML containers holding native buttons/articles | Preserves stable spatial memory, native text wrapping, focus, keyboard behavior, and screen-reader semantics while allowing art-directed placement. |
 | Connections | One non-interactive SVG layer behind the HTML cells | SVG paths are easy to draw, fade, and animate while occupied-cell content remains accessible HTML. |
 | Animation | Motion for React (`motion`) for focus and content transitions; CSS for simple halos | Motion provides controlled transforms, occupancy fades, and reduced-motion support without introducing a full scene or physics engine. Stable cell elements avoid remount-heavy transition choreography. |
-| Validation | Zod in a root `shared/` module | One schema can validate browser requests, server input, model output, and mock fixtures. Tuple schemas enforce exactly three answers. |
+| Validation | Zod in a root `shared/` module | One schema can validate browser requests, server input, model output, and mock fixtures. An exact-length array enforces three answers while producing JSON Schema accepted by Structured Outputs. |
 | AI server | One TypeScript Vercel Function in `api/reflect.ts` | Vercel supports Vite projects with functions in an `api` directory, so the frontend and secret-bearing endpoint can deploy together without a separate server. |
 | Model API | Official OpenAI JavaScript SDK, Responses API, and Structured Outputs | The SDK can parse a response directly against a Zod schema. Structured Outputs provides schema adherence rather than merely valid JSON. |
-| Default model | `gpt-5.6-terra`, configurable with `OPENAI_MODEL` | Current official guidance describes Terra as the balance of intelligence and cost. Use low reasoning effort for this short, latency-sensitive task; keep the model configurable so the contract is not coupled to one release. |
+| Deployed model | `gpt-4.1-mini`, configurable with server-only `OPENAI_MODEL` | It is sufficient for the strict, short structured contract and keeps the prototype responsive. The contract remains model-independent. |
 | Tests | Vitest for reducer, schema, layout, and mock-provider tests | These are the failure-prone pure functions. A full end-to-end suite is not necessary for the two-day prototype. |
 | Deployment | Vercel | One static frontend plus one same-repository function is the shortest path to a shareable demo. |
+
+The production deployment is [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). Vercel serves the Vite client and the colocated `api/reflect.ts` function; the deployed endpoint has returned validated live rounds with `Cache-Control: no-store`. Forced mock mode remains the deterministic demonstration and outage fallback.
 
 ### Graph-library assessment
 
@@ -100,7 +106,6 @@ No package versions are specified before the project is scaffolded. Install curr
 │   │   │   ├── AnswerCluster.tsx
 │   │   │   ├── CustomAnswerComposer.tsx
 │   │   │   ├── ProgressCard.tsx
-│   │   │   ├── ClarityPrompt.tsx
 │   │   │   ├── GenerationStatus.tsx
 │   │   │   └── SessionActions.tsx
 │   │   ├── ending/
@@ -159,7 +164,7 @@ This is an intended boundary map, not a requirement to create an empty file for 
 | `CustomAnswerComposer` | Captures and validates the 160-character custom answer | A fourth suggested answer |
 | `ProgressCard` | Displays the original dilemma, committed answers, round count, and derived qualitative status | Duplicate history state, AI confidence, or graph navigation |
 | `GenerationStatus` | Shows initial/next/summary loading state | Fake percentages |
-| `ClarityPrompt` | Offers ending or one more core question | Deciding that clarity exists |
+| `CellField` reflection lens occupancy | Offers the explicit recap action beside the latest answer | Automatically generating or deciding that clarity exists |
 | `ResultLens` | Displays the four-part summary and handoff actions | Reconstructing the summary from canvas nodes |
 | `RecoveryNotice` | Explains live failure, fallback, and retry without losing context | Raw provider error details |
 | `SessionContext` | Exposes state and semantic events backed by one reducer | Visual styling |
@@ -175,14 +180,14 @@ type SessionPhase =
   | "welcome"
   | "entering"
   | "generating-round"
+  | "lens-ready"
   | "round-ready"
   | "writing-custom-answer"
   | "answer-selected"
   | "transitioning"
-  | "clarity-offered"
+  | "finish-offered"
   | "generating-summary"
   | "ending"
-  | "recovering"
   | "error";
 
 type ReflectionStep = {
@@ -218,8 +223,9 @@ type SessionState = {
 - Increment `activeRequestId` for each generation request. Ignore any response whose identifier is not current.
 - An `AbortController` cancels the previous request on restart or retry.
 - Derive round number as `history.length + 1`; do not trust a visual component to count rounds.
-- After a fifth core answer, generate the summary without requesting another round.
-- `extensionUsed` permits exactly one post-ending question; after its answer, regenerate the summary immediately.
+- After every fourth committed answer, expose a derived `finish` occupancy over one exact quiet-cell diamond: one left slot, two vertically stacked middle slots, and one right slot. `getFinishFootprintCellIds` owns this authored geometry and tests its four touching relationships. The translucent sea-glass membrane spans those four slots, while a normal-sized derived `continue` bubble below it provides an immediate route to the prepared next discovery. Neither is an automatic summary request. Keep the prepared discovery in state so both the bubble and recap dismissal can restore its two lenses.
+- After a fifth core answer, expose the same final reflection lens rather than generating a summary automatically; no next discovery exists in that case.
+- `extensionUsed` permits exactly one post-ending question only while fewer than five answers are committed; after its answer, regenerate the summary immediately. The action is absent and the reducer rejects it once the five-round ceiling is reached.
 - Restart creates the initial state in one reducer event.
 
 `useReducer` is sufficient because this state is local, synchronous except for two service methods, and never shared between browser tabs or persisted.
@@ -270,7 +276,7 @@ type CanvasProjection = {
 
 `cell-field.ts` owns a finite deterministic **hex-offset packed** lattice of stable slot IDs and world coordinates. Packing is computed once as module constants—no runtime physics. Odd columns are vertically offset by half a row pitch so each empty cell has six near-neighbours. Empty-cell diameter is set to approximately the pitch (with a small membrane gap of about 2–4% of pitch) so neighbours appear to kiss. `projectOccupancy.ts` (or the equivalent projection inside `projectCanvas.ts`) maps semantic IDs such as `question-2` and `suggestion-2-1` into those slots by replaying the selected option indices. React keys the outer cell elements by `cellId`, never by `semanticId` or an array index.
 
-Question cells occupy alternating lattice columns after the origin. Their three suggestions occupy the next column at `row - 1`, `row`, and `row + 1`; the chosen suggestion row becomes the next question row two columns forward. Starting from the middle row leaves enough vertical capacity for any five-round sequence. Occupied or active cells may scale slightly above the pack for emphasis; empty substrate cells stay packed and quiet. A development assertion must reject duplicate active occupancy, an unknown slot, or a route outside the authored lattice.
+Question cells occupy alternating lattice columns after the origin. Their three suggestions use three immediate hex neighbours as a directional fan rather than one detached column. For the upper lens, one suggestion sits directly above and two use the forward diagonal neighbours; for the lower lens, one sits directly below and two use the forward diagonal neighbours. The semantic option index still supplies the next route delta independently of its rendered slot. Starting from the middle row leaves enough vertical capacity for any five-round sequence. Occupied or active cells may scale slightly above the pack for emphasis; empty substrate cells stay packed and quiet. A development assertion must reject duplicate active occupancy, an unknown slot, a suggestion that does not touch its question, or a route outside the authored lattice.
 
 Edges are derived in one selector from occupied/marked cell IDs:
 
@@ -278,7 +284,8 @@ Edges are derived in one selector from occupied/marked cell IDs:
 2. question cell → selected-answer cell for every completed step;
 3. selected-answer cell → next question cell when it exists;
 4. current question cell → three currently occupied suggestion cells only while the round is ready;
-5. a dotted preview edge to the custom-answer composer only while it is open.
+5. latest selected-answer cell → the temporary reflection lens when it is offered;
+6. a dotted preview edge to the custom-answer composer only while it is open.
 
 Unchosen suggestions are never added to history. Their content and temporary edges leave through a short occupancy fade; their `Cell` elements and geometry remain mounted.
 
@@ -299,7 +306,8 @@ For windows at least 900 px wide:
 - reserve a 280–320 px upper-left rectangle for the progress card and keep semantic nodes outside it;
 - render the full packed soup of empty cells so neighbours appear to touch; only occupied cells carry readable meaning;
 - place the active question near the desktop focal area while its world position advances along the packed route;
-- place the three suggestions in the next forward column’s upper, middle, and lower packed neighbours;
+- place the three suggestions in a touching upper or lower fan selected by the opened lens position;
+- place a reflection lens in a stable touching neighbour of the latest answer after every fourth answer and at the hard final cap;
 - preset enough columns and rows for every five-round combination;
 - derive the current row from the prior `choiceIndex` sequence (`0 = up`, `1 = straight`, `2 = down`) rather than from randomness;
 - reduce older occupied-cell emphasis to a minimum of `0.58`, while the underlying cell geometry remains present;
@@ -396,8 +404,11 @@ Provider responsibilities:
 - In `auto`, try live once; on timeout, network failure, rate limit, or invalid output, return the appropriate mock payload with a recovery notice.
 - In `mock`, make no network request.
 - In `live`, expose a recoverable error instead of silently switching; reserve this mode for development diagnostics.
+- Provider failures are converted into a request-scoped `REQUEST_FAILED` session event. The reducer owns the resulting `error` phase and public error payload; asynchronous callbacks must not throw into React or maintain a parallel component-level error state.
 
 The presenter can force the curated journey with `VITE_CONTENT_MODE=mock` or a documented demo query parameter that selects the same provider. No visible provider selector is required.
+
+For local development, `npm run dev:full` enables a small Vite middleware adapter that invokes the production `api/reflect.ts` handler at the same-origin route. Plain `npm run dev` remains client-only. The adapter loads only `OPENAI_API_KEY` and `OPENAI_MODEL` from `.env.local`; it must never copy the full environment into client-visible Vite variables.
 
 Because the entire short history is sent on every live request, the app can switch from live to mock at any turn without provider-side conversation state.
 
@@ -443,19 +454,22 @@ This protects the key from appearing in the bundle or browser requests. It does 
 - Do not automatically retry the model before falling back; two slow calls make the demo worse.
 - A user-triggered **Try live again** starts one fresh request with a new request ID.
 - Aborted and stale requests never change state.
+- A failed operation is retained outside the visual components as a small typed descriptor: round versus summary, validated request payload, and the success event it must produce. The reducer retains the pre-error phase so recovery can restore the same semantic point without reconstructing it from the UI.
+- **Try again** replays that descriptor through the configured provider. **Continue with prepared questions** replays it through `MockReflectionProvider`. Both allocate a new request ID, and neither edits committed history.
+- Development builds may inject timeout or refusal failures through documented query parameters. Production builds ignore them.
 
 ### Failure mapping
 
 | Failure | App behavior | Retry |
 | --- | --- | --- |
 | No API key / endpoint unavailable | Automatic mock response; small persistent notice | Manual live retry only if configuration changes |
-| Network error or timeout | Automatic mock response preserving the current path | One user-triggered retry |
+| Network error or timeout | Automatic mock response in `auto`; in-context error cell in diagnostic `live` mode | **Try again** or **Continue with prepared questions** |
 | Non-2xx provider response | Map to public code; automatic mock | User-triggered retry |
 | Model refusal | Show the appropriate static boundary message; do not feed sensitive text into generic mock reflection | No automatic retry |
 | JSON/schema invalid | Reject immediately; use mock; log server-side diagnostic | User-triggered retry during development only |
 | Semantically invalid content | Reject if answers are duplicated, lengths fail, advice language appears, or question shape is invalid; use mock | No repair call in P0 |
 | Mock fixture invalid | Fail tests/build; at runtime show preserved-path error with copy/restart | Retry cannot help |
-| Summary failure | Keep complete trail visible; use mock summary or offer retry/copy path | One user-triggered retry |
+| Summary failure | Keep complete trail visible; use mock summary or offer retry/prepared summary | One user-triggered retry |
 | Clipboard/new-tab failure | Show the prepared prompt for manual copy | User retries the browser action |
 
 The server may log a request ID, error code, duration, and model name. It should not log the user’s full dilemma or answers in the hackathon default.

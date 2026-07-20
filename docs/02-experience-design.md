@@ -1,5 +1,13 @@
 # Hmm… — Complete Session Experience Design
 
+## Discovery-led round rhythm
+
+The active neighbourhood begins with two violet question-lens cells carrying short theme labels, not a fully revealed question. Choosing a lens transforms that same cell into the active Hmm… question and reveals exactly three neighbouring answer cells. Until an answer is committed, **Try the other angle** restores both lenses without another content request. Once an answer is chosen, the unused lens clears back to the substrate and only the chosen question and answer remain marked.
+
+Committed question and answer cells are buttons in review mode. Activating either focuses that cell and opens one read-only trail card containing the lens theme, full question, and chosen answer. **Back to now** or Escape restores the current neighbourhood. Review never edits history, resurrects an unused lens, or enables free pan and zoom.
+
+Each active discovery places one small amber fortune-cookie cell near its two lenses. Opening it once reveals a short, surprising reframing grounded in the original dilemma and committed path. Cookies remain subordinate to lenses, never create connectors, and do not enter the progress card or committed AI history.
+
 **Status:** Experience definition before implementation
 
 **Depends on:** `docs/01-product-and-mvp.md`
@@ -10,7 +18,7 @@
 
 The session should feel like a thought becoming visible.
 
-The user begins with one unresolved dilemma. Hmm… introduces one useful question, then three possible ways to respond. Each selection marks one cell in a stable field and adds one short segment to a living path. The interface never tries to display every possible branch. It shows only the route the user is actually taking, clears unused content from the field, and gently recognizes when the route has produced enough clarity to pause.
+The user begins with one unresolved dilemma. Hmm… introduces two useful question lenses; the selected lens opens into one question and three possible ways to respond. Each committed answer marks cells in a stable field and adds one short segment to a living path. The interface never displays every possible branch. It shows only the route the user is actually taking, clears unused content from the field, and gently recognizes when the route has produced enough clarity to pause.
 
 The experience is not a chat transcript arranged in circles. It is a focused reflection with spatial memory: the active thought is unmistakable, the chosen path is still present, and everything else makes room.
 
@@ -45,7 +53,7 @@ The recommended direction is therefore a warm off-white cellular field with ink 
 - A selected cell keeps its amber mark and selected text as part of the trail. A rejected cell loses its suggestion text and returns to its quiet neutral state.
 - The active neighbourhood comes forward through scale, contrast, sharpness, halo, and a controlled camera pan. Recent cells remain near the viewport edge before slipping away; the progress card preserves the complete textual route.
 - Choosing an item under **What you’ve chosen so far** is a review affordance: the camera (or narrow scroll) briefly focuses that committed amber answer cell. It does not edit history or enable free pan/zoom. The next selection, phase change, or **Back to now** returns focus to the active neighbourhood.
-- The three suggestions occupy forward cells above, level with, and below the current direction. The selected position determines the row of the next question, so repeated choices create a distinct rising, level, falling, or mixed path.
+- The three suggestions form a compact fan in cells that physically touch the opened question; they must never read as a detached vertical menu. The fan follows the lens placement: an upper lens uses one cell directly above and two forward neighbours, while a lower lens uses one cell directly below and two forward neighbours. The selected position still determines the next route bend, so repeated choices create a distinct rising, level, falling, or mixed path.
 - Semantic connectors join only selected relationships. Empty substrate cells never receive decorative cross-links.
 
 ## 2. Journey from arrival to ending
@@ -116,18 +124,9 @@ This alternating rhythm makes authorship readable even when the text is too smal
 
 ### 2.6 Recognize enough clarity
 
-After the fourth selected answer, if the reflection response indicates that a coherent direction is visible, the surrounding membrane becomes still and a small non-modal clarity card appears near the active path. The curated demo always produces this signal:
+After every fourth committed question/answer pair, the path grows one distinct **reflection lens** beside the last amber answer. It is anchored over exactly four quiet cells in the packed lattice: one left, two vertically stacked in the middle, and one right. Its translucent sea-glass membrane uses that precise diamond footprint, letting the existing cellular soup supply the subtle internal arcs. There are no decorative internal lines. This is a layer over the field, not a replacement bubble. It says **What is taking shape?** and is an invitation, not a diagnosis. Nothing is summarised until the user taps it.
 
-> A direction is taking shape.
->
-> You can see what’s emerging, or stay with it for one more question.
-
-Actions:
-
-- **See what’s emerging** — primary;
-- **One more question** — secondary.
-
-This is an invitation, not a diagnosis. It does not show a percentage, score, or celebratory success state. The persistent **I think I’ve got it** action remains available from round 2; round 5 proceeds to the ending automatically after selection.
+Below it, a normal-sized sea-glass **Keep going** bubble lets the user decline the pause immediately and reveal the already-prepared next pair of question lenses. It behaves like a fourth optional cell rather than a secondary text control. Opening the lens gathers and reveals the result; **Keep exploring** there offers the same return path. The persistent **I think I’ve got it** action remains available from round 2. At the fifth-round ceiling, a final **Let this settle** lens replaces automatic summary generation; tapping it explicitly opens the recap.
 
 ### 2.7 End the session
 
@@ -147,7 +146,8 @@ The result remains framed as a reflection of the user’s path, never as the mod
 The ending actions are:
 
 - **Continue in ChatGPT** — copies the prepared context and opens ChatGPT;
-- **Explore one remaining doubt** — adds exactly one user-initiated question and then returns to an updated ending;
+- **Keep exploring** — only when the next round was prepared before the recap; dismisses the result and returns to those lenses without rewriting history;
+- **Explore one remaining doubt** — when no prepared core round remains and fewer than five answers have been committed, adds exactly one user-initiated question and then returns to an updated ending;
 - **Start over** — asks for confirmation before clearing the current in-memory path.
 
 An explicitly resumed question does not violate the five-round automatic stop: Hmm… has already paused and will not continue without the user asking it to.
@@ -165,10 +165,10 @@ The progress card remains visible beside the result lens, changes its status to 
 | **Three possible answers** | Exactly three neutral cells holding suggestions around/below the question | Hover/focus, select, open custom answer | One suggestion is selected or custom input opens |
 | **Different answer** | Suggestions remain visible but subdued; attached input cell or narrow-window sheet | Enter up to 160 characters, use answer, cancel | Valid custom text becomes the selected answer |
 | **Selected answer** | One amber occupied cell with check mark; stronger connector to its question | None during the brief committed animation | Automatically enters transition |
-| **Transition** | Chosen cells remain marked; unused text clears; focus moves as existing cells receive the next content | Wait | Next question becomes active, or ending generation begins |
-| **Enough clarity** | Non-modal clarity card, settled network, current path | See what’s emerging; one more question | Ending generation or another round |
+| **Transition** | Chosen cells remain marked; unused text clears; focus moves as existing cells receive the next content | Wait | Next question becomes active, or a reflection lens appears |
+| **Reflection lens** | One tappable violet bubble touching the latest amber answer | See what’s emerging | Ending generation; or remain on the path until tapped |
 | **Ending generation** | Entire path, dimmed but readable; gathering copy; forming result lens | Wait; retry after failure | Final result becomes available |
-| **Ending** | Result lens, subdued full path, four-part reflection, three actions | Continue in ChatGPT, explore one doubt, start over | External handoff, one extra round, or reset |
+| **Ending** | Result lens, subdued full path, four-part reflection, contextual actions | Continue in ChatGPT, keep exploring when available, explore one doubt, start over | External handoff, resumed path, one extra round, or reset |
 | **API unavailable** | Existing context stays visible; calm inline recovery message; fallback begins automatically | Wait for demo path; try live again | Fallback succeeds, retry succeeds, or user restarts |
 | **Unrecoverable error** | Existing path plus concise error card | Try again; start over; copy current path if any | Retry, reset, or manual preservation |
 
@@ -225,11 +225,13 @@ If live generation fails but mock content is available, begin loading the mock c
 
 Action: **Try live again**. Otherwise, no response is required.
 
-Technical error details never replace the user’s path. If both live and fallback content fail, use:
+Technical error details never replace the user’s path. In diagnostic live mode, or if automatic fallback also fails, keep the progress card and selected trail visible and place a temporary error cell at the same focal slot reserved for the incoming question:
 
 > I lost the thread for a moment. Your path is still here.
 
-Actions: **Try again**, **Copy my path**, and **Start over**.
+For retryable failures with a valid mock continuation, actions are **Try again**, **Continue with prepared questions**, and a quieter **Start over**. **Try again** repeats the exact failed operation with a new request ID. **Continue with prepared questions** runs that operation through the mock provider without changing committed history. For refusals or other non-retryable boundaries, show the boundary message and **Start over** only; never route sensitive content into generic mock reflection.
+
+In development only, `?simulateError=timeout` and `?simulateError=refusal` deterministically exercise the two variants. These query parameters must be ignored in production builds.
 
 ## 4. Simple state machine
 
@@ -253,21 +255,22 @@ stateDiagram-v2
     RoundReady --> EndingGeneration: I think I've got it (round 2+)
 
     AnswerSelected --> Transitioning
-    Transitioning --> ClarityOffered: Ending suggested after round 4
-    Transitioning --> EndingGeneration: Round 5 complete
+    Transitioning --> FinishOffered: Every fourth answer commits
+    AnswerSelected --> FinishOffered: Round 5 complete
     Transitioning --> Generating: Continue to next round
 
-    ClarityOffered --> EndingGeneration: See what's emerging
-    ClarityOffered --> Generating: One more question
+    FinishOffered --> EndingGeneration: Open reflection lens
 
     EndingGeneration --> Ending: Summary succeeds
     EndingGeneration --> ApiUnavailable: Summary generation fails
+    Ending --> RoundReady: Keep exploring (prepared next round)
     Ending --> Generating: Explore one remaining doubt
     Ending --> Welcome: Confirm start over
     Ending --> ExternalHandoff: Continue in ChatGPT
     ExternalHandoff --> Ending
 
     Error --> Generating: Try again
+    Error --> Generating: Continue with prepared questions
     Error --> Welcome: Confirm start over
 ```
 
@@ -427,15 +430,13 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 **Progress card:** 4 of up to 5 · A direction is forming · I want more influence · Making things myself · Much more appealing · Whether the role is flexible
 
-### Enough clarity
+### Reflection lens
 
-**Heading:** A direction is taking shape.
+**Label:** Reflection lens
 
-**Body:** You can see what’s emerging, or stay with it for one more question.
+**Bubble copy:** What is taking shape?
 
-**Primary action:** See what’s emerging
-
-**Secondary action:** One more question
+**Action:** Tap the bubble to gather the recap. If a fifth round is prepared, the result includes **Keep exploring** to dismiss it and return to that round.
 
 ### Ending generation
 

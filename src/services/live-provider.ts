@@ -1,8 +1,8 @@
 import {
   publicErrorSchema,
-  roundPayloadSchema,
+  discoveryPayloadSchema,
   summaryPayloadSchema,
-  type RoundPayload,
+  type DiscoveryPayload,
   type RoundRequest,
   type SummaryPayload,
   type SummaryRequest,
@@ -13,10 +13,10 @@ import { ReflectionProviderError } from "./reflection-provider";
 const LIVE_TIMEOUT_MS = 7_000;
 
 export class LiveReflectionProvider implements ReflectionProvider {
-  async getRound(input: RoundRequest, signal?: AbortSignal): Promise<ContentResult<RoundPayload>> {
+  async getRound(input: RoundRequest, signal?: AbortSignal): Promise<ContentResult<DiscoveryPayload>> {
     return {
       source: "live",
-      data: await this.post(input, roundPayloadSchema, signal),
+      data: await this.post(input, discoveryPayloadSchema, signal),
     };
   }
 

@@ -1,5 +1,9 @@
 # Hmm… — Product Vision and MVP
 
+> **Discovery revision:** Each reflection round now begins with exactly two short question lenses. The user chooses which angle to open, then answers one of exactly three suggestions. Only the opened-and-answered lens joins the permanent path; the unused lens returns to the quiet substrate.
+
+A fortune-cookie cell may appear near each active discovery. Its reframing is generated from the dilemma and committed path—or supplied by the matching mock round—while opening it remains optional and never changes history, later generation context, or the final summary.
+
 **Status:** Initial product definition
 
 **Purpose:** Align the hackathon team on what to build, what to demonstrate, and what not to build
@@ -10,7 +14,7 @@
 
 Hmm… is a curious companion for thinking through a decision.
 
-It gives the user a small, calm space to state what is on their mind, respond to one useful question at a time, and see their line of thought take shape across a persistent field of connected cells. The cells are the stable surface of the experience: questions and possibilities move into focus within them, while selected cells keep a visible mark of the route taken. After a short journey, Hmm… reflects back the direction that appears to be emerging, why it matters, what remains uncertain, and one practical next step.
+It gives the user a small, calm space to state what is on their mind, choose between two useful question lenses, respond to the opened question, and see their line of thought take shape across a persistent field of connected cells. The cells are the stable surface of the experience: questions and possibilities move into focus within them, while selected cells keep a visible mark of the route taken. After a short journey, Hmm… reflects back the direction that appears to be emerging, why it matters, what remains uncertain, and one practical next step.
 
 The product does not predict outcomes, optimize the user’s life, or make a decision on the user’s behalf. Its value comes from helping the user hear and examine their own reasoning. The intended feeling is less “an AI gave me the answer” and more “I can finally see what I think.”
 
@@ -333,13 +337,13 @@ None of these decisions blocks initial design or implementation; the defaults be
 | --- | --- | --- |
 | Public name and punctuation | Use **Hmm…** in the interface and `hmm` in technical identifiers. | Trademark/domain checks and final brand styling have not been done. |
 | Visual palette | Use a warm off-white cellular field, ink text, violet for Hmm…, amber for the user, and neutral suggestions. | Exact colour values and contrast need validation in the first visual prototype. |
-| Live AI provider/model | Use one low-latency model behind a server-side endpoint. | Provider access, hackathon credits, latency, and deployment target need confirmation. |
-| Hosting target | Use a static frontend host with one small serverless function. | The team’s preferred platform and available accounts are unknown. |
+| Live AI provider/model | **Confirmed for the deployed prototype:** use `gpt-4.1-mini`, configurable through the server-only `OPENAI_MODEL` variable. | Revisit only if event latency, access, or cost makes the live path unreliable; mock mode remains the demo-safe default. |
+| Hosting target | **Confirmed:** one Vercel project hosts the Vite client and `/api/reflect` function at [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). | Custom domain and longer-term ownership are post-hackathon decisions. |
 | Custom-answer length | P0 allows a custom answer of up to 160 characters through a separate “None quite fit” action. | The limit should be validated with real prompts so it stays expressive without breaking node layouts. |
 | Automatic ending logic | Offer a soft ending after round 4 and force the summary after round 5. | Live testing may show that 3 or 4 rounds feels better. |
 | Sensitive-topic handling | Display a brief boundary message and avoid guidance for crisis or professional-advice scenarios. | Exact wording and whether to block or redirect such sessions require a product decision. |
 | ChatGPT handoff | Copy context, open ChatGPT in a new tab, and instruct the user to paste. | Browser behaviour and the preferred ChatGPT destination URL should be verified. |
-| Data posture | Keep the session in memory and send only required context for generation; do not persist it. | A final privacy statement is needed before any public deployment. |
+| Data posture | Keep the session in memory and send only required context for generation; do not persist it. | The prototype is publicly reachable, so a user-facing privacy statement remains necessary before promoting it beyond the hackathon demo. |
 | Success evaluation at the event | Use the acceptance criteria above plus 3–5 observed test sessions. | The team may want a specific qualitative clarity question or demo metric. |
 
 ## MVP guardrail

@@ -1,25 +1,28 @@
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import {
-  roundPayloadSchema,
+  discoveryPayloadSchema,
   summaryPayloadSchema,
-  type RoundPayload,
+  type DiscoveryPayload,
   type RoundRequest,
   type SummaryPayload,
   type SummaryRequest,
-} from "../../shared/ai-contract";
-import { SYSTEM_PROMPT } from "./system-prompt";
+} from "../../shared/ai-contract.js";
+import { SYSTEM_PROMPT } from "./system-prompt.js";
 import {
   applySuggestEndingGate,
   createPublicError,
   validateRoundSemantics,
   validateSummarySemantics,
-} from "./validate-output";
+} from "./validate-output.js";
 
 const DEFAULT_MODEL = "gpt-4.1-mini";
+const serverEnvironment = (globalThis as typeof globalThis & {
+  process?: { env?: Record<string, string | undefined> };
+}).process?.env;
 
 const getClient = () => {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = serverEnvironment?.OPENAI_API_KEY;
   if (!apiKey) {
     throw createPublicError("AI_UNAVAILABLE", "Live reflection is not configured.", {
       retryable: false,
@@ -29,9 +32,9 @@ const getClient = () => {
   return new OpenAI({ apiKey });
 };
 
-const getModel = () => process.env.OPENAI_MODEL?.trim() || DEFAULT_MODEL;
+const getModel = () => serverEnvironment?.OPENAI_MODEL?.trim() || DEFAULT_MODEL;
 
-export async function generateRound(request: RoundRequest): Promise<RoundPayload> {
+export async function generateRound(request: RoundRequest): Promise<DiscoveryPayload> {
   const client = getClient();
   try {
     const response = await client.responses.parse({
@@ -41,7 +44,7 @@ export async function generateRound(request: RoundRequest): Promise<RoundPayload
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: JSON.stringify(request) },
       ],
-      text: { format: zodTextFormat(roundPayloadSchema, "hmm_round") },
+      text: { format: zodTextFormat(discoveryPayloadSchema, "hmm_discovery") },
     });
 
     if (response.status === "incomplete" || !response.output_parsed) {
@@ -64,7 +67,7 @@ export async function generateRound(request: RoundRequest): Promise<RoundPayload
       });
     }
 
-    const payload = applySuggestEndingGate(request, roundPayloadSchema.parse(parsed));
+    const payload = applySuggestEndingGate(request, discoveryPayloadSchema.parse(parsed));
     const semanticError = validateRoundSemantics(payload);
     if (semanticError) {
       throw createPublicError("AI_INVALID_OUTPUT", semanticError, {

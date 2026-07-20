@@ -2,7 +2,7 @@
 
 ## Product purpose
 
-Hmm… is a curious companion that helps people think through a bounded decision. It asks one useful question, offers exactly three possible answers, and makes the selected path visible. It reflects what appears to be emerging; it never predicts, scores, or decides for the user.
+Hmm… is a curious companion that helps people think through a bounded decision. It offers two question lenses, opens the chosen lens into exactly three answers, and makes the selected path visible. It reflects what appears to be emerging; it never predicts, scores, or decides for the user.
 
 Read the relevant files in `docs/` before changing product behavior. In particular:
 
@@ -71,6 +71,8 @@ Scaffolding must provide and preserve these commands:
 ## Essential visual rules
 
 - One active Hmm… question, exactly three generated suggestions, and one separate **None quite fit** action.
+- Every round begins with exactly two short question lenses; opening either reveals its one question and exactly three answers without another request.
+- Each discovery payload includes one contextual fortune grounded in the dilemma and selected path. Opening it never enters history or alters summaries.
 - Keep a stable progress card showing the original dilemma, selected answers, round count, and a qualitative session status derived from state.
 - Choosing a committed answer in **Your thread** may focus the camera on that trail cell for review; it must not enable free pan/zoom or mutate history.
 - Treat the canvas as one persistent, authored field of reusable cells. A new round changes which stable cells hold content; it does not spawn a fresh set of bubbles.

@@ -1,14 +1,14 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   publicErrorSchema,
-  roundPayloadSchema,
+  discoveryPayloadSchema,
   roundRequestSchema,
   summaryPayloadSchema,
   summaryRequestSchema,
   type PublicError,
-} from "../shared/ai-contract";
-import { generateRound, generateSummary } from "./lib/openai-reflect";
-import { createPublicError } from "./lib/validate-output";
+} from "../shared/ai-contract.js";
+import { generateRound, generateSummary } from "./lib/openai-reflect.js";
+import { createPublicError } from "./lib/validate-output.js";
 
 const MAX_BODY_BYTES = 24_576;
 
@@ -83,7 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if ((body as { kind: string }).kind === "round") {
       const request = roundRequestSchema.parse(body);
-      const payload = roundPayloadSchema.parse(await generateRound(request));
+      const payload = discoveryPayloadSchema.parse(await generateRound(request));
       setNoStore(res);
       res.status(200).json(payload);
       return;

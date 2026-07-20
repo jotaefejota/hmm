@@ -6,9 +6,11 @@ describe("mock dataset", () => {
     expect(mockDataset.scenarios).toHaveLength(2);
     expect(mockDataset.scenarios[0].dilemma).toBe(TEAM_LEAD_DILEMMA);
     for (const scenario of mockDataset.scenarios) {
-      expect(scenario.rounds).toHaveLength(5);
-      for (const round of scenario.rounds) expect(round.answers).toHaveLength(3);
+      expect(scenario.discoveries).toHaveLength(5);
+      for (const discovery of scenario.discoveries) {
+        expect(discovery.lenses).toHaveLength(2);
+        expect(discovery.lenses.every((lens) => lens.answers.length === 3)).toBe(true);
+      }
     }
   });
 });
-

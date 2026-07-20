@@ -1,6 +1,40 @@
 # Hmm… — Two-Day Build Plan
 
-**Status:** Blocks 1–6 complete including Task 3.3 packed-soup substrate and Block 6.1 ending extension; Blocks 7–10 implemented for P0 (live API, resilient fallback, ChatGPT handoff, narrow/a11y polish, demo docs). Rehearse Task 10.1 before the event.
+## 11. Discovery-led canvas revision
+
+### Task 11.1 — P0: Two-lens discovery rhythm
+
+**Implementation status:** Complete on `dev` — 2026-07-20.
+
+**Observable outcome:** Every round begins with two short question lenses. Opening either reveals its full question and exactly three answers without another request; the user can try the other angle until answering.
+
+**Acceptance criteria:** Contract v2 validates exactly two complete lenses, the mock journey works through either lens, and only the answered lens enters history.
+
+### Task 11.2 — P0: Choice-dependent discovery route
+
+**Implementation status:** Complete on `dev` — 2026-07-20.
+
+**Observable outcome:** The chosen lens creates an upper/lower bend, the chosen answer creates the next upper/middle/lower bend, and unused lenses return to the unchanged substrate.
+
+**Acceptance criteria:** Stable slot identity is preserved, every five-round combination remains within the authored field, and no pan/zoom or physics is introduced.
+
+### Task 11.3 — P0: Direct trail review
+
+**Implementation status:** Complete on `dev` — 2026-07-20.
+
+**Observable outcome:** A committed question or answer bubble can be activated to focus it and open a read-only detail card. Escape and **Back to now** restore the active neighbourhood.
+
+**Acceptance criteria:** Review is keyboard accessible, does not mutate history, and shares the same review state as progress-card anchors.
+
+### Task 11.4 — P1: Contextual fortune-cookie reframes
+
+**Implementation status:** Complete on `dev` — 2026-07-20.
+
+**Observable outcome:** Each discovery includes an amber cookie that reveals a short, path-specific refreshing angle.
+
+**Acceptance criteria:** Live and mock providers return the same validated fortune field; cookies open once, remain visually secondary, and never affect history, summaries, or routing.
+
+**Status:** Release 0.1 remains deployed. The contract-v2 discovery experience, contextual fortunes, direct trail review, deterministic mock journey, checks, and desktop/narrow inspection are complete on `dev`; the live v2 model smoke test and deployment remain pending.
 
 **Purpose:** Build the smallest complete, visually memorable session through demonstrable vertical slices.
 
@@ -252,7 +286,7 @@ The canvas reads as one organic cellular world larger than the viewport. The fir
 - One finite preset lattice large enough for every five-round path is rendered for the session.
 - Outer cell elements use stable slot IDs and keep the same count and relative geometry across round changes.
 - Semantic question/answer IDs map into cells as occupancy; they are not React identities for the outer cells.
-- The active question and exactly three suggestions occupy the next forward column at upper, middle, and lower rows with visible, uncrossed relationships.
+- The active question and exactly three suggestions occupy a compact directional fan of touching neighbour cells, with visible, uncrossed relationships and no detached vertical menu.
 - Choosing upper, middle, or lower changes the row of the next question and therefore the visible route.
 - The camera advances toward the active question rather than fitting the full route into the viewport.
 - Selected cells can retain text and a semantic mark; unchosen content can clear while its neutral cell remains.
@@ -457,17 +491,17 @@ Activating an item under **What you’ve chosen so far** pans the desktop camera
 
 ## 6. Session ending and summary
 
-### Task 6.1 — P0: Clarity prompt, result lens, restart, and one extension
+### Task 6.1 — P0: Reflection lens, result panel, restart, and one extension
 
-**Implementation status:** Complete — 2026-07-20. Clarity prompt, early/suggested/max-round summaries, result lens, confirmed restart, and exactly one post-ending extension are implemented.
+**Implementation status:** Complete — 2026-07-20. A reflection lens now appears beside the fourth answer (and at the fifth-round cap); it opens the result only on tap. The result can be dismissed back to the already-prepared next round.
 
 **Observable outcome**
 
-After the curated fourth answer, **A direction is taking shape** appears. The user can reveal the four-part mock summary, start over, or explore exactly one remaining doubt and return to an updated ending.
+After the curated fourth answer, a violet **What is taking shape?** bubble appears beside the last amber answer. The user can tap it to reveal the four-part mock summary, dismiss that panel to continue with the preloaded fifth round, start over, or explore one remaining doubt where applicable.
 
 **Files likely to be affected**
 
-- `src/components/session/ClarityPrompt.tsx`, `SessionActions.tsx`
+- `src/layout/projectCanvas.ts`, `src/layout/cell-field.ts`, `src/components/canvas/CellField.tsx`
 - `src/components/ending/ResultLens.tsx`
 - reducer/context/provider integration
 - ending layout and styles
@@ -479,11 +513,11 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 
 **Acceptance criteria**
 
-- The curated round-5 payload is held while the clarity prompt is shown.
-- **See what’s emerging** displays direction, 2–3 reasons, 1–2 doubts, and one next step.
+- The curated round-5 payload is held while the reflection lens is shown.
+- Tapping **What is taking shape?** displays direction, 2–3 reasons, 1–2 doubts, and one next step.
 - The result is tentative and contains no confidence score.
-- **One more question** reveals the held fifth round.
-- **Explore one remaining doubt** permits exactly one extension, then returns to summary.
+- **Keep exploring** dismisses the result and reveals the held fifth round.
+- **Explore one remaining doubt** permits exactly one extension only when no prepared core round remains; it is absent while **Keep exploring** can resume that core path and after round five.
 - **Start over** confirms, clears in-memory state, and returns to welcome.
 - The complete chosen trail remains marked on the same cellular field, visible but subordinate at the ending.
 - **Your thread** remains visible with **Ready to reflect**, the original dilemma, and the ordered committed answers.
@@ -493,7 +527,7 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 - Reducer tests for user finish, suggested finish, max-round finish, extension, extension cap, and restart.
 - Summary component tests for required section counts.
 - `npm run check`
-- Manual runs for finish after round 2, suggested finish after round 4, and forced finish after round 5.
+- Manual runs for finish after round 2, reflection lens after round 4, dismissal into round 5, and final reflection lens after round 5.
 
 ---
 
@@ -501,7 +535,7 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 
 ### Task 7.1 — P0: Protected, validated live endpoint
 
-**Implementation status:** Complete — 2026-07-20. `POST /api/reflect` validates input, calls OpenAI Structured Outputs server-side, re-validates output, and returns contract payloads or public errors with `no-store`.
+**Implementation status:** Complete locally and on Vercel — 2026-07-20. `POST /api/reflect` validates input, calls OpenAI Structured Outputs server-side, re-validates output, and returns contract payloads or public errors with `no-store`. `npm run dev:full` mounts the production handler in Vite; endpoint tests cover valid round/summary responses and required public error mappings. The deployed endpoint returned validated live rounds at [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/).
 
 **Observable outcome**
 
@@ -540,7 +574,7 @@ With server credentials configured, `POST /api/reflect` returns one validated li
 
 ### Task 7.2 — P0: Resilient live/mock provider
 
-**Implementation status:** Complete — 2026-07-20. `VITE_CONTENT_MODE` selects mock/live/auto; auto falls back to mock with a recovery notice; refusals bypass generic fallback.
+**Implementation status:** Complete and recovery-verified — 2026-07-20. `VITE_CONTENT_MODE` selects mock/live/auto; auto falls back to mock with a recovery notice; refusals bypass generic fallback. Live/refusal failures become request-scoped reducer events, so a stale failure cannot overwrite a restarted session and an active failure renders a recoverable in-session boundary instead of escaping as an asynchronous exception.
 
 **Observable outcome**
 
@@ -642,7 +676,7 @@ The user can copy the concise result without opening ChatGPT.
 
 ### Task 9.1 — P0: Narrow vertical thread and resilient interaction
 
-**Implementation status:** Complete — 2026-07-20 for P0 essentials. Narrow CSS thread, progress disclosure, 16px body text, recovery/boundary notices, and reduced-motion kill-switch are in place. Further trail-strip refinement remains P1.
+**Implementation status:** Complete — 2026-07-20 for P0 essentials. Narrow CSS thread, progress disclosure, 16px body text, recovery notices, and reduced-motion kill-switch are in place. Explicit live errors now keep the path visible, commit a clicked answer even when failure wins the animation race, and offer request-scoped retry or prepared-content recovery where safe. Development-only timeout and refusal simulations make both variants deterministic. Further trail-strip refinement remains P1.
 
 **Observable outcome**
 
@@ -672,6 +706,8 @@ At a narrow viewport the current question and three answers become a readable ve
 - State changes and errors are announced in a restrained live region.
 - Reduced motion removes large travel, blur, morph, and continuous pulsing.
 - Error, retry, and mock-fallback notices never replace the existing path.
+- Retryable explicit errors offer **Try again** and **Continue with prepared questions**; refusals offer no generic fallback.
+- Development-only timeout and refusal simulations make both error variants deterministic without changing production behavior.
 - The full mock session works at both desktop and narrow widths.
 
 **Checks Codex must run**
@@ -714,7 +750,7 @@ The narrow history strip smoothly keeps the active end visible and allows old no
 
 ### Task 10.1 — P0: Rehearsed, stable 90-second demo
 
-**Implementation status:** Ready for rehearsal — 2026-07-20. Forced mock mode, README demo steps, and `npm run check` are green; complete three timed rehearsals before the event.
+**Implementation status:** Reliability rehearsal and production smoke test complete — 2026-07-20. Three consecutive forced-mock sessions completed all four rounds, summary, ChatGPT handoff fallback, and confirmed restart. An automatic-mode run with no API key returned the public `AI_UNAVAILABLE` response, displayed the recovery notice, preserved the path, and reached the curated ending. Credentialed smoke runs generated consecutive validated rounds through both the local serverless handler and the Vercel production endpoint. The full desktop/narrow/keyboard/reduced-motion release pass was intentionally deferred and must not be inferred from this status.
 
 **Observable outcome**
 
@@ -818,6 +854,8 @@ flowchart LR
 The API is intentionally late. Blocks 1–6 must produce a complete creature in mock mode before live generation can threaten the schedule.
 
 ## Final P0 release gate
+
+**Current delivery note (2026-07-20):** implementation, automated checks, mock/fallback rehearsal, production build, deployment, and live endpoint smoke testing are complete. The remaining manual release item is the comprehensive desktop/narrow/keyboard/reduced-motion pass that was explicitly skipped during the deployment sequence. Preview deployment authentication also prevented an external browser pass of a separate forced-mock preview; forced mock and fallback behavior were verified locally instead.
 
 P0 is complete only when:
 

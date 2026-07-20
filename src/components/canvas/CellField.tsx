@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { CanvasOccupancy, CanvasProjection } from "../../layout/projectCanvas";
 import { CELL_SIZE_RATIO, FIELD_HEIGHT, FIELD_WIDTH, getCellSlot } from "../../layout/cell-field";
@@ -6,10 +6,14 @@ import { ConnectionLayer } from "./ConnectionLayer";
 
 type CellFieldProps = {
   projection: CanvasProjection;
-  phase: "round-ready" | "writing-custom-answer" | "answer-selected" | "transitioning" | "clarity-offered" | "generating-summary" | "ending";
+  phase: "lens-ready" | "round-ready" | "writing-custom-answer" | "answer-selected" | "transitioning" | "finish-offered" | "generating-summary" | "ending";
   questionRef?: React.RefObject<HTMLHeadingElement | null>;
   onSelect?: (answer: string) => void;
+  onOpenLens?: (lensIndex: 0 | 1) => void;
+  onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
   onCommit?: () => void;
+  onOpenFinish?: () => void;
+  onContinueFromFinish?: () => void;
   ending?: boolean;
   reviewCellId?: string | null;
 };
@@ -19,13 +23,21 @@ function CellContent({
   phase,
   questionRef,
   onSelect,
+  onOpenLens,
+  onReviewNode,
   onCommit,
+  onOpenFinish,
+  onContinueFromFinish,
 }: {
   item: CanvasOccupancy;
   phase: CellFieldProps["phase"];
   questionRef?: CellFieldProps["questionRef"];
   onSelect?: (answer: string) => void;
+  onOpenLens?: (lensIndex: 0 | 1) => void;
+  onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
   onCommit?: () => void;
+  onOpenFinish?: () => void;
+  onContinueFromFinish?: () => void;
 }) {
   const reducedMotion = useReducedMotion();
   const isActiveQuestion = item.kind === "question" && item.status === "active";
@@ -35,7 +47,7 @@ function CellContent({
   const transition = { duration: reducedMotion ? 0.12 : isSelected ? 0.48 : 0.34, ease: [0.22, 1, 0.36, 1] as const };
   const body = (
     <>
-      {isActiveQuestion ? <span className="question-pin" aria-hidden="true">?</span> : null}
+      {isActiveQuestion || item.kind === "lens" ? <span className="question-pin" aria-hidden="true">?</span> : null}
       <span className="node-label">{item.label}</span>
       {isSelected ? <span className="selection-check" aria-hidden="true">✓</span> : null}
       {isActiveQuestion ? (
@@ -58,6 +70,82 @@ function CellContent({
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: targetOpacity, scale: isSelected ? 1.04 : item.status === "clearing" ? 0.94 : 1 }}
         exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+        transition={transition}
+      >
+        {body}
+      </motion.button>
+    );
+  }
+
+  if (item.kind === "lens") {
+    return (
+      <motion.button
+        key={item.semanticId}
+        className={className}
+        type="button"
+        aria-label={`Explore ${item.text}`}
+        onClick={() => { if (item.lensIndex !== undefined) onOpenLens?.(item.lensIndex); }}
+        initial={{ opacity: 0, scale: 0.86 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.92 }}
+        transition={transition}
+      >
+        {body}
+      </motion.button>
+    );
+  }
+
+  if (item.kind === "finish") {
+    return (
+      <motion.button
+        key={item.semanticId}
+        className={className}
+        type="button"
+        aria-label="Open reflection lens"
+        onClick={onOpenFinish}
+        initial={{ opacity: 0, scale: 0.82 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={transition}
+      >
+        <svg className="finish-membrane" viewBox="0 0 274 200" aria-hidden="true" preserveAspectRatio="none">
+          <path d="M50 50C72 6 115 1 137 22C160 1 204 6 224 50C268 69 269 130 224 150C204 194 160 199 137 178C115 199 72 194 50 150C6 130 6 69 50 50Z" />
+        </svg>
+        <span className="finish-mark" aria-hidden="true">✦</span>
+        {body}
+      </motion.button>
+    );
+  }
+
+  if (item.kind === "continue") {
+    return (
+      <motion.button
+        key={item.semanticId}
+        className={className}
+        type="button"
+        aria-label="Keep exploring with new questions"
+        onClick={onContinueFromFinish}
+        initial={{ opacity: 0, scale: 0.82 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={transition}
+      >
+        <span className="continue-mark" aria-hidden="true">→</span>
+        <span>{item.text}</span>
+      </motion.button>
+    );
+  }
+
+  if (item.interactive && item.stepIndex !== undefined && item.reviewKind) {
+    return (
+      <motion.button
+        key={item.semanticId}
+        data-history-node={item.semanticId}
+        className={`${className} history-cell-action`}
+        type="button"
+        aria-label={`Review round ${item.stepIndex + 1}: ${item.text}`}
+        onClick={() => onReviewNode?.(item.stepIndex!, item.reviewKind!)}
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: targetOpacity, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
         transition={transition}
       >
         {body}
@@ -88,11 +176,22 @@ export function CellField({
   phase,
   questionRef,
   onSelect,
+  onOpenLens,
+  onReviewNode,
   onCommit,
+  onOpenFinish,
+  onContinueFromFinish,
   ending = false,
   reviewCellId = null,
 }: CellFieldProps) {
-  const focus = getCellSlot(projection.focusCellId);
+  const focusedSlot = getCellSlot(projection.focusCellId);
+  const visibleLensSlots = phase === "lens-ready"
+    ? projection.occupancy.filter((item) => item.kind === "lens").map((item) => getCellSlot(item.cellId))
+    : [];
+  const focus = visibleLensSlots.length === 2
+    ? { x: (visibleLensSlots[0].x + visibleLensSlots[1].x) / 2, y: (visibleLensSlots[0].y + visibleLensSlots[1].y) / 2 }
+    : focusedSlot;
+  const [openedCookies, setOpenedCookies] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     if (phase !== "answer-selected" || !onCommit) return;
@@ -102,7 +201,7 @@ export function CellField({
 
   useEffect(() => {
     if (!reviewCellId || typeof window === "undefined") return;
-    if (!window.matchMedia("(max-width: 900px)").matches) return;
+    if (typeof window.matchMedia !== "function" || !window.matchMedia("(max-width: 900px)").matches) return;
     const node = document.querySelector(`[data-cell-slot="${reviewCellId}"]`);
     if (node instanceof HTMLElement) {
       node.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
@@ -139,13 +238,27 @@ export function CellField({
             } as React.CSSProperties}
           >
             <AnimatePresence mode="wait" initial={false}>
-              {item ? (
+              {item?.kind === "fortune" ? (
+                <button
+                  type="button"
+                  className={`fortune-cookie ${openedCookies.has(item.semanticId) ? "is-open" : ""}`}
+                  aria-label={openedCookies.has(item.semanticId) ? item.text : "Open a refreshing angle"}
+                  onClick={() => setOpenedCookies((current) => new Set(current).add(item.semanticId))}
+                >
+                  <span aria-hidden="true">{openedCookies.has(item.semanticId) ? "✦" : "◒"}</span>
+                  <span>{openedCookies.has(item.semanticId) ? item.text : item.label}</span>
+                </button>
+              ) : item ? (
                 <CellContent
                   item={item}
                   phase={phase}
                   questionRef={questionRef}
                   onSelect={onSelect}
+                  onOpenLens={onOpenLens}
+                  onReviewNode={onReviewNode}
                   onCommit={onCommit}
+                  onOpenFinish={onOpenFinish}
+                  onContinueFromFinish={onContinueFromFinish}
                 />
               ) : null}
             </AnimatePresence>

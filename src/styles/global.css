@@ -45,17 +45,6 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
 
 .wordmark span { color: var(--violet); }
 
-.mode-chip {
-  padding: 0.45rem 0.75rem;
-  color: var(--ink-soft);
-  border: 1px solid rgba(40, 36, 45, 0.12);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.48);
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .primary-action, .quiet-action {
   min-height: 3rem;
   border: 0;
@@ -201,6 +190,26 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
   background: rgba(255, 240, 236, 0.9);
   color: #7a3a34;
 }
+.request-error-panel {
+  width: min(34rem, calc(100vw - 3rem));
+  padding: clamp(2rem, 4vw, 3rem);
+  position: absolute;
+  left: 66%;
+  top: 50%;
+  z-index: 12;
+  translate: -50% -50%;
+  border: 1px solid rgba(155, 74, 66, 0.3);
+  border-radius: 3.5rem 2.4rem 4.2rem 2.8rem;
+  background: rgba(255, 246, 242, 0.94);
+  box-shadow: 0 0 0 0.7rem rgba(155, 74, 66, 0.035), 0 24px 75px rgba(95, 54, 52, 0.14);
+  backdrop-filter: blur(18px);
+}
+.request-error-mark { width: 2.3rem; height: 2.3rem; display: grid; place-items: center; color: white; border-radius: 50%; background: #9b4a42; font-weight: 750; }
+.request-error-panel .eyebrow { margin: 1rem 0 0.45rem; color: #7a3a34; }
+.request-error-panel h1 { margin: 0; font-size: clamp(1.8rem, 3.3vw, 3rem); line-height: 1; letter-spacing: -0.05em; }
+.request-error-panel > p:not(.eyebrow) { margin: 1rem 0 0; color: var(--ink-soft); line-height: 1.5; }
+.request-error-actions { margin-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; }
+.prepared-action { border: 1px solid rgba(155, 74, 66, 0.2); background: rgba(255, 255, 255, 0.56); }
 .gathering-lens { width: min(34rem, 55vw); min-height: 24rem; margin: 8vh 8vw 0 auto; position: relative; z-index: 6; display: grid; place-content: center; text-align: center; border: 1px solid rgba(118, 87, 220, 0.2); border-radius: var(--shape-0); background: rgba(255,255,255,0.76); box-shadow: var(--shadow-soft); }
 .gathering-lens span { color: var(--violet); font-size: 1.8rem; }
 .gathering-lens p { font-family: Georgia, serif; font-size: 1.2rem; }
@@ -217,4 +226,6 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
   .result-grid { grid-template-columns: 1fr; gap: 1.4rem; }
   .restart-confirmation { align-items: stretch; flex-direction: column; width: 100%; }
   .gathering-lens { width: 100%; min-height: 20rem; margin: 1rem 0 0; }
+  .request-error-panel { width: 100%; position: relative; left: auto; top: auto; translate: none; margin: 1rem 0 0; padding: 2rem 1.4rem; border-radius: 2.3rem 1.6rem 2.8rem 1.9rem; }
+  .request-error-actions { align-items: stretch; flex-direction: column; }
 }

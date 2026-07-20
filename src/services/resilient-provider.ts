@@ -1,4 +1,4 @@
-import type { RoundPayload, RoundRequest, SummaryPayload, SummaryRequest } from "../../shared/ai-contract";
+import type { DiscoveryPayload, RoundRequest, SummaryPayload, SummaryRequest } from "../../shared/ai-contract";
 import { MockReflectionProvider } from "./mock-provider";
 import { LiveReflectionProvider } from "./live-provider";
 import type { ContentResult, ReflectionProvider } from "./reflection-provider";
@@ -12,7 +12,7 @@ export class ResilientReflectionProvider implements ReflectionProvider {
 
   constructor(private readonly mode: ContentMode) {}
 
-  async getRound(input: RoundRequest, signal?: AbortSignal): Promise<ContentResult<RoundPayload>> {
+  async getRound(input: RoundRequest, signal?: AbortSignal): Promise<ContentResult<DiscoveryPayload>> {
     if (this.mode === "mock") return this.mock.getRound(input, signal);
     if (this.mode === "live") return this.live.getRound(input, signal);
     try {
