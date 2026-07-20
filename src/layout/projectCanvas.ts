@@ -27,6 +27,7 @@ export type CanvasOccupancy = {
   lensIndex?: 0 | 1;
   stepIndex?: number;
   reviewKind?: "question" | "answer";
+  revisionStepIndex?: number;
 };
 
 export type CanvasEdge = { id: string; from: CellSlot; to: CellSlot; status: "origin" | "active" | "previous" };
@@ -63,14 +64,36 @@ export function projectCanvas({
     const age = (history.length - index) * 2;
     const isExpanded = expandedDecisionStepIndex === index;
     if (isExpanded) {
+      const options = step.options?.length === 3
+        ? step.options
+        : [step.answer, "", ""];
       occupancy.push(
         { cellId: questionCellId, semanticId: `question-${step.round}`, kind: "question", status: "previous", text: step.question, label: `${step.lensTheme} · ${step.round}`, age, interactive: true, lensIndex: step.lensIndex, stepIndex: index, reviewKind: "question" },
-        { cellId: answerCellId, semanticId: `answer-${step.round}`, kind: "answer", status: "selected", text: step.answer, label: `You chose · ${step.round}`, age: age - 1, interactive: true, optionIndex: step.choiceIndex, stepIndex: index, reviewKind: "answer" },
       );
+      getSuggestionCellIds(step.round, completed, step.lensIndex).forEach((cellId, optionIndex) => {
+        const indexAsChoice = optionIndex as 0 | 1 | 2;
+        const isChosen = indexAsChoice === step.choiceIndex;
+        occupancy.push({
+          cellId,
+          semanticId: isChosen ? `answer-${step.round}` : `revision-option-${step.round}-${optionIndex + 1}`,
+          kind: isChosen ? "answer" : "suggestion",
+          status: isChosen ? "selected" : "active",
+          text: isChosen ? step.answer : options[indexAsChoice],
+          label: isChosen ? `You chose · ${step.round}` : `Possibility ${optionIndex + 1}`,
+          age: age - 1,
+          interactive: isChosen || Boolean(options[indexAsChoice]),
+          optionIndex: indexAsChoice,
+          stepIndex: index,
+          reviewKind: isChosen ? "answer" : undefined,
+          revisionStepIndex: isChosen ? undefined : index,
+        });
+      });
       edges.push(
         edge(`edge-${previousCellId}-${questionCellId}`, previousCellId, questionCellId, index === 0 ? "origin" : "previous"),
-        edge(`edge-${questionCellId}-${answerCellId}`, questionCellId, answerCellId, "previous"),
       );
+      getSuggestionCellIds(step.round, completed, step.lensIndex).forEach((cellId, optionIndex) => {
+        edges.push(edge(`edge-${questionCellId}-${cellId}`, questionCellId, cellId, optionIndex === step.choiceIndex ? "previous" : "active"));
+      });
     } else {
       occupancy.push({
         cellId: answerCellId,

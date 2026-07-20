@@ -11,9 +11,11 @@ type CellFieldProps = {
   phase: "lens-ready" | "round-ready" | "writing-custom-answer" | "answer-selected" | "transitioning" | "finish-offered" | "generating-summary" | "ending";
   questionRef?: React.RefObject<HTMLHeadingElement | null>;
   onSelect?: (answer: string) => void;
+  onReviseSelection?: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
   onOpenLens?: (lensIndex: 0 | 1) => void;
   onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
   onToggleDecision?: (stepIndex: number) => void;
+  expandedDecisionStepIndex?: number | null;
   onCommit?: () => void;
   onOpenFinish?: () => void;
   onContinueFromFinish?: () => void;
@@ -26,9 +28,11 @@ function CellContent({
   phase,
   questionRef,
   onSelect,
+  onReviseSelection,
   onOpenLens,
   onReviewNode,
   onToggleDecision,
+  expandedDecisionStepIndex,
   onCommit,
   onOpenFinish,
   onContinueFromFinish,
@@ -37,9 +41,11 @@ function CellContent({
   phase: CellFieldProps["phase"];
   questionRef?: CellFieldProps["questionRef"];
   onSelect?: (answer: string) => void;
+  onReviseSelection?: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
   onOpenLens?: (lensIndex: 0 | 1) => void;
   onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
   onToggleDecision?: (stepIndex: number) => void;
+  expandedDecisionStepIndex?: number | null;
   onCommit?: () => void;
   onOpenFinish?: () => void;
   onContinueFromFinish?: () => void;
@@ -71,7 +77,14 @@ function CellContent({
         type="button"
         aria-label={`${item.label}: ${item.text}`}
         disabled={!item.interactive}
-        onClick={() => { if (item.interactive) onSelect?.(item.text); }}
+        onClick={() => {
+          if (!item.interactive) return;
+          if (item.revisionStepIndex !== undefined && item.optionIndex !== undefined) {
+            onReviseSelection?.(item.revisionStepIndex, item.optionIndex);
+            return;
+          }
+          onSelect?.(item.text);
+        }}
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: targetOpacity, scale: isSelected ? 1.04 : item.status === "clearing" ? 0.94 : 1 }}
         exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
@@ -148,10 +161,10 @@ function CellContent({
         type="button"
         aria-label={`Unfold decision from round ${item.stepIndex + 1}: ${item.text}`}
         onClick={() => onToggleDecision?.(item.stepIndex!)}
-        initial={{ opacity: 0, scale: 0.92 }}
-        animate={{ opacity: targetOpacity, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        transition={transition}
+        initial={{ opacity: 0, y: reducedMotion ? 0 : 8 }}
+        animate={{ opacity: targetOpacity, y: 0 }}
+        exit={{ opacity: 0, y: reducedMotion ? 0 : -4 }}
+        transition={{ duration: reducedMotion ? 0.12 : 0.28, delay: reducedMotion ? 0 : 0.14, ease: [0.22, 1, 0.36, 1] }}
       >
         {body}
       </motion.button>
@@ -159,14 +172,19 @@ function CellContent({
   }
 
   if (item.interactive && item.stepIndex !== undefined && item.reviewKind) {
+    const isExpandedDecisionMember = expandedDecisionStepIndex === item.stepIndex;
     return (
       <motion.button
         key={item.semanticId}
         data-history-node={item.semanticId}
         className={`${className} history-cell-action`}
         type="button"
-        aria-label={`Review round ${item.stepIndex + 1}: ${item.text}`}
-        onClick={() => onReviewNode?.(item.stepIndex!, item.reviewKind!)}
+        aria-label={isExpandedDecisionMember
+          ? `Settle decision from round ${item.stepIndex + 1}: ${item.text}`
+          : `Review round ${item.stepIndex + 1}: ${item.text}`}
+        onClick={() => isExpandedDecisionMember
+          ? onToggleDecision?.(item.stepIndex!)
+          : onReviewNode?.(item.stepIndex!, item.reviewKind!)}
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: targetOpacity, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
@@ -200,9 +218,11 @@ export function CellField({
   phase,
   questionRef,
   onSelect,
+  onReviseSelection,
   onOpenLens,
   onReviewNode,
   onToggleDecision,
+  expandedDecisionStepIndex = null,
   onCommit,
   onOpenFinish,
   onContinueFromFinish,
@@ -289,9 +309,11 @@ export function CellField({
                   phase={phase}
                   questionRef={questionRef}
                   onSelect={onSelect}
+                  onReviseSelection={onReviseSelection}
                   onOpenLens={onOpenLens}
                   onReviewNode={onReviewNode}
                   onToggleDecision={onToggleDecision}
+                  expandedDecisionStepIndex={expandedDecisionStepIndex}
                   onCommit={onCommit}
                   onOpenFinish={onOpenFinish}
                   onContinueFromFinish={onContinueFromFinish}

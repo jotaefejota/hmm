@@ -2,7 +2,7 @@
 
 > **Contract v2 revision:** A round request returns one discovery payload containing exactly two complete lenses. Each lens includes a short theme, one question, and exactly three answers. Lens switching is local state work and never performs a second request. The stable lattice route is derived from both the chosen lens index and answer index.
 
-> **Settled-decision presentation:** Canonical history continues to retain the separate question and answer. The canvas derives either a single, enlarged decision occupancy at the answer slot or the original pair for one temporarily expanded review step. This view-local state resets whenever another answer commits; it never creates an alternate path or changes provider payloads.
+> **Revisable settled decisions:** Canonical history retains the question, selected answer, and original three options. The canvas derives either a single enlarged decision occupancy at the answer slot or an expanded question plus three options for one review step. Choosing an unselected historical option is an explicit branch replacement: it truncates later history, replaces the selected answer at that step, then requests the next discovery with only the revised canonical path.
 
 The validated discovery payload includes one contextual `fortune` string. Projection maps it to a deterministic nearby cell-slot ID; opened state remains component-local and deliberately absent from canonical session history. Mock and live providers return the same field.
 
@@ -235,7 +235,7 @@ type SessionState = {
 
 The progress card adds no canonical state. A selector derives its items and status from `dilemma`, `history`, `phase`, `currentRound.suggestEnding`, and `extensionUsed`. Tests must prove that it never includes `selectedAnswer` before commitment or an unchosen suggestion.
 
-Trail review is local presentation state only: activating a committed answer in the card sets a temporary `focusOverrideCellId` resolved from history + `choiceIndex` via the same occupancy helpers. Clearing that override (next selection, phase change, or **Back to now**) restores the derived active focus. This is not stored in the session reducer and must not change history.
+Trail review is local presentation state only: activating a committed answer in the card sets a temporary `focusOverrideCellId` resolved from history + `choiceIndex` via the same occupancy helpers. That ID is also the settled-decision slot, so panel activation focuses the merged node without changing its occupancy. Only a direct canvas activation sets the separate unfolded-decision presentation state. Clearing the review override (next selection, phase change, or **Back to now**) restores the derived active focus. This is not stored in the session reducer and must not change history.
 
 ## 5. Representation of cells, occupancy, and connections
 

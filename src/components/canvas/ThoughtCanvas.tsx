@@ -4,6 +4,7 @@ import type { SessionState } from "../../session/session-types";
 import { selectCanFinish, selectProgress } from "../../session/session-selectors";
 import { useTrailReviewFocus } from "../../session/useTrailReviewFocus";
 import { projectCanvas } from "../../layout/projectCanvas";
+import { getHistoryAnswerCellId } from "../../layout/cell-field";
 import { CellField } from "./CellField";
 import { ProgressCard } from "../session/ProgressCard";
 import { CustomAnswerComposer } from "../session/CustomAnswerComposer";
@@ -13,6 +14,7 @@ import { TrailReviewCard } from "../session/TrailReviewCard";
 type ThoughtCanvasProps = {
   state: SessionState;
   onSelectAnswer: (answer: string) => void;
+  onReviseHistorySelection: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
   onOpenLens: (lensIndex: 0 | 1) => void;
   onReturnToLenses: () => void;
   onSelectCustomAnswer: (answer: string) => void;
@@ -52,9 +54,17 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
   const progress = selectProgress(state);
   const { review, reviewCellId, isReviewing, focusHistoryAnswer, focusHistoryNode, clearReviewFocus } = useTrailReviewFocus(state);
   const [expandedDecision, setExpandedDecision] = useState<{ historyLength: number; stepIndex: number } | null>(null);
+  const [decisionFocus, setDecisionFocus] = useState<{ historyLength: number; stepIndex: number } | null>(null);
   const expandedDecisionStepIndex = expandedDecision?.historyLength === state.history.length
     ? expandedDecision.stepIndex
     : null;
+  const focusedDecisionStepIndex = decisionFocus?.historyLength === state.history.length
+    ? decisionFocus.stepIndex
+    : null;
+  const focusedDecisionCellId = focusedDecisionStepIndex === null
+    ? null
+    : getHistoryAnswerCellId(state.history, focusedDecisionStepIndex);
+  const canvasFocusCellId = reviewCellId ?? focusedDecisionCellId;
   const projection = projectCanvas({
     dilemma: state.dilemma,
     history: state.history,
@@ -62,7 +72,7 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
     selectedLensIndex: state.selectedLensIndex,
     phase: state.phase,
     selectedAnswer: state.selectedAnswer,
-    focusOverrideCellId: reviewCellId,
+    focusOverrideCellId: canvasFocusCellId,
     expandedDecisionStepIndex,
   });
 
@@ -84,10 +94,7 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
     >
       <ProgressCard
         progress={progress}
-        onFocusAnswer={(stepIndex) => {
-          setExpandedDecision({ historyLength: state.history.length, stepIndex });
-          focusHistoryAnswer(stepIndex);
-        }}
+        onFocusAnswer={focusHistoryAnswer}
         onReturnToNow={clearReviewFocus}
         reviewing={isReviewing}
       />
@@ -99,10 +106,18 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
         onSelect={(answer) => {
           clearReviewFocus();
           setExpandedDecision(null);
+          setDecisionFocus(null);
           props.onSelectAnswer(answer);
+        }}
+        onReviseSelection={(stepIndex, choiceIndex) => {
+          clearReviewFocus();
+          setExpandedDecision(null);
+          setDecisionFocus(null);
+          props.onReviseHistorySelection(stepIndex, choiceIndex);
         }}
         onOpenLens={(lensIndex) => {
           clearReviewFocus();
+          setDecisionFocus(null);
           props.onOpenLens(lensIndex);
         }}
         onReviewNode={(stepIndex, focusKind) => {
@@ -111,14 +126,16 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
         }}
         onToggleDecision={(stepIndex) => {
           clearReviewFocus();
+          setDecisionFocus({ historyLength: state.history.length, stepIndex });
           setExpandedDecision((current) => current?.historyLength === state.history.length && current.stepIndex === stepIndex
             ? null
             : { historyLength: state.history.length, stepIndex });
         }}
+        expandedDecisionStepIndex={expandedDecisionStepIndex}
         onCommit={props.onCommitSelection}
         onOpenFinish={() => props.onFinish("suggested")}
         onContinueFromFinish={props.onContinueFromFinish}
-        reviewCellId={reviewCellId}
+        reviewCellId={canvasFocusCellId}
       />
 
       {state.phase === "round-ready" || state.phase === "writing-custom-answer" ? (

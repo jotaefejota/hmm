@@ -34,7 +34,7 @@
 
 **Observable outcome:** A committed question or answer bubble can be activated to focus it and open a read-only detail card. Escape and **Back to now** restore the active neighbourhood.
 
-**Acceptance criteria:** Review is keyboard accessible, does not mutate history, and shares the same review state as progress-card anchors.
+**Acceptance criteria:** Review is keyboard accessible, does not mutate history, and shares the same focus state as progress-card anchors. A progress-card anchor focuses the collapsed settled decision; only direct canvas activation unfolds its question-and-answer pair.
 
 ### Task 11.4 — P1: Contextual fortune-cookie reframes
 
@@ -435,7 +435,7 @@ Choosing **None quite fit** opens **Say it your way**; a valid custom response b
 
 **Dependencies:** Stable history projection and bounded local pressure layout.
 
-**Acceptance criteria:** History remains canonical question plus answer data; exactly one step can be unfolded; no new API request or history mutation occurs when unfolding; collapsed decisions, unfolded pairs, keyboard focus, and reduced-motion fallback are testable.
+**Acceptance criteria:** History retains the original three options as well as the canonical question and selected answer. Exactly one step can be unfolded; an unfolded step shows its selected amber answer and two discarded white options. Tapping the question or selected answer re-settles it; choosing a discarded option explicitly truncates later history, updates progress, and requests the next discovery from the revised path. Keyboard focus and reduced-motion fallback are testable.
 
 **Checks:** `npm test -- --run`, forced mock session through at least two commitments, desktop/narrow keyboard and reduced-motion visual inspection, then `npm run check`.
 

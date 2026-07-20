@@ -15,6 +15,7 @@ type AppShellProps = {
   onOpenLens: (lensIndex: 0 | 1) => void;
   onReturnToLenses: () => void;
   onSelectAnswer: (answer: string) => void;
+  onReviseHistorySelection: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
   onSelectCustomAnswer: (answer: string) => void;
   onOpenCustomAnswer: () => void;
   onCloseCustomAnswer: () => void;
@@ -68,6 +69,7 @@ export function AppShell(props: AppShellProps) {
         <ThoughtCanvas
           state={state}
           onSelectAnswer={props.onSelectAnswer}
+          onReviseHistorySelection={props.onReviseHistorySelection}
           onOpenLens={props.onOpenLens}
           onReturnToLenses={props.onReturnToLenses}
           onSelectCustomAnswer={props.onSelectCustomAnswer}

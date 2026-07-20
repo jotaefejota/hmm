@@ -41,6 +41,22 @@ describe("session reducer discovery flow", () => {
     expect(repeated).toBe(state);
   });
 
+  it("replaces a past choice and removes later history before resuming", () => {
+    let committed = sessionReducer(ready(), { type: "OPEN_LENS", lensIndex: 0 });
+    committed = sessionReducer(committed, { type: "SELECT_ANSWER", answer: { text: discoveries[0].lenses[0].answers[0], source: "suggested", choiceIndex: 0 }, requestId: 2 });
+    committed = sessionReducer(committed, { type: "COMMIT_SELECTION" });
+    const later = {
+      ...committed,
+      phase: "lens-ready" as const,
+      history: [...committed.history, { ...committed.history[0], round: 2 }],
+      currentDiscovery: discoveries[2],
+    };
+    const revised = sessionReducer(later, { type: "REVISE_HISTORY_SELECTION", stepIndex: 0, answer: { text: discoveries[0].lenses[0].answers[2], source: "suggested", choiceIndex: 2 }, requestId: 8 });
+    expect(revised).toMatchObject({ phase: "transitioning", currentDiscovery: null, activeRequestId: 8 });
+    expect(revised.history).toHaveLength(1);
+    expect(revised.history[0]).toMatchObject({ answer: discoveries[0].lenses[0].answers[2], choiceIndex: 2 });
+  });
+
   it("restart clears lens selection and invalidates the request", () => {
     const restarted = sessionReducer(sessionReducer(ready(), { type: "OPEN_LENS", lensIndex: 0 }), { type: "RESTART", requestId: 9 });
     expect(restarted).toMatchObject({ phase: "welcome", history: [], currentDiscovery: null, selectedLensIndex: null, activeRequestId: 9 });

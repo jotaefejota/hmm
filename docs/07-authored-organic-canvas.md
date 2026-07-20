@@ -52,7 +52,7 @@ Semantic role may temporarily raise a slot within its authored allowance. A ques
 | Open Hmm… question | Large violet `shell`; this is the local visual centre. |
 | Suggested answer | Neutral `orb`, `pebble`, or `capsule`, chosen by authored slot and copy length. |
 | Selected answer | Amber version of its footprint during commitment. |
-| Settled decision | Larger amber shell carrying the selected answer; it displaces nearby quiet cells and unfolds back into its question/answer pair on activation. |
+| Settled decision | Larger amber shell carrying the selected answer in the trail’s largest amber type; it displaces nearby quiet cells and unfolds back into its question/answer pair on activation. Its copy fades and rises independently after the membrane’s size transition, rather than scaling with it. |
 | Previous question | Quieter violet footprint; directly reviewable. |
 | Reflection / ending | Teal `pool` spanning a deliberate nearby cluster; its pressure radius matches its rendered footprint. |
 

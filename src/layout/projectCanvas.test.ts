@@ -12,6 +12,7 @@ const step = (lensIndex: 0 | 1, choiceIndex: 0 | 1 | 2): ReflectionStep => ({
   answer: discovery.lenses[lensIndex].answers[choiceIndex],
   answerSource: "suggested",
   choiceIndex,
+  options: discovery.lenses[lensIndex].answers,
 });
 
 describe("projectCanvas discovery", () => {
@@ -36,13 +37,13 @@ describe("projectCanvas discovery", () => {
     expect(new Set(projection.occupancy.map((item) => item.cellId)).size).toBe(projection.occupancy.length);
   });
 
-  it("unfolds one settled decision into its original question and answer for review", () => {
+  it("unfolds one settled decision into its question and all three original options", () => {
     const projection = projectCanvas({
       dilemma: "A dilemma", history: [step(0, 2)], currentDiscovery: mockDataset.scenarios[0].discoveries[1],
       selectedLensIndex: null, phase: "lens-ready", selectedAnswer: null, expandedDecisionStepIndex: 0,
     });
     const history = projection.occupancy.filter((item) => item.stepIndex === 0);
-    expect(history.map((item) => item.kind)).toEqual(["question", "answer"]);
+    expect(history.map((item) => item.kind)).toEqual(["question", "suggestion", "suggestion", "answer"]);
     expect(history.every((item) => item.interactive)).toBe(true);
   });
 

@@ -9,6 +9,8 @@ export type ReflectionStep = {
   answer: string;
   answerSource: "suggested" | "custom";
   choiceIndex: 0 | 1 | 2;
+  /** Original lens answers, retained only for revising an unfolded decision. */
+  options?: readonly string[];
 };
 
 export type SessionPhase =
@@ -66,6 +68,7 @@ export type SessionEvent =
   | { type: "OPEN_CUSTOM_ANSWER" }
   | { type: "CLOSE_CUSTOM_ANSWER" }
   | { type: "SELECT_ANSWER"; answer: SelectedAnswer; requestId: number }
+  | { type: "REVISE_HISTORY_SELECTION"; stepIndex: number; answer: SelectedAnswer; requestId: number }
   | { type: "NEXT_DISCOVERY_LOADED"; discovery: DiscoveryPayload; requestId: number }
   | { type: "COMMIT_SELECTION" }
   | { type: "TRANSITION_COMPLETE" }

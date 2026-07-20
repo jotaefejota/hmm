@@ -16,6 +16,7 @@ const committedStep = (state: SessionState): ReflectionStep | null => {
     answer: state.selectedAnswer.text,
     answerSource: state.selectedAnswer.source,
     choiceIndex: state.selectedAnswer.choiceIndex,
+    options: lens.answers.map((answer, index) => index === state.selectedAnswer!.choiceIndex ? state.selectedAnswer!.text : answer),
   };
 };
 
@@ -64,6 +65,34 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
       return (state.phase === "round-ready" || state.phase === "writing-custom-answer") && activeLens(state)
         ? { ...state, phase: "answer-selected", selectedAnswer: event.answer, pendingDiscovery: null, transitionFinished: false, activeRequestId: event.requestId }
         : state;
+    case "REVISE_HISTORY_SELECTION": {
+      if ((state.phase !== "lens-ready" && state.phase !== "round-ready") || event.stepIndex < 0 || event.stepIndex >= state.history.length) return state;
+      const previous = state.history[event.stepIndex];
+      const revised = {
+        ...previous,
+        answer: event.answer.text,
+        answerSource: event.answer.source,
+        choiceIndex: event.answer.choiceIndex,
+        options: (previous.options ?? []).map((option, index) => index === event.answer.choiceIndex ? event.answer.text : option),
+      };
+      const history = [...state.history.slice(0, event.stepIndex), revised];
+      const reachedCoreLimit = history.length >= MAX_CORE_ROUNDS;
+      return {
+        ...state,
+        phase: reachedCoreLimit ? "finish-offered" : "transitioning",
+        history,
+        currentDiscovery: null,
+        pendingDiscovery: null,
+        selectedLensIndex: null,
+        selectedAnswer: null,
+        summary: null,
+        finishReason: reachedCoreLimit ? "max_rounds" : null,
+        extensionUsed: false,
+        extensionFocus: null,
+        transitionFinished: false,
+        activeRequestId: event.requestId,
+      };
+    }
     case "NEXT_DISCOVERY_LOADED": {
       if (event.requestId !== state.activeRequestId) return state;
       if (state.phase === "answer-selected") return { ...state, pendingDiscovery: event.discovery };

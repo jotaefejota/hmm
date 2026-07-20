@@ -22,7 +22,7 @@ const toContractHistory = (history: ReflectionStep[]) => history.map((step) => (
   lensIndex: step.lensIndex,
   question: step.question,
   answer: step.answer,
-  answerSource: step.answerSource,
+    answerSource: step.answerSource,
 }));
 
 type FailedOperation =
@@ -209,6 +209,7 @@ export function App() {
       answer: answer.text,
       answerSource: answer.source,
       choiceIndex: answer.choiceIndex,
+      options: selectedLens.answers.map((option, index) => index === answer.choiceIndex ? answer.text : option),
     };
     const nextHistory = [...state.history, completedStep];
     dispatch({ type: "SELECT_ANSWER", answer, requestId });
@@ -236,6 +237,40 @@ export function App() {
     } catch (error) {
       reportRequestFailure(error, requestId, operation);
     }
+  };
+
+  const reviseHistorySelection = async (stepIndex: number, choiceIndex: 0 | 1 | 2) => {
+    if (selectionLocked.current || (state.phase !== "lens-ready" && state.phase !== "round-ready")) return;
+    const step = state.history[stepIndex];
+    const options = step?.options;
+    const text = options?.[choiceIndex];
+    if (!step || !text || text === step.answer) return;
+
+    selectionLocked.current = true;
+    const { requestId, signal } = beginRequest();
+    const revisedStep: ReflectionStep = {
+      ...step,
+      answer: text,
+      answerSource: "suggested",
+      choiceIndex,
+      options: options.map((option, index) => index === choiceIndex ? text : option),
+    };
+    const history = [...state.history.slice(0, stepIndex), revisedStep];
+    dispatch({ type: "REVISE_HISTORY_SELECTION", stepIndex, answer: { text, source: "suggested", choiceIndex }, requestId });
+
+    if (history.length >= MAX_CORE_ROUNDS) return;
+    const request = roundRequestSchema.parse({
+      contractVersion: "2",
+      kind: "round",
+      dilemma: state.dilemma,
+      roundNumber: history.length + 1,
+      requestMode: "core",
+      maxCoreRounds: MAX_CORE_ROUNDS,
+      history: toContractHistory(history),
+      focus: null,
+    });
+    const operation = { kind: "round" as const, request, success: "NEXT_DISCOVERY_LOADED" as const };
+    void requestRound(operation, provider, requestId, signal);
   };
 
   const loadSummary = async (
@@ -322,12 +357,13 @@ export function App() {
       onSubmitDilemma={submitDilemma}
       onOpenLens={(lensIndex) => dispatch({ type: "OPEN_LENS", lensIndex })}
       onReturnToLenses={() => dispatch({ type: "RETURN_TO_LENSES" })}
-      onSelectAnswer={(text) => {
+          onSelectAnswer={(text) => {
         const answers = state.selectedLensIndex === null ? [] : state.currentDiscovery?.lenses[state.selectedLensIndex].answers ?? [];
         const index = answers.indexOf(text);
         const choiceIndex = (index >= 0 ? index : 0) as 0 | 1 | 2;
         void selectAnswer({ text, source: "suggested", choiceIndex });
-      }}
+          }}
+          onReviseHistorySelection={(stepIndex, choiceIndex) => void reviseHistorySelection(stepIndex, choiceIndex)}
       onSelectCustomAnswer={(text) => void selectAnswer({ text, source: "custom", choiceIndex: 1 })}
       onOpenCustomAnswer={() => dispatch({ type: "OPEN_CUSTOM_ANSWER" })}
       onCloseCustomAnswer={() => dispatch({ type: "CLOSE_CUSTOM_ANSWER" })}

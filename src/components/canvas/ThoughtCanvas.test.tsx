@@ -2,19 +2,21 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { mockDataset, TEAM_LEAD_DILEMMA } from "../../content/mock-dataset";
+import { getHistoryAnswerCellId } from "../../layout/cell-field";
 import { createInitialSessionState, type ReflectionStep } from "../../session/session-types";
 import { ThoughtCanvas } from "./ThoughtCanvas";
 
 const scenario = mockDataset.scenarios[0];
 const callbacks = () => ({
   onSelectAnswer: vi.fn(), onOpenLens: vi.fn(), onReturnToLenses: vi.fn(), onSelectCustomAnswer: vi.fn(),
+  onReviseHistorySelection: vi.fn(),
   onOpenCustomAnswer: vi.fn(), onCloseCustomAnswer: vi.fn(), onCommitSelection: vi.fn(),
   onTransitionComplete: vi.fn(), onFinish: vi.fn(), onContinueFromFinish: vi.fn(),
   onRetry: vi.fn(), onUsePrepared: vi.fn(), onRestart: vi.fn(),
 });
 const historyStep = (round = 1): ReflectionStep => {
   const lens = scenario.discoveries[round - 1].lenses[0];
-  return { round, lensTheme: lens.theme, lensIndex: 0, question: lens.question, answer: lens.answers[0], answerSource: "suggested", choiceIndex: 0 };
+  return { round, lensTheme: lens.theme, lensIndex: 0, question: lens.question, answer: lens.answers[0], answerSource: "suggested", choiceIndex: 0, options: lens.answers };
 };
 
 describe("ThoughtCanvas discovery", () => {
@@ -49,15 +51,63 @@ describe("ThoughtCanvas discovery", () => {
     expect(props.onReturnToLenses).toHaveBeenCalledOnce();
   });
 
-  it("unfolds a settled decision, then opens read-only detail from its answer", async () => {
+  it("unfolds a settled decision and settles it again from either member", async () => {
     const props = callbacks();
     const step = historyStep();
     const state = { ...createInitialSessionState(2), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, history: [step], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const };
     render(<ThoughtCanvas state={state} {...props} />);
     await userEvent.click(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` }));
-    await userEvent.click(screen.getByRole("button", { name: `Review round 1: ${step.answer}` }));
-    expect(screen.getByRole("complementary", { name: "Review round 1" })).toHaveTextContent(step.question);
+    await userEvent.click(screen.getByRole("button", { name: `Settle decision from round 1: ${step.answer}` }));
+    expect(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` })).toBeVisible();
+  });
+
+  it("settles an unfolded decision when its question is activated", async () => {
+    const step = historyStep();
+    const state = { ...createInitialSessionState(2), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, history: [step], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...callbacks()} />);
+
+    await userEvent.click(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` }));
+    await userEvent.click(screen.getByRole("button", { name: `Settle decision from round 1: ${step.question}` }));
+
+    expect(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` })).toBeVisible();
+  });
+
+  it("offers discarded answers as white revision choices when a decision unfolds", async () => {
+    const props = callbacks();
+    const step = historyStep();
+    const state = { ...createInitialSessionState(2), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, history: [step], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...props} />);
+
+    await userEvent.click(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` }));
+    await userEvent.click(screen.getByRole("button", { name: `Possibility 2: ${step.options![1]}` }));
+
+    expect(props.onReviseHistorySelection).toHaveBeenCalledWith(0, 1);
+  });
+
+  it("focuses a settled decision from the progress card without unfolding it", async () => {
+    const step = historyStep();
+    const state = { ...createInitialSessionState(2), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, history: [step], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...callbacks()} />);
+
+    await userEvent.click(screen.getByRole("button", { name: step.answer }));
+
+    expect(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` })).toBeVisible();
+    expect(screen.queryByRole("button", { name: `Review round 1: ${step.question}` })).not.toBeInTheDocument();
     expect(screen.getByRole("complementary", { name: "Review round 1" })).toHaveTextContent(step.answer);
+  });
+
+  it("keeps the answer slot focused when a progress-focused decision unfolds", async () => {
+    const step = historyStep();
+    const state = { ...createInitialSessionState(2), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, history: [step], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const };
+    const { container } = render(<ThoughtCanvas state={state} {...callbacks()} />);
+
+    await userEvent.click(screen.getByRole("button", { name: step.answer }));
+    await userEvent.click(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` }));
+
+    const answerCellId = getHistoryAnswerCellId([step], 0);
+    expect(container.querySelector(`[data-cell-slot="${answerCellId}"].is-review-focus`)).toBeTruthy();
+    expect(screen.getByRole("button", { name: `Settle decision from round 1: ${step.answer}` })).toBeVisible();
+    expect(screen.queryByRole("complementary", { name: "Review round 1" })).not.toBeInTheDocument();
   });
 
   it("keeps stable outer cells across discovery changes", () => {
