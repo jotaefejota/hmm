@@ -8,6 +8,7 @@ import { CellField } from "./CellField";
 import { ProgressCard } from "../session/ProgressCard";
 import { CustomAnswerComposer } from "../session/CustomAnswerComposer";
 import { ClarityPrompt } from "../session/ClarityPrompt";
+import { RequestErrorPanel } from "../session/RequestErrorPanel";
 
 type ThoughtCanvasProps = {
   state: SessionState;
@@ -19,6 +20,9 @@ type ThoughtCanvasProps = {
   onTransitionComplete: () => void;
   onContinueAfterClarity: () => void;
   onFinish: (reason: "user" | "suggested") => void;
+  onRetry: () => void;
+  onUsePrepared: () => void;
+  onRestart: () => void;
 };
 
 function TransitionMoment({ state, onComplete }: { state: SessionState; onComplete: () => void }) {
@@ -100,6 +104,14 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
       ) : null}
       {state.phase === "clarity-offered" ? (
         <ClarityPrompt onFinish={() => props.onFinish("suggested")} onContinue={props.onContinueAfterClarity} />
+      ) : null}
+      {state.phase === "error" && state.requestError ? (
+        <RequestErrorPanel
+          error={state.requestError}
+          onRetry={props.onRetry}
+          onUsePrepared={props.onUsePrepared}
+          onRestart={props.onRestart}
+        />
       ) : null}
       {selectCanFinish(state) ? (
         <button className="finish-action" type="button" onClick={() => props.onFinish("user")}>

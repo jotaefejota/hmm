@@ -8,6 +8,7 @@ import { App } from "./App";
 afterEach(() => {
   vi.restoreAllMocks();
   vi.useRealTimers();
+  window.history.replaceState({}, "", "/");
 });
 
 describe("App interaction guards", () => {
@@ -47,6 +48,33 @@ describe("App interaction guards", () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
     expect(screen.getByRole("alert")).toHaveTextContent("This topic needs a different kind of support.");
+    expect(screen.getByRole("complementary", { name: "Your thread" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Continue with prepared questions" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Start over" })).toBeVisible();
+  });
+
+  it("keeps context visible and can recover a retryable failure with prepared content", async () => {
+    vi.useFakeTimers();
+    vi.spyOn(reflectionProvider, "getRound").mockRejectedValueOnce(new ReflectionProviderError({
+      kind: "error",
+      code: "AI_TIMEOUT",
+      message: "The live response took too long.",
+      retryable: true,
+      fallbackAvailable: true,
+    }));
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start with a thought" }));
+    fireEvent.click(screen.getByRole("button", { name: /Think it through/ }));
+    await act(async () => { await vi.advanceTimersByTimeAsync(500); });
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Your path is still here.");
+    expect(screen.getAllByText("Should I accept a team-lead role if it means less hands-on creative work?").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: "Continue with prepared questions" }));
+    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+
+    expect(screen.getByRole("heading", { name: "What makes the role appealing right now?" })).toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent("Continuing with prepared reflection.");
   });
 });

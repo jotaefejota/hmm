@@ -21,6 +21,8 @@ type AppShellProps = {
   onContinueAfterClarity: () => void;
   onFinish: (reason: "user" | "suggested") => void;
   onExploreDoubt: (focus: string) => void;
+  onRetry: () => void;
+  onUsePrepared: () => void;
   onRestart: () => void;
 };
 
@@ -33,7 +35,10 @@ export function AppShell(props: AppShellProps) {
     "answer-selected",
     "transitioning",
     "clarity-offered",
+    ...(state.phase === "error" && state.errorPhase !== "generating-summary" ? ["error"] : []),
   ].includes(state.phase);
+  const isEnding = state.phase === "generating-summary" || state.phase === "ending" ||
+    (state.phase === "error" && state.errorPhase === "generating-summary");
 
   return (
     <main className="app-shell">
@@ -45,15 +50,6 @@ export function AppShell(props: AppShellProps) {
       </header>
 
       {props.notice ? <RecoveryNotice message={props.notice.message} /> : null}
-      {state.phase === "error" && state.requestError ? (
-        <div className="boundary-notice" role="alert">
-          <p>{state.requestError.message}</p>
-          <button className="primary-action" type="button" onClick={props.onRestart}>
-            Start over
-          </button>
-        </div>
-      ) : null}
-
       {isWelcome ? (
         <WelcomeSeed
           phase={state.phase}
@@ -76,14 +72,19 @@ export function AppShell(props: AppShellProps) {
           onTransitionComplete={props.onTransitionComplete}
           onContinueAfterClarity={props.onContinueAfterClarity}
           onFinish={props.onFinish}
+          onRetry={props.onRetry}
+          onUsePrepared={props.onUsePrepared}
+          onRestart={props.onRestart}
         />
       ) : null}
 
-      {state.phase === "generating-summary" || state.phase === "ending" ? (
+      {isEnding ? (
         <EndingExperience
           state={state}
           onRestart={props.onRestart}
           onExploreDoubt={props.onExploreDoubt}
+          onRetry={props.onRetry}
+          onUsePrepared={props.onUsePrepared}
         />
       ) : null}
     </main>

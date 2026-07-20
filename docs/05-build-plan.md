@@ -642,7 +642,7 @@ The user can copy the concise result without opening ChatGPT.
 
 ### Task 9.1 — P0: Narrow vertical thread and resilient interaction
 
-**Implementation status:** Complete — 2026-07-20 for P0 essentials. Narrow CSS thread, progress disclosure, 16px body text, recovery/boundary notices, and reduced-motion kill-switch are in place. Further trail-strip refinement remains P1.
+**Implementation status:** Complete — 2026-07-20 for P0 essentials. Narrow CSS thread, progress disclosure, 16px body text, recovery notices, and reduced-motion kill-switch are in place. Explicit live errors now keep the path visible, commit a clicked answer even when failure wins the animation race, and offer request-scoped retry or prepared-content recovery where safe. Development-only timeout and refusal simulations make both variants deterministic. Further trail-strip refinement remains P1.
 
 **Observable outcome**
 
@@ -672,6 +672,8 @@ At a narrow viewport the current question and three answers become a readable ve
 - State changes and errors are announced in a restrained live region.
 - Reduced motion removes large travel, blur, morph, and continuous pulsing.
 - Error, retry, and mock-fallback notices never replace the existing path.
+- Retryable explicit errors offer **Try again** and **Continue with prepared questions**; refusals offer no generic fallback.
+- Development-only timeout and refusal simulations make both error variants deterministic without changing production behavior.
 - The full mock session works at both desktop and narrow widths.
 
 **Checks Codex must run**

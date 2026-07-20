@@ -25,6 +25,9 @@ describe("ThoughtCanvas", () => {
         onTransitionComplete={vi.fn()}
         onContinueAfterClarity={vi.fn()}
         onFinish={vi.fn()}
+        onRetry={vi.fn()}
+        onUsePrepared={vi.fn()}
+        onRestart={vi.fn()}
       />,
     );
 
@@ -64,6 +67,9 @@ describe("ThoughtCanvas", () => {
         onTransitionComplete={vi.fn()}
         onContinueAfterClarity={vi.fn()}
         onFinish={vi.fn()}
+        onRetry={vi.fn()}
+        onUsePrepared={vi.fn()}
+        onRestart={vi.fn()}
       />,
     );
 
@@ -84,6 +90,9 @@ describe("ThoughtCanvas", () => {
       onTransitionComplete: vi.fn(),
       onContinueAfterClarity: vi.fn(),
       onFinish: vi.fn(),
+      onRetry: vi.fn(),
+      onUsePrepared: vi.fn(),
+      onRestart: vi.fn(),
     };
     const firstState = {
       ...createInitialSessionState(1),

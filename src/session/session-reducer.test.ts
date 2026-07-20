@@ -124,7 +124,64 @@ describe("sessionReducer", () => {
       phase: "error",
       dilemma: "A real question?",
       requestError: error,
+      errorPhase: "generating-round",
     });
+  });
+
+  it("restores the exact pre-error phase for a request-scoped recovery", () => {
+    let state = readyAtFirstRound();
+    state = completeRound(state, 0, 2, 1);
+    state = sessionReducer(state, {
+      type: "SELECT_ANSWER",
+      answer: { text: rounds[1].answers[0], source: "suggested", choiceIndex: 0 },
+      requestId: 3,
+    });
+    state = sessionReducer(state, { type: "COMMIT_SELECTION" });
+    state = sessionReducer(state, { type: "TRANSITION_COMPLETE" });
+    const error = {
+      kind: "error" as const,
+      code: "AI_TIMEOUT" as const,
+      message: "The live response took too long.",
+      retryable: true,
+      fallbackAvailable: true,
+    };
+
+    state = sessionReducer(state, { type: "REQUEST_FAILED", error, requestId: 3 });
+    expect(state).toMatchObject({ phase: "error", errorPhase: "transitioning" });
+    expect(state.history).toHaveLength(2);
+
+    state = sessionReducer(state, { type: "RECOVER_REQUEST", requestId: 4 });
+    expect(state).toMatchObject({
+      phase: "transitioning",
+      requestError: null,
+      errorPhase: null,
+      activeRequestId: 4,
+    });
+    expect(state.history).toHaveLength(2);
+  });
+
+  it("commits a clicked answer even when the next request fails before animation completion", () => {
+    const selected = sessionReducer(readyAtFirstRound(), {
+      type: "SELECT_ANSWER",
+      answer: { text: rounds[0].answers[1], source: "suggested", choiceIndex: 1 },
+      requestId: 2,
+    });
+    const error = {
+      kind: "error" as const,
+      code: "AI_TIMEOUT" as const,
+      message: "The live response took too long.",
+      retryable: true,
+      fallbackAvailable: true,
+    };
+
+    const failed = sessionReducer(selected, { type: "REQUEST_FAILED", error, requestId: 2 });
+    expect(failed).toMatchObject({
+      phase: "error",
+      errorPhase: "transitioning",
+      currentRound: null,
+      selectedAnswer: null,
+    });
+    expect(failed.history).toEqual([expect.objectContaining({ answer: rounds[0].answers[1], choiceIndex: 1 })]);
   });
 
   it("allows exactly one post-ending extension then regenerates the summary", () => {

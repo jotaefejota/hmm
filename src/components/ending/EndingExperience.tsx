@@ -5,14 +5,17 @@ import { projectCanvas } from "../../layout/projectCanvas";
 import { ProgressCard } from "../session/ProgressCard";
 import { CellField } from "../canvas/CellField";
 import { ResultLens } from "./ResultLens";
+import { RequestErrorPanel } from "../session/RequestErrorPanel";
 
 type EndingExperienceProps = {
   state: SessionState;
   onRestart: () => void;
   onExploreDoubt: (focus: string) => void;
+  onRetry: () => void;
+  onUsePrepared: () => void;
 };
 
-export function EndingExperience({ state, onRestart, onExploreDoubt }: EndingExperienceProps) {
+export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, onUsePrepared }: EndingExperienceProps) {
   const { reviewCellId, isReviewing, focusHistoryAnswer, clearReviewFocus } = useTrailReviewFocus(state);
   const projection = projectCanvas({
     dilemma: state.dilemma,
@@ -44,6 +47,13 @@ export function EndingExperience({ state, onRestart, onExploreDoubt }: EndingExp
           <span aria-hidden="true">✦</span>
           <p>Let me gather the thread…</p>
         </div>
+      ) : state.phase === "error" && state.requestError ? (
+        <RequestErrorPanel
+          error={state.requestError}
+          onRetry={onRetry}
+          onUsePrepared={onUsePrepared}
+          onRestart={onRestart}
+        />
       ) : state.summary ? (
         <ResultLens
           summary={state.summary}

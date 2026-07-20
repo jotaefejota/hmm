@@ -225,11 +225,13 @@ If live generation fails but mock content is available, begin loading the mock c
 
 Action: **Try live again**. Otherwise, no response is required.
 
-Technical error details never replace the user’s path. If both live and fallback content fail, use:
+Technical error details never replace the user’s path. In diagnostic live mode, or if automatic fallback also fails, keep the progress card and selected trail visible and place a temporary error cell at the same focal slot reserved for the incoming question:
 
 > I lost the thread for a moment. Your path is still here.
 
-Actions: **Try again**, **Copy my path**, and **Start over**.
+For retryable failures with a valid mock continuation, actions are **Try again**, **Continue with prepared questions**, and a quieter **Start over**. **Try again** repeats the exact failed operation with a new request ID. **Continue with prepared questions** runs that operation through the mock provider without changing committed history. For refusals or other non-retryable boundaries, show the boundary message and **Start over** only; never route sensitive content into generic mock reflection.
+
+In development only, `?simulateError=timeout` and `?simulateError=refusal` deterministically exercise the two variants. These query parameters must be ignored in production builds.
 
 ## 4. Simple state machine
 
@@ -268,6 +270,7 @@ stateDiagram-v2
     ExternalHandoff --> Ending
 
     Error --> Generating: Try again
+    Error --> Generating: Continue with prepared questions
     Error --> Welcome: Confirm start over
 ```
 

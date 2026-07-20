@@ -29,6 +29,10 @@ export type SelectedAnswer = {
 };
 
 export type FinishReason = "user" | "suggested" | "max_rounds" | "extension";
+export type RecoverablePhase = Extract<
+  SessionPhase,
+  "generating-round" | "answer-selected" | "transitioning" | "generating-summary"
+>;
 
 export type SessionState = {
   phase: SessionPhase;
@@ -44,6 +48,7 @@ export type SessionState = {
   extensionFocus: string | null;
   dataSource: "mock" | null;
   requestError: PublicError | null;
+  errorPhase: RecoverablePhase | null;
   activeRequestId: number;
 };
 
@@ -63,6 +68,7 @@ export type SessionEvent =
   | { type: "REQUEST_EXTENSION"; focus: string; requestId: number }
   | { type: "SUMMARY_LOADED"; summary: SummaryPayload; requestId: number }
   | { type: "REQUEST_FAILED"; error: PublicError; requestId: number }
+  | { type: "RECOVER_REQUEST"; requestId: number }
   | { type: "RESTART"; requestId: number };
 
 export const createInitialSessionState = (activeRequestId = 0): SessionState => ({
@@ -79,6 +85,7 @@ export const createInitialSessionState = (activeRequestId = 0): SessionState => 
   extensionFocus: null,
   dataSource: null,
   requestError: null,
+  errorPhase: null,
   activeRequestId,
 });
 

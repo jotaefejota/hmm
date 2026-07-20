@@ -36,3 +36,12 @@ npm run check
 3. See what’s emerging → Continue in ChatGPT / Explore one remaining doubt / Start over
 
 If clipboard access is blocked, the ChatGPT handoff reveals the complete prepared prompt so it can be copied manually.
+
+## Development error checks
+
+Development builds support deterministic recovery-state checks:
+
+- `/?simulateError=timeout` keeps the current path visible and offers retry or prepared content.
+- `/?simulateError=refusal` keeps the current path visible and offers only restart.
+
+These query parameters are ignored in production builds.

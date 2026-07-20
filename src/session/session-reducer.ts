@@ -113,9 +113,45 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
       return state.phase === "generating-summary" && event.requestId === state.activeRequestId
         ? { ...state, phase: "ending", summary: event.summary, dataSource: "mock" }
         : state;
-    case "REQUEST_FAILED":
-      return event.requestId === state.activeRequestId
-        ? { ...state, phase: "error", requestError: event.error }
+    case "REQUEST_FAILED": {
+      if (event.requestId !== state.activeRequestId || state.phase === "error") return state;
+      if (state.phase === "answer-selected" && state.selectedAnswer && state.currentRound) {
+        const committedStep = {
+          round: state.history.length + 1,
+          question: state.currentRound.question,
+          answer: state.selectedAnswer.text,
+          answerSource: state.selectedAnswer.source,
+          choiceIndex: state.selectedAnswer.choiceIndex,
+        } as const;
+        return {
+          ...state,
+          phase: "error",
+          history: [...state.history, committedStep],
+          currentRound: null,
+          selectedAnswer: null,
+          requestError: event.error,
+          errorPhase: "transitioning",
+        };
+      }
+      return {
+        ...state,
+        phase: "error",
+        requestError: event.error,
+        errorPhase: state.phase === "generating-round" || state.phase === "transitioning" ||
+          state.phase === "generating-summary"
+          ? state.phase
+          : null,
+      };
+    }
+    case "RECOVER_REQUEST":
+      return state.phase === "error" && state.errorPhase
+        ? {
+            ...state,
+            phase: state.errorPhase,
+            requestError: null,
+            errorPhase: null,
+            activeRequestId: event.requestId,
+          }
         : state;
     case "RESTART":
       return createInitialSessionState(event.requestId);

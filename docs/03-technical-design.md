@@ -446,19 +446,22 @@ This protects the key from appearing in the bundle or browser requests. It does 
 - Do not automatically retry the model before falling back; two slow calls make the demo worse.
 - A user-triggered **Try live again** starts one fresh request with a new request ID.
 - Aborted and stale requests never change state.
+- A failed operation is retained outside the visual components as a small typed descriptor: round versus summary, validated request payload, and the success event it must produce. The reducer retains the pre-error phase so recovery can restore the same semantic point without reconstructing it from the UI.
+- **Try again** replays that descriptor through the configured provider. **Continue with prepared questions** replays it through `MockReflectionProvider`. Both allocate a new request ID, and neither edits committed history.
+- Development builds may inject timeout or refusal failures through documented query parameters. Production builds ignore them.
 
 ### Failure mapping
 
 | Failure | App behavior | Retry |
 | --- | --- | --- |
 | No API key / endpoint unavailable | Automatic mock response; small persistent notice | Manual live retry only if configuration changes |
-| Network error or timeout | Automatic mock response preserving the current path | One user-triggered retry |
+| Network error or timeout | Automatic mock response in `auto`; in-context error cell in diagnostic `live` mode | **Try again** or **Continue with prepared questions** |
 | Non-2xx provider response | Map to public code; automatic mock | User-triggered retry |
 | Model refusal | Show the appropriate static boundary message; do not feed sensitive text into generic mock reflection | No automatic retry |
 | JSON/schema invalid | Reject immediately; use mock; log server-side diagnostic | User-triggered retry during development only |
 | Semantically invalid content | Reject if answers are duplicated, lengths fail, advice language appears, or question shape is invalid; use mock | No repair call in P0 |
 | Mock fixture invalid | Fail tests/build; at runtime show preserved-path error with copy/restart | Retry cannot help |
-| Summary failure | Keep complete trail visible; use mock summary or offer retry/copy path | One user-triggered retry |
+| Summary failure | Keep complete trail visible; use mock summary or offer retry/prepared summary | One user-triggered retry |
 | Clipboard/new-tab failure | Show the prepared prompt for manual copy | User retries the browser action |
 
 The server may log a request ID, error code, duration, and model name. It should not log the user’s full dilemma or answers in the hackathon default.
