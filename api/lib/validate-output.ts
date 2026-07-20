@@ -1,4 +1,4 @@
-import type { RoundPayload, RoundRequest, SummaryPayload } from "../../shared/ai-contract.js";
+import type { DiscoveryPayload, RoundRequest, SummaryPayload } from "../../shared/ai-contract.js";
 import { publicErrorSchema, type PublicError } from "../../shared/ai-contract.js";
 
 const AUTHORITY_PATTERN = /\byou should\b|\byou need to\b|\bthe best choice\b|\d+\s*%/i;
@@ -18,7 +18,7 @@ export function createPublicError(
   });
 }
 
-export function applySuggestEndingGate(request: RoundRequest, payload: RoundPayload): RoundPayload {
+export function applySuggestEndingGate(request: RoundRequest, payload: DiscoveryPayload): DiscoveryPayload {
   const maySuggest =
     request.requestMode === "core" &&
     request.roundNumber === 5 &&
@@ -27,16 +27,20 @@ export function applySuggestEndingGate(request: RoundRequest, payload: RoundPayl
   return { ...payload, suggestEnding: false };
 }
 
-export function validateRoundSemantics(payload: RoundPayload): string | null {
-  if (!payload.question.endsWith("?") || MULTI_QUESTION.test(payload.question)) {
+export function validateRoundSemantics(payload: DiscoveryPayload): string | null {
+  if (payload.lenses.some((lens) => !lens.question.endsWith("?") || MULTI_QUESTION.test(lens.question))) {
     return "Question must end in exactly one question mark.";
   }
-  if (/\n/.test(payload.question) || payload.answers.some((answer) => /\n/.test(answer)) || /\n/.test(payload.transition)) {
+  if (payload.lenses.some((lens) => /\n/.test(lens.theme) || /\n/.test(lens.question) || lens.answers.some((answer) => /\n/.test(answer))) || /\n/.test(payload.fortune) || /\n/.test(payload.transition)) {
     return "Round strings must be single-line.";
   }
-  const authorityTarget = [payload.question, ...payload.answers, payload.transition].join(" ");
+  const authorityTarget = [...payload.lenses.flatMap((lens) => [lens.theme, lens.question, ...lens.answers]), payload.fortune, payload.transition].join(" ");
   if (AUTHORITY_PATTERN.test(authorityTarget)) {
     return "Round content contains banned authority language.";
+  }
+  const normalizedFortune = payload.fortune.toLocaleLowerCase();
+  if (payload.lenses.some((lens) => normalizedFortune === lens.theme.toLocaleLowerCase() || normalizedFortune === lens.question.toLocaleLowerCase())) {
+    return "Fortune must add a distinct reframing.";
   }
   return null;
 }

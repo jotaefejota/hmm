@@ -6,6 +6,7 @@ import { ProgressCard } from "../session/ProgressCard";
 import { CellField } from "../canvas/CellField";
 import { ResultLens } from "./ResultLens";
 import { RequestErrorPanel } from "../session/RequestErrorPanel";
+import { TrailReviewCard } from "../session/TrailReviewCard";
 
 type EndingExperienceProps = {
   state: SessionState;
@@ -16,11 +17,12 @@ type EndingExperienceProps = {
 };
 
 export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, onUsePrepared }: EndingExperienceProps) {
-  const { reviewCellId, isReviewing, focusHistoryAnswer, clearReviewFocus } = useTrailReviewFocus(state);
+  const { review, reviewCellId, isReviewing, focusHistoryAnswer, focusHistoryNode, clearReviewFocus } = useTrailReviewFocus(state);
   const projection = projectCanvas({
     dilemma: state.dilemma,
     history: state.history,
-    currentRound: null,
+    currentDiscovery: null,
+    selectedLensIndex: null,
     phase: state.phase,
     selectedAnswer: null,
     focusOverrideCellId: reviewCellId,
@@ -41,7 +43,9 @@ export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, on
         phase={state.phase === "ending" ? "ending" : "generating-summary"}
         ending
         reviewCellId={reviewCellId}
+        onReviewNode={focusHistoryNode}
       />
+      {review ? <TrailReviewCard step={state.history[review.stepIndex]} onClose={clearReviewFocus} /> : null}
       {state.phase === "generating-summary" ? (
         <div className="gathering-lens">
           <span aria-hidden="true">✦</span>

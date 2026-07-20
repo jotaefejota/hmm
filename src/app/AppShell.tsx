@@ -12,6 +12,8 @@ type AppShellProps = {
   onOpenEntry: () => void;
   onCancelEntry: () => void;
   onSubmitDilemma: (dilemma: string) => Promise<void>;
+  onOpenLens: (lensIndex: 0 | 1) => void;
+  onReturnToLenses: () => void;
   onSelectAnswer: (answer: string) => void;
   onSelectCustomAnswer: (answer: string) => void;
   onOpenCustomAnswer: () => void;
@@ -31,6 +33,7 @@ export function AppShell(props: AppShellProps) {
   const isWelcome = state.phase === "welcome" || state.phase === "entering";
   const isExploring = [
     "round-ready",
+    "lens-ready",
     "writing-custom-answer",
     "answer-selected",
     "transitioning",
@@ -64,6 +67,8 @@ export function AppShell(props: AppShellProps) {
         <ThoughtCanvas
           state={state}
           onSelectAnswer={props.onSelectAnswer}
+          onOpenLens={props.onOpenLens}
+          onReturnToLenses={props.onReturnToLenses}
           onSelectCustomAnswer={props.onSelectCustomAnswer}
           onOpenCustomAnswer={props.onOpenCustomAnswer}
           onCloseCustomAnswer={props.onCloseCustomAnswer}

@@ -1,5 +1,9 @@
 # Hmm… — Product Vision and MVP
 
+> **Discovery revision:** Each reflection round now begins with exactly two short question lenses. The user chooses which angle to open, then answers one of exactly three suggestions. Only the opened-and-answered lens joins the permanent path; the unused lens returns to the quiet substrate.
+
+A fortune-cookie cell may appear near each active discovery. Its reframing is generated from the dilemma and committed path—or supplied by the matching mock round—while opening it remains optional and never changes history, later generation context, or the final summary.
+
 **Status:** Initial product definition
 
 **Purpose:** Align the hackathon team on what to build, what to demonstrate, and what not to build
@@ -10,7 +14,7 @@
 
 Hmm… is a curious companion for thinking through a decision.
 
-It gives the user a small, calm space to state what is on their mind, respond to one useful question at a time, and see their line of thought take shape across a persistent field of connected cells. The cells are the stable surface of the experience: questions and possibilities move into focus within them, while selected cells keep a visible mark of the route taken. After a short journey, Hmm… reflects back the direction that appears to be emerging, why it matters, what remains uncertain, and one practical next step.
+It gives the user a small, calm space to state what is on their mind, choose between two useful question lenses, respond to the opened question, and see their line of thought take shape across a persistent field of connected cells. The cells are the stable surface of the experience: questions and possibilities move into focus within them, while selected cells keep a visible mark of the route taken. After a short journey, Hmm… reflects back the direction that appears to be emerging, why it matters, what remains uncertain, and one practical next step.
 
 The product does not predict outcomes, optimize the user’s life, or make a decision on the user’s behalf. Its value comes from helping the user hear and examine their own reasoning. The intended feeling is less “an AI gave me the answer” and more “I can finally see what I think.”
 

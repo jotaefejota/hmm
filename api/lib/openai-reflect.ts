@@ -1,9 +1,9 @@
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import {
-  roundPayloadSchema,
+  discoveryPayloadSchema,
   summaryPayloadSchema,
-  type RoundPayload,
+  type DiscoveryPayload,
   type RoundRequest,
   type SummaryPayload,
   type SummaryRequest,
@@ -34,7 +34,7 @@ const getClient = () => {
 
 const getModel = () => serverEnvironment?.OPENAI_MODEL?.trim() || DEFAULT_MODEL;
 
-export async function generateRound(request: RoundRequest): Promise<RoundPayload> {
+export async function generateRound(request: RoundRequest): Promise<DiscoveryPayload> {
   const client = getClient();
   try {
     const response = await client.responses.parse({
@@ -44,7 +44,7 @@ export async function generateRound(request: RoundRequest): Promise<RoundPayload
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: JSON.stringify(request) },
       ],
-      text: { format: zodTextFormat(roundPayloadSchema, "hmm_round") },
+      text: { format: zodTextFormat(discoveryPayloadSchema, "hmm_discovery") },
     });
 
     if (response.status === "incomplete" || !response.output_parsed) {
@@ -67,7 +67,7 @@ export async function generateRound(request: RoundRequest): Promise<RoundPayload
       });
     }
 
-    const payload = applySuggestEndingGate(request, roundPayloadSchema.parse(parsed));
+    const payload = applySuggestEndingGate(request, discoveryPayloadSchema.parse(parsed));
     const semanticError = validateRoundSemantics(payload);
     if (semanticError) {
       throw createPublicError("AI_INVALID_OUTPUT", semanticError, {

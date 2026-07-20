@@ -18,13 +18,15 @@ const pause = (duration: number) => new Promise((resolve) => window.setTimeout(r
 const wasAborted = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
 const toContractHistory = (history: ReflectionStep[]) => history.map((step) => ({
   round: step.round,
+  lensTheme: step.lensTheme,
+  lensIndex: step.lensIndex,
   question: step.question,
   answer: step.answer,
   answerSource: step.answerSource,
 }));
 
 type FailedOperation =
-  | { kind: "round"; request: RoundRequest; success: "ROUND_LOADED" | "NEXT_ROUND_LOADED" }
+  | { kind: "round"; request: RoundRequest; success: "DISCOVERY_LOADED" | "NEXT_DISCOVERY_LOADED" }
   | { kind: "summary"; request: SummaryRequest };
 
 const simulatedFailure = () => {
@@ -60,7 +62,7 @@ export function App() {
   const failedOperation = useRef<FailedOperation | null>(null);
 
   useEffect(() => {
-    if (state.phase === "round-ready") selectionLocked.current = false;
+    if (state.phase === "round-ready" || state.phase === "lens-ready") selectionLocked.current = false;
   }, [state.phase]);
 
   const beginRequest = () => {
@@ -105,7 +107,7 @@ export function App() {
       const result = await source.getRound(operation.request, signal);
       rememberResult(result.source, result.notice);
       failedOperation.current = null;
-      dispatch({ type: operation.success, round: result.data, requestId });
+      dispatch({ type: operation.success, discovery: result.data, requestId });
     } catch (error) {
       reportRequestFailure(error, requestId, operation);
     }
@@ -136,7 +138,7 @@ export function App() {
     const { requestId, signal } = beginRequest();
     dispatch({ type: "SUBMIT_DILEMMA", dilemma, requestId });
     const request = roundRequestSchema.parse({
-      contractVersion: "1",
+      contractVersion: "2",
       kind: "round",
       dilemma: dilemma.trim(),
       roundNumber: 1,
@@ -145,7 +147,7 @@ export function App() {
       history: [],
       focus: null,
     });
-    const operation = { kind: "round" as const, request, success: "ROUND_LOADED" as const };
+    const operation = { kind: "round" as const, request, success: "DISCOVERY_LOADED" as const };
 
     try {
       const failure = simulatedFailure();
@@ -155,7 +157,7 @@ export function App() {
         pause(MINIMUM_GENERATION_MS),
       ]);
       rememberResult(result.source, result.notice);
-      dispatch({ type: "ROUND_LOADED", round: result.data, requestId });
+      dispatch({ type: "DISCOVERY_LOADED", discovery: result.data, requestId });
     } catch (error) {
       reportRequestFailure(error, requestId, operation);
     }
@@ -164,7 +166,7 @@ export function App() {
   const loadExtensionRound = async (focus: string, requestId: number, history: ReflectionStep[]) => {
     const signal = abortController.current?.signal;
     const request = roundRequestSchema.parse({
-      contractVersion: "1",
+      contractVersion: "2",
       kind: "round",
       dilemma: state.dilemma,
       roundNumber: 6,
@@ -173,7 +175,7 @@ export function App() {
       history: toContractHistory(history),
       focus,
     });
-    const operation = { kind: "round" as const, request, success: "ROUND_LOADED" as const };
+    const operation = { kind: "round" as const, request, success: "DISCOVERY_LOADED" as const };
 
     try {
       const failure = simulatedFailure();
@@ -183,7 +185,7 @@ export function App() {
         pause(MINIMUM_GENERATION_MS),
       ]);
       rememberResult(result.source, result.notice);
-      dispatch({ type: "ROUND_LOADED", round: result.data, requestId });
+      dispatch({ type: "DISCOVERY_LOADED", discovery: result.data, requestId });
     } catch (error) {
       reportRequestFailure(error, requestId, operation);
     }
@@ -193,14 +195,17 @@ export function App() {
     if (
       selectionLocked.current ||
       (state.phase !== "round-ready" && state.phase !== "writing-custom-answer") ||
-      !state.currentRound
+      !state.currentDiscovery || state.selectedLensIndex === null
     ) return;
 
     selectionLocked.current = true;
     const { requestId, signal } = beginRequest();
+    const selectedLens = state.currentDiscovery.lenses[state.selectedLensIndex];
     const completedStep: ReflectionStep = {
       round: state.history.length + 1,
-      question: state.currentRound.question,
+      lensTheme: selectedLens.theme,
+      lensIndex: state.selectedLensIndex,
+      question: selectedLens.question,
       answer: answer.text,
       answerSource: answer.source,
       choiceIndex: answer.choiceIndex,
@@ -211,7 +216,7 @@ export function App() {
     if (state.extensionUsed || nextHistory.length >= MAX_CORE_ROUNDS) return;
 
     const request = roundRequestSchema.parse({
-      contractVersion: "1",
+      contractVersion: "2",
       kind: "round",
       dilemma: state.dilemma,
       roundNumber: nextHistory.length + 1,
@@ -220,14 +225,14 @@ export function App() {
       history: toContractHistory(nextHistory),
       focus: null,
     });
-    const operation = { kind: "round" as const, request, success: "NEXT_ROUND_LOADED" as const };
+    const operation = { kind: "round" as const, request, success: "NEXT_DISCOVERY_LOADED" as const };
 
     try {
       const failure = simulatedFailure();
       if (failure) throw failure;
       const result = await provider.getRound(request, signal);
       rememberResult(result.source, result.notice);
-      dispatch({ type: "NEXT_ROUND_LOADED", round: result.data, requestId });
+      dispatch({ type: "NEXT_DISCOVERY_LOADED", discovery: result.data, requestId });
     } catch (error) {
       reportRequestFailure(error, requestId, operation);
     }
@@ -240,7 +245,7 @@ export function App() {
   ) => {
     const signal = abortController.current?.signal;
     const request = summaryRequestSchema.parse({
-      contractVersion: "1",
+      contractVersion: "2",
       kind: "summary",
       dilemma: state.dilemma,
       history: toContractHistory(history),
@@ -263,12 +268,15 @@ export function App() {
   };
 
   const commitSelection = () => {
-    if (state.phase !== "answer-selected" || !state.currentRound || !state.selectedAnswer) return;
+    if (state.phase !== "answer-selected" || !state.currentDiscovery || state.selectedLensIndex === null || !state.selectedAnswer) return;
+    const selectedLens = state.currentDiscovery.lenses[state.selectedLensIndex];
     const committedHistory: ReflectionStep[] = [
       ...state.history,
       {
         round: state.history.length + 1,
-        question: state.currentRound.question,
+        lensTheme: selectedLens.theme,
+        lensIndex: state.selectedLensIndex,
+        question: selectedLens.question,
         answer: state.selectedAnswer.text,
         answerSource: state.selectedAnswer.source,
         choiceIndex: state.selectedAnswer.choiceIndex,
@@ -332,8 +340,11 @@ export function App() {
       onOpenEntry={() => dispatch({ type: "OPEN_ENTRY" })}
       onCancelEntry={() => dispatch({ type: "CANCEL_ENTRY" })}
       onSubmitDilemma={submitDilemma}
+      onOpenLens={(lensIndex) => dispatch({ type: "OPEN_LENS", lensIndex })}
+      onReturnToLenses={() => dispatch({ type: "RETURN_TO_LENSES" })}
       onSelectAnswer={(text) => {
-        const index = state.currentRound?.answers.indexOf(text) ?? 0;
+        const answers = state.selectedLensIndex === null ? [] : state.currentDiscovery?.lenses[state.selectedLensIndex].answers ?? [];
+        const index = answers.indexOf(text);
         const choiceIndex = (index >= 0 ? index : 0) as 0 | 1 | 2;
         void selectAnswer({ text, source: "suggested", choiceIndex });
       }}

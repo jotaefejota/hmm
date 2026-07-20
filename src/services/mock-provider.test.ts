@@ -8,7 +8,7 @@ describe("MockReflectionProvider", () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch");
     const provider = new MockReflectionProvider();
     const result = await provider.getRound({
-      contractVersion: "1",
+      contractVersion: "2",
       kind: "round",
       dilemma: TEAM_LEAD_DILEMMA,
       roundNumber: 1,
@@ -19,8 +19,9 @@ describe("MockReflectionProvider", () => {
     });
 
     expect(result.source).toBe("mock");
-    expect(result.data.question).toBe("What makes the role appealing right now?");
-    expect(result.data.answers).toHaveLength(3);
+    expect(result.data.lenses).toHaveLength(2);
+    expect(result.data.lenses[0].question).toBe("What makes the role appealing right now?");
+    expect(result.data.lenses[0].answers).toHaveLength(3);
     expect(fetchSpy).not.toHaveBeenCalled();
     fetchSpy.mockRestore();
   });
@@ -28,7 +29,7 @@ describe("MockReflectionProvider", () => {
   it("uses the generic path for another dilemma", async () => {
     const provider = new MockReflectionProvider();
     const result = await provider.getRound({
-      contractVersion: "1",
+      contractVersion: "2",
       kind: "round",
       dilemma: "Should I move?",
       roundNumber: 1,
@@ -38,7 +39,7 @@ describe("MockReflectionProvider", () => {
       focus: null,
     });
 
-    expect(result.data.question).toBe("What matters most to you about this?");
+    expect(result.data.lenses[0].question).toBe("What matters most to you about this?");
   });
 
   it("uses the curated summary only after the documented four-answer path", async () => {
@@ -46,12 +47,14 @@ describe("MockReflectionProvider", () => {
     const curated = mockDataset.scenarios[0];
     const history = curated.demoAnswerIndexes.map((answerIndex, index) => ({
       round: index + 1,
-      question: curated.rounds[index].question,
-      answer: curated.rounds[index].answers[answerIndex],
+      lensTheme: curated.discoveries[index].lenses[curated.demoLensIndexes[index]].theme,
+      lensIndex: curated.demoLensIndexes[index] as 0 | 1,
+      question: curated.discoveries[index].lenses[curated.demoLensIndexes[index]].question,
+      answer: curated.discoveries[index].lenses[curated.demoLensIndexes[index]].answers[answerIndex],
       answerSource: "suggested" as const,
     }));
     const summary = await provider.getSummary({
-      contractVersion: "1",
+      contractVersion: "2",
       kind: "summary",
       dilemma: TEAM_LEAD_DILEMMA,
       history,
@@ -60,7 +63,7 @@ describe("MockReflectionProvider", () => {
     expect(summary.data.direction).toBe(curated.summary.direction);
 
     const earlySummary = await provider.getSummary({
-      contractVersion: "1",
+      contractVersion: "2",
       kind: "summary",
       dilemma: TEAM_LEAD_DILEMMA,
       history: history.slice(0, 2),

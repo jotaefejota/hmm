@@ -2,6 +2,8 @@ import { z } from "zod";
 import {
   CUSTOM_ANSWER_MAX_LENGTH,
   DILEMMA_MAX_LENGTH,
+  FORTUNE_MAX_LENGTH,
+  LENS_THEME_MAX_LENGTH,
   MAX_CORE_ROUNDS,
   QUESTION_MAX_LENGTH,
   SUGGESTED_ANSWER_MAX_LENGTH,
@@ -13,6 +15,8 @@ export const answerSourceSchema = z.enum(["suggested", "custom"]);
 
 export const historyItemSchema = z.object({
   round: z.number().int().min(1).max(6),
+  lensTheme: trimmedString(LENS_THEME_MAX_LENGTH),
+  lensIndex: z.union([z.literal(0), z.literal(1)]),
   question: trimmedString(QUESTION_MAX_LENGTH),
   answer: trimmedString(CUSTOM_ANSWER_MAX_LENGTH),
   answerSource: answerSourceSchema,
@@ -23,7 +27,7 @@ export const historyItemSchema = z.object({
 });
 
 const baseRequestSchema = z.object({
-  contractVersion: z.literal("1"),
+  contractVersion: z.literal("2"),
   dilemma: trimmedString(DILEMMA_MAX_LENGTH),
 });
 
@@ -60,14 +64,25 @@ export const summaryRequestSchema = baseRequestSchema.extend({
 
 const answerSchema = trimmedString(SUGGESTED_ANSWER_MAX_LENGTH);
 
-export const roundPayloadSchema = z.object({
-  kind: z.literal("round"),
+const lensSchema = z.object({
+  theme: trimmedString(LENS_THEME_MAX_LENGTH),
   question: trimmedString(QUESTION_MAX_LENGTH),
   answers: z.array(answerSchema).length(3).superRefine((answers, context) => {
     if (new Set(answers.map((answer) => answer.toLocaleLowerCase())).size !== 3) {
       context.addIssue({ code: "custom", message: "Answers must be distinct." });
     }
   }),
+}).strict();
+
+export const discoveryPayloadSchema = z.object({
+  kind: z.literal("discovery"),
+  lenses: z.array(lensSchema).length(2).superRefine((lenses, context) => {
+    const themes = lenses.map((lens) => lens.theme.toLocaleLowerCase());
+    const questions = lenses.map((lens) => lens.question.toLocaleLowerCase());
+    if (new Set(themes).size !== 2) context.addIssue({ code: "custom", path: ["theme"], message: "Lens themes must be distinct." });
+    if (new Set(questions).size !== 2) context.addIssue({ code: "custom", path: ["question"], message: "Lens questions must be distinct." });
+  }),
+  fortune: trimmedString(FORTUNE_MAX_LENGTH),
   transition: trimmedString(80),
   suggestEnding: z.boolean(),
 }).strict();
@@ -104,6 +119,6 @@ export const publicErrorSchema = z.object({
 export type HistoryItem = z.infer<typeof historyItemSchema>;
 export type RoundRequest = z.infer<typeof roundRequestSchema>;
 export type SummaryRequest = z.infer<typeof summaryRequestSchema>;
-export type RoundPayload = z.infer<typeof roundPayloadSchema>;
+export type DiscoveryPayload = z.infer<typeof discoveryPayloadSchema>;
 export type SummaryPayload = z.infer<typeof summaryPayloadSchema>;
 export type PublicError = z.infer<typeof publicErrorSchema>;

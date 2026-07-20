@@ -1,6 +1,40 @@
 # Hmm… — Two-Day Build Plan
 
-**Status:** All P0 implementation blocks are complete. The Vercel production deployment and live endpoint were verified on 2026-07-20. The deterministic mock rehearsal is complete; the deliberately skipped full cross-viewport/accessibility release pass remains an acknowledged pre-event check.
+## 11. Discovery-led canvas revision
+
+### Task 11.1 — P0: Two-lens discovery rhythm
+
+**Implementation status:** Complete on `dev` — 2026-07-20.
+
+**Observable outcome:** Every round begins with two short question lenses. Opening either reveals its full question and exactly three answers without another request; the user can try the other angle until answering.
+
+**Acceptance criteria:** Contract v2 validates exactly two complete lenses, the mock journey works through either lens, and only the answered lens enters history.
+
+### Task 11.2 — P0: Choice-dependent discovery route
+
+**Implementation status:** Complete on `dev` — 2026-07-20.
+
+**Observable outcome:** The chosen lens creates an upper/lower bend, the chosen answer creates the next upper/middle/lower bend, and unused lenses return to the unchanged substrate.
+
+**Acceptance criteria:** Stable slot identity is preserved, every five-round combination remains within the authored field, and no pan/zoom or physics is introduced.
+
+### Task 11.3 — P0: Direct trail review
+
+**Implementation status:** Complete on `dev` — 2026-07-20.
+
+**Observable outcome:** A committed question or answer bubble can be activated to focus it and open a read-only detail card. Escape and **Back to now** restore the active neighbourhood.
+
+**Acceptance criteria:** Review is keyboard accessible, does not mutate history, and shares the same review state as progress-card anchors.
+
+### Task 11.4 — P1: Contextual fortune-cookie reframes
+
+**Implementation status:** Complete on `dev` — 2026-07-20.
+
+**Observable outcome:** Each discovery includes an amber cookie that reveals a short, path-specific refreshing angle.
+
+**Acceptance criteria:** Live and mock providers return the same validated fortune field; cookies open once, remain visually secondary, and never affect history, summaries, or routing.
+
+**Status:** Release 0.1 remains deployed. The contract-v2 discovery experience, contextual fortunes, direct trail review, deterministic mock journey, checks, and desktop/narrow inspection are complete on `dev`; the live v2 model smoke test and deployment remain pending.
 
 **Purpose:** Build the smallest complete, visually memorable session through demonstrable vertical slices.
 

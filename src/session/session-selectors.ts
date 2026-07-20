@@ -33,7 +33,7 @@ export const selectProgress = (state: SessionState): ProgressView => {
 };
 
 export const selectCanFinish = (state: SessionState) =>
-  state.phase === "round-ready" && state.history.length >= 2 && !state.extensionUsed;
+  (state.phase === "lens-ready" || state.phase === "round-ready") && state.history.length >= 2 && !state.extensionUsed;
 
 export const selectCanExtend = (state: SessionState) =>
   state.phase === "ending" &&

@@ -24,6 +24,7 @@ describe("App interaction guards", () => {
     fireEvent.click(screen.getByRole("button", { name: /Think it through/ }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
+    fireEvent.click(screen.getByRole("button", { name: "Explore What pulls you?" }));
     const possibility = screen.getByRole("button", { name: "Possibility 1: I want more influence" });
     fireEvent.click(possibility);
     fireEvent.click(possibility);
@@ -74,7 +75,7 @@ describe("App interaction guards", () => {
     fireEvent.click(screen.getByRole("button", { name: "Continue with prepared questions" }));
     await act(async () => { await vi.advanceTimersByTimeAsync(10); });
 
-    expect(screen.getByRole("heading", { name: "What makes the role appealing right now?" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Explore What pulls you?" })).toBeVisible();
     expect(screen.getByRole("status")).toHaveTextContent("Continuing with prepared reflection.");
   });
 });

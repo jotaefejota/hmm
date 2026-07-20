@@ -21,7 +21,7 @@ export const CELL_MEMBRANE_GAP = 0.96;
 export const CELL_DIAMETER = CELL_PITCH * CELL_MEMBRANE_GAP;
 
 export const FIELD_COLUMN_COUNT = 14;
-export const FIELD_ROW_COUNT = 13;
+export const FIELD_ROW_COUNT = 21;
 export const FIELD_START_ROW = Math.floor(FIELD_ROW_COUNT / 2);
 
 const COL_STEP = CELL_PITCH * (Math.sqrt(3) / 2);
@@ -66,18 +66,37 @@ export function choiceDelta(choiceIndex: 0 | 1 | 2) {
   return choiceIndex - 1;
 }
 
-export function rowAfterChoices(choiceIndices: readonly (0 | 1 | 2)[]) {
-  return choiceIndices.reduce((row, choiceIndex) => row + choiceDelta(choiceIndex), FIELD_START_ROW);
+export function lensDelta(lensIndex: 0 | 1) {
+  return lensIndex === 0 ? -1 : 1;
 }
 
-export function getQuestionCellId(roundNumber: number, priorChoices: readonly (0 | 1 | 2)[]) {
+export type RouteStep = { lensIndex: 0 | 1; choiceIndex: 0 | 1 | 2 };
+
+export function rowAfterSteps(steps: readonly RouteStep[]) {
+  return steps.reduce(
+    (row, step) => row + lensDelta(step.lensIndex) + choiceDelta(step.choiceIndex),
+    FIELD_START_ROW,
+  );
+}
+
+export function getLensCellIds(roundNumber: number, priorSteps: readonly RouteStep[]) {
+  const baseRow = rowAfterSteps(priorSteps);
   const column = roundNumber * 2 - 1;
-  const row = rowAfterChoices(priorChoices);
-  return idFor(column, row);
+  return [idFor(column, baseRow - 1), idFor(column, baseRow + 1)] as const;
 }
 
-export function getSuggestionCellIds(roundNumber: number, priorChoices: readonly (0 | 1 | 2)[]) {
-  const questionRow = rowAfterChoices(priorChoices);
+export function getFortuneCellId(roundNumber: number, priorSteps: readonly RouteStep[]) {
+  const baseRow = rowAfterSteps(priorSteps);
+  const row = baseRow <= FIELD_START_ROW ? baseRow + 3 : baseRow - 3;
+  return idFor(roundNumber * 2 - 1, row);
+}
+
+export function getQuestionCellId(roundNumber: number, priorSteps: readonly RouteStep[], lensIndex: 0 | 1) {
+  return getLensCellIds(roundNumber, priorSteps)[lensIndex];
+}
+
+export function getSuggestionCellIds(roundNumber: number, priorSteps: readonly RouteStep[], lensIndex: 0 | 1) {
+  const questionRow = rowAfterSteps(priorSteps) + lensDelta(lensIndex);
   const column = roundNumber * 2;
   return [
     idFor(column, questionRow - 1),
@@ -86,17 +105,25 @@ export function getSuggestionCellIds(roundNumber: number, priorChoices: readonly
   ] as const;
 }
 
-export function getHistoryAnswerCellId(
-  history: readonly { round: number; choiceIndex: 0 | 1 | 2 }[],
+export function getHistoryCellId(
+  history: readonly { round: number; lensIndex: 0 | 1; choiceIndex: 0 | 1 | 2 }[],
   stepIndex: number,
+  focusKind: "question" | "answer" = "answer",
 ) {
   if (stepIndex < 0 || stepIndex >= history.length) {
     throw new Error(`History step out of range: ${stepIndex}.`);
   }
-  const priorChoices = history.slice(0, stepIndex).map((step) => step.choiceIndex);
+  const priorSteps = history.slice(0, stepIndex);
   const step = history[stepIndex];
-  return getSuggestionCellIds(step.round, priorChoices)[step.choiceIndex];
+  return focusKind === "question"
+    ? getQuestionCellId(step.round, priorSteps, step.lensIndex)
+    : getSuggestionCellIds(step.round, priorSteps, step.lensIndex)[step.choiceIndex];
 }
+
+export const getHistoryAnswerCellId = (
+  history: readonly { round: number; lensIndex: 0 | 1; choiceIndex: 0 | 1 | 2 }[],
+  stepIndex: number,
+) => getHistoryCellId(history, stepIndex, "answer");
 
 export function getCellSlot(id: string) {
   const slot = CELL_SLOTS.find((candidate) => candidate.id === id);

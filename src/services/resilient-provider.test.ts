@@ -4,7 +4,7 @@ import { ResilientReflectionProvider } from "./resilient-provider";
 import { ReflectionProviderError } from "./reflection-provider";
 
 const roundRequest = {
-  contractVersion: "1" as const,
+  contractVersion: "2" as const,
   kind: "round" as const,
   dilemma: TEAM_LEAD_DILEMMA,
   roundNumber: 1 as const,

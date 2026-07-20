@@ -1,14 +1,15 @@
 # Hmm…
 
-Hmm… is a curious companion for thinking through a bounded decision. It asks one useful question at a time, offers exactly three possible directions, and leaves the chosen path visible without deciding for the user.
+Hmm… is a curious companion for thinking through a bounded decision. It offers two question lenses, opens the chosen one into exactly three possible responses, and leaves the selected path visible without deciding for the user.
 
-**Live demo:** [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/)
+**Live 0.1 demo:** [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). The `dev` branch contains the contract-v2 discovery-lens experience described below and requires a new deployment before it appears at that URL.
 
 ## What is implemented
 
 - a complete four-to-five-round reflection session;
 - one persistent cellular field whose camera follows choice-dependent routes;
 - a stable **Your thread** card containing the original dilemma and committed answers;
+- two question lenses per round, direct trail-bubble review, and contextual fortune-cookie reframes;
 - early finishing, a structured summary, one optional remaining-doubt extension, and restart;
 - deterministic mock content, live OpenAI generation, and automatic fallback;
 - a local, deterministic **Continue in ChatGPT** handoff;

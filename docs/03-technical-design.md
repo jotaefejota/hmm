@@ -1,5 +1,9 @@
 # Hmm… — Technical Design
 
+> **Contract v2 revision:** A round request returns one discovery payload containing exactly two complete lenses. Each lens includes a short theme, one question, and exactly three answers. Lens switching is local state work and never performs a second request. The stable lattice route is derived from both the chosen lens index and answer index.
+
+The validated discovery payload includes one contextual `fortune` string. Projection maps it to a deterministic nearby cell-slot ID; opened state remains component-local and deliberately absent from canonical session history. Mock and live providers return the same field.
+
 **Status:** Implemented architecture; production deployment verified 2026-07-20
 
 **Depends on:** `docs/01-product-and-mvp.md`, `docs/02-experience-design.md`, and `docs/04-ai-contract.md`

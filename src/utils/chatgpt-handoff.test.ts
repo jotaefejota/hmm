@@ -7,8 +7,10 @@ describe("buildChatGptPrompt", () => {
     const scenario = mockDataset.scenarios[0];
     const history = scenario.demoAnswerIndexes.map((answerIndex, index) => ({
       round: index + 1,
-      question: scenario.rounds[index].question,
-      answer: scenario.rounds[index].answers[answerIndex],
+      lensTheme: scenario.discoveries[index].lenses[scenario.demoLensIndexes[index]].theme,
+      lensIndex: scenario.demoLensIndexes[index] as 0 | 1,
+      question: scenario.discoveries[index].lenses[scenario.demoLensIndexes[index]].question,
+      answer: scenario.discoveries[index].lenses[scenario.demoLensIndexes[index]].answers[answerIndex],
       answerSource: "suggested" as const,
       choiceIndex: answerIndex as 0 | 1 | 2,
     }));

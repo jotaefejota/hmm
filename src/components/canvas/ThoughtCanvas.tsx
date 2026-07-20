@@ -9,10 +9,13 @@ import { ProgressCard } from "../session/ProgressCard";
 import { CustomAnswerComposer } from "../session/CustomAnswerComposer";
 import { ClarityPrompt } from "../session/ClarityPrompt";
 import { RequestErrorPanel } from "../session/RequestErrorPanel";
+import { TrailReviewCard } from "../session/TrailReviewCard";
 
 type ThoughtCanvasProps = {
   state: SessionState;
   onSelectAnswer: (answer: string) => void;
+  onOpenLens: (lensIndex: 0 | 1) => void;
+  onReturnToLenses: () => void;
   onSelectCustomAnswer: (answer: string) => void;
   onOpenCustomAnswer: () => void;
   onCloseCustomAnswer: () => void;
@@ -38,7 +41,7 @@ function TransitionMoment({ state, onComplete }: { state: SessionState; onComple
         onAnimationComplete={onComplete}
       >
         <span aria-hidden="true">✦</span>
-        <p>{state.pendingRound?.transition ?? "Following that thread…"}</p>
+        <p>{state.pendingDiscovery?.transition ?? "Following that thread…"}</p>
       </motion.div>
     </div>
   );
@@ -48,11 +51,12 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
   const { state } = props;
   const questionRef = useRef<HTMLHeadingElement>(null);
   const progress = selectProgress(state);
-  const { reviewCellId, isReviewing, focusHistoryAnswer, clearReviewFocus } = useTrailReviewFocus(state);
+  const { review, reviewCellId, isReviewing, focusHistoryAnswer, focusHistoryNode, clearReviewFocus } = useTrailReviewFocus(state);
   const projection = projectCanvas({
     dilemma: state.dilemma,
     history: state.history,
-    currentRound: state.currentRound,
+    currentDiscovery: state.currentDiscovery,
+    selectedLensIndex: state.selectedLensIndex,
     phase: state.phase,
     selectedAnswer: state.selectedAnswer,
     focusOverrideCellId: reviewCellId,
@@ -60,9 +64,9 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
 
   useEffect(() => {
     if (state.phase === "round-ready" && !isReviewing) questionRef.current?.focus();
-  }, [state.phase, state.currentRound?.question, isReviewing]);
+  }, [state.phase, state.selectedLensIndex, isReviewing]);
 
-  const fieldPhase = state.phase === "round-ready" || state.phase === "writing-custom-answer" || state.phase === "answer-selected"
+  const fieldPhase = state.phase === "lens-ready" || state.phase === "round-ready" || state.phase === "writing-custom-answer" || state.phase === "answer-selected"
     ? state.phase
     : state.phase === "transitioning" || state.phase === "clarity-offered"
       ? state.phase
@@ -89,9 +93,18 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
           clearReviewFocus();
           props.onSelectAnswer(answer);
         }}
+        onOpenLens={(lensIndex) => {
+          clearReviewFocus();
+          props.onOpenLens(lensIndex);
+        }}
+        onReviewNode={focusHistoryNode}
         onCommit={props.onCommitSelection}
         reviewCellId={reviewCellId}
       />
+
+      {state.phase === "round-ready" || state.phase === "writing-custom-answer" ? (
+        <button className="other-angle-action" type="button" onClick={props.onReturnToLenses}>Try the other angle</button>
+      ) : null}
 
       {state.phase === "round-ready" || state.phase === "writing-custom-answer" ? (
         <button className="custom-answer-hint" type="button" onClick={props.onOpenCustomAnswer}>None quite fit</button>
@@ -118,6 +131,7 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
           I think I’ve got it
         </button>
       ) : null}
+      {review ? <TrailReviewCard step={state.history[review.stepIndex]} onClose={clearReviewFocus} /> : null}
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import type { RoundPayload, RoundRequest, SummaryPayload, SummaryRequest, PublicError } from "../../shared/ai-contract";
+import type { DiscoveryPayload, RoundRequest, SummaryPayload, SummaryRequest, PublicError } from "../../shared/ai-contract";
 
 export type ContentNotice = {
   code: PublicError["code"] | string;
@@ -12,7 +12,7 @@ export type ContentResult<T> = {
 };
 
 export interface ReflectionProvider {
-  getRound(input: RoundRequest, signal?: AbortSignal): Promise<ContentResult<RoundPayload>>;
+  getRound(input: RoundRequest, signal?: AbortSignal): Promise<ContentResult<DiscoveryPayload>>;
   getSummary(input: SummaryRequest, signal?: AbortSignal): Promise<ContentResult<SummaryPayload>>;
 }
 

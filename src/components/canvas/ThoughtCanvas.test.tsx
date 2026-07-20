@@ -1,125 +1,71 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { mockDataset, TEAM_LEAD_DILEMMA } from "../../content/mock-dataset";
-import { createInitialSessionState } from "../../session/session-types";
+import { createInitialSessionState, type ReflectionStep } from "../../session/session-types";
 import { ThoughtCanvas } from "./ThoughtCanvas";
 
-describe("ThoughtCanvas", () => {
-  it("renders the first molecule and synchronized initial progress", () => {
-    const round = mockDataset.scenarios[0].rounds[0];
-    const state = {
-      ...createInitialSessionState(1),
-      phase: "round-ready" as const,
-      dilemma: TEAM_LEAD_DILEMMA,
-      currentRound: round,
-      dataSource: "mock" as const,
-    };
-    render(
-      <ThoughtCanvas
-        state={state}
-        onSelectAnswer={vi.fn()}
-        onSelectCustomAnswer={vi.fn()}
-        onOpenCustomAnswer={vi.fn()}
-        onCloseCustomAnswer={vi.fn()}
-        onCommitSelection={vi.fn()}
-        onTransitionComplete={vi.fn()}
-        onContinueAfterClarity={vi.fn()}
-        onFinish={vi.fn()}
-        onRetry={vi.fn()}
-        onUsePrepared={vi.fn()}
-        onRestart={vi.fn()}
-      />,
-    );
+const scenario = mockDataset.scenarios[0];
+const callbacks = () => ({
+  onSelectAnswer: vi.fn(), onOpenLens: vi.fn(), onReturnToLenses: vi.fn(), onSelectCustomAnswer: vi.fn(),
+  onOpenCustomAnswer: vi.fn(), onCloseCustomAnswer: vi.fn(), onCommitSelection: vi.fn(),
+  onTransitionComplete: vi.fn(), onContinueAfterClarity: vi.fn(), onFinish: vi.fn(),
+  onRetry: vi.fn(), onUsePrepared: vi.fn(), onRestart: vi.fn(),
+});
+const historyStep = (round = 1): ReflectionStep => {
+  const lens = scenario.discoveries[round - 1].lenses[0];
+  return { round, lensTheme: lens.theme, lensIndex: 0, question: lens.question, answer: lens.answers[0], answerSource: "suggested", choiceIndex: 0 };
+};
 
-    expect(screen.getByRole("heading", { name: round.question })).toBeInTheDocument();
+describe("ThoughtCanvas discovery", () => {
+  it("shows exactly two question lenses before answers", async () => {
+    const props = callbacks();
+    const state = { ...createInitialSessionState(1), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, currentDiscovery: scenario.discoveries[0], dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...props} />);
+    const lenses = screen.getAllByRole("button", { name: /Explore/ });
+    expect(lenses).toHaveLength(2);
+    expect(screen.queryAllByRole("button", { name: /^Possibility/ })).toHaveLength(0);
+    await userEvent.click(lenses[1]);
+    expect(props.onOpenLens).toHaveBeenCalledWith(1);
+  });
+
+  it("opens the contextual fortune without changing the reflection", async () => {
+    const state = { ...createInitialSessionState(1), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, currentDiscovery: scenario.discoveries[0], dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...callbacks()} />);
+    const fortune = screen.getByRole("button", { name: "Open a refreshing angle" });
+    await userEvent.click(fortune);
+    expect(screen.getByRole("button", { name: scenario.discoveries[0].fortune })).toBeVisible();
+    expect(screen.getAllByRole("button", { name: /Explore/ })).toHaveLength(2);
+  });
+
+  it("shows one opened question, three answers, and a local return action", async () => {
+    const props = callbacks();
+    const lens = scenario.discoveries[0].lenses[1];
+    const state = { ...createInitialSessionState(1), phase: "round-ready" as const, dilemma: TEAM_LEAD_DILEMMA, currentDiscovery: scenario.discoveries[0], selectedLensIndex: 1 as const, dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...props} />);
+    expect(screen.getByRole("heading", { name: lens.question })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /^Possibility/ })).toHaveLength(3);
-    expect(screen.getByRole("button", { name: "None quite fit" })).toBeInTheDocument();
-    expect(screen.getByText("You brought")).toBeInTheDocument();
-    expect(screen.getByText("Starting out")).toBeInTheDocument();
-    expect(screen.getByText("0 of up to 5")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Try the other angle" }));
+    expect(props.onReturnToLenses).toHaveBeenCalledOnce();
   });
 
-  it("keeps every committed question and answer as a text-bearing history node", () => {
-    const scenario = mockDataset.scenarios[0];
-    const history = scenario.rounds.slice(0, 2).map((round, index) => ({
-      round: index + 1,
-      question: round.question,
-      answer: round.answers[0],
-      answerSource: "suggested" as const,
-      choiceIndex: 0 as const,
-    }));
-    const state = {
-      ...createInitialSessionState(3),
-      phase: "round-ready" as const,
-      dilemma: TEAM_LEAD_DILEMMA,
-      history,
-      currentRound: scenario.rounds[2],
-      dataSource: "mock" as const,
-    };
-    const { container } = render(
-      <ThoughtCanvas
-        state={state}
-        onSelectAnswer={vi.fn()}
-        onSelectCustomAnswer={vi.fn()}
-        onOpenCustomAnswer={vi.fn()}
-        onCloseCustomAnswer={vi.fn()}
-        onCommitSelection={vi.fn()}
-        onTransitionComplete={vi.fn()}
-        onContinueAfterClarity={vi.fn()}
-        onFinish={vi.fn()}
-        onRetry={vi.fn()}
-        onUsePrepared={vi.fn()}
-        onRestart={vi.fn()}
-      />,
-    );
-
-    const historyNodes = container.querySelectorAll("[data-history-node]");
-    expect(historyNodes).toHaveLength(5);
-    expect(container.querySelector('[data-history-node="question-1"]')).toHaveTextContent(scenario.rounds[0].question);
-    expect(container.querySelector('[data-history-node="answer-2"]')).toHaveTextContent(scenario.rounds[1].answers[0]);
+  it("opens read-only detail by activating a historical bubble", async () => {
+    const props = callbacks();
+    const step = historyStep();
+    const state = { ...createInitialSessionState(2), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, history: [step], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...props} />);
+    await userEvent.click(screen.getByRole("button", { name: `Review round 1: ${step.answer}` }));
+    expect(screen.getByRole("complementary", { name: "Review round 1" })).toHaveTextContent(step.question);
+    expect(screen.getByRole("complementary", { name: "Review round 1" })).toHaveTextContent(step.answer);
   });
 
-  it("keeps the same outer cell elements when a later round takes focus", () => {
-    const scenario = mockDataset.scenarios[0];
-    const callbacks = {
-      onSelectAnswer: vi.fn(),
-      onSelectCustomAnswer: vi.fn(),
-      onOpenCustomAnswer: vi.fn(),
-      onCloseCustomAnswer: vi.fn(),
-      onCommitSelection: vi.fn(),
-      onTransitionComplete: vi.fn(),
-      onContinueAfterClarity: vi.fn(),
-      onFinish: vi.fn(),
-      onRetry: vi.fn(),
-      onUsePrepared: vi.fn(),
-      onRestart: vi.fn(),
-    };
-    const firstState = {
-      ...createInitialSessionState(1),
-      phase: "round-ready" as const,
-      dilemma: TEAM_LEAD_DILEMMA,
-      currentRound: scenario.rounds[0],
-      dataSource: "mock" as const,
-    };
-    const { container, rerender } = render(<ThoughtCanvas state={firstState} {...callbacks} />);
-    const originalCells = Array.from(container.querySelectorAll("[data-cell-slot]"));
-
-    const secondState = {
-      ...firstState,
-      history: [{
-        round: 1,
-        question: scenario.rounds[0].question,
-        answer: scenario.rounds[0].answers[1],
-        answerSource: "suggested" as const,
-        choiceIndex: 1 as const,
-      }],
-      currentRound: scenario.rounds[1],
-      activeRequestId: 2,
-    };
-    rerender(<ThoughtCanvas state={secondState} {...callbacks} />);
-    const laterCells = Array.from(container.querySelectorAll("[data-cell-slot]"));
-
-    expect(laterCells).toHaveLength(originalCells.length);
-    expect(laterCells.every((cell, index) => cell === originalCells[index])).toBe(true);
+  it("keeps stable outer cells across discovery changes", () => {
+    const props = callbacks();
+    const first = { ...createInitialSessionState(1), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, currentDiscovery: scenario.discoveries[0], dataSource: "mock" as const };
+    const { container, rerender } = render(<ThoughtCanvas state={first} {...props} />);
+    const cells = Array.from(container.querySelectorAll("[data-cell-slot]"));
+    rerender(<ThoughtCanvas state={{ ...first, history: [historyStep()], currentDiscovery: scenario.discoveries[1], activeRequestId: 2 }} {...props} />);
+    const later = Array.from(container.querySelectorAll("[data-cell-slot]"));
+    expect(later.every((cell, index) => cell === cells[index])).toBe(true);
   });
 });

@@ -1,5 +1,13 @@
 # Hmm… — Complete Session Experience Design
 
+## Discovery-led round rhythm
+
+The active neighbourhood begins with two violet question-lens cells carrying short theme labels, not a fully revealed question. Choosing a lens transforms that same cell into the active Hmm… question and reveals exactly three neighbouring answer cells. Until an answer is committed, **Try the other angle** restores both lenses without another content request. Once an answer is chosen, the unused lens clears back to the substrate and only the chosen question and answer remain marked.
+
+Committed question and answer cells are buttons in review mode. Activating either focuses that cell and opens one read-only trail card containing the lens theme, full question, and chosen answer. **Back to now** or Escape restores the current neighbourhood. Review never edits history, resurrects an unused lens, or enables free pan and zoom.
+
+Each active discovery places one small amber fortune-cookie cell near its two lenses. Opening it once reveals a short, surprising reframing grounded in the original dilemma and committed path. Cookies remain subordinate to lenses, never create connectors, and do not enter the progress card or committed AI history.
+
 **Status:** Experience definition before implementation
 
 **Depends on:** `docs/01-product-and-mvp.md`
@@ -10,7 +18,7 @@
 
 The session should feel like a thought becoming visible.
 
-The user begins with one unresolved dilemma. Hmm… introduces one useful question, then three possible ways to respond. Each selection marks one cell in a stable field and adds one short segment to a living path. The interface never tries to display every possible branch. It shows only the route the user is actually taking, clears unused content from the field, and gently recognizes when the route has produced enough clarity to pause.
+The user begins with one unresolved dilemma. Hmm… introduces two useful question lenses; the selected lens opens into one question and three possible ways to respond. Each committed answer marks cells in a stable field and adds one short segment to a living path. The interface never displays every possible branch. It shows only the route the user is actually taking, clears unused content from the field, and gently recognizes when the route has produced enough clarity to pause.
 
 The experience is not a chat transcript arranged in circles. It is a focused reflection with spatial memory: the active thought is unmistakable, the chosen path is still present, and everything else makes room.
 

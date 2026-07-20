@@ -1,8 +1,10 @@
-import type { RoundPayload, SummaryPayload } from "../../shared/ai-contract";
+import type { DiscoveryPayload, SummaryPayload } from "../../shared/ai-contract";
 import type { PublicError } from "../../shared/ai-contract";
 
 export type ReflectionStep = {
   round: number;
+  lensTheme: string;
+  lensIndex: 0 | 1;
   question: string;
   answer: string;
   answerSource: "suggested" | "custom";
@@ -13,6 +15,7 @@ export type SessionPhase =
   | "welcome"
   | "entering"
   | "generating-round"
+  | "lens-ready"
   | "round-ready"
   | "writing-custom-answer"
   | "answer-selected"
@@ -38,9 +41,10 @@ export type SessionState = {
   phase: SessionPhase;
   dilemma: string;
   history: ReflectionStep[];
-  currentRound: RoundPayload | null;
+  currentDiscovery: DiscoveryPayload | null;
+  selectedLensIndex: 0 | 1 | null;
   selectedAnswer: SelectedAnswer | null;
-  pendingRound: RoundPayload | null;
+  pendingDiscovery: DiscoveryPayload | null;
   transitionFinished: boolean;
   summary: SummaryPayload | null;
   finishReason: FinishReason | null;
@@ -56,11 +60,13 @@ export type SessionEvent =
   | { type: "OPEN_ENTRY" }
   | { type: "CANCEL_ENTRY" }
   | { type: "SUBMIT_DILEMMA"; dilemma: string; requestId: number }
-  | { type: "ROUND_LOADED"; round: RoundPayload; requestId: number }
+  | { type: "DISCOVERY_LOADED"; discovery: DiscoveryPayload; requestId: number }
+  | { type: "OPEN_LENS"; lensIndex: 0 | 1 }
+  | { type: "RETURN_TO_LENSES" }
   | { type: "OPEN_CUSTOM_ANSWER" }
   | { type: "CLOSE_CUSTOM_ANSWER" }
   | { type: "SELECT_ANSWER"; answer: SelectedAnswer; requestId: number }
-  | { type: "NEXT_ROUND_LOADED"; round: RoundPayload; requestId: number }
+  | { type: "NEXT_DISCOVERY_LOADED"; discovery: DiscoveryPayload; requestId: number }
   | { type: "COMMIT_SELECTION" }
   | { type: "TRANSITION_COMPLETE" }
   | { type: "CONTINUE_AFTER_CLARITY" }
@@ -75,9 +81,10 @@ export const createInitialSessionState = (activeRequestId = 0): SessionState => 
   phase: "welcome",
   dilemma: "",
   history: [],
-  currentRound: null,
+  currentDiscovery: null,
+  selectedLensIndex: null,
   selectedAnswer: null,
-  pendingRound: null,
+  pendingDiscovery: null,
   transitionFinished: false,
   summary: null,
   finishReason: null,

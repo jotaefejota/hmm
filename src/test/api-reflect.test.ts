@@ -15,7 +15,7 @@ vi.mock("../../api/lib/openai-reflect", () => ({
 import handler from "../../api/reflect";
 
 const roundRequest = {
-  contractVersion: "1",
+  contractVersion: "2",
   kind: "round",
   dilemma: "Should I take the role?",
   roundNumber: 1,
@@ -26,20 +26,23 @@ const roundRequest = {
 } as const;
 
 const summaryRequest = {
-  contractVersion: "1",
+  contractVersion: "2",
   kind: "summary",
   dilemma: "Should I take the role?",
   history: [
-    { round: 1, question: "What matters most?", answer: "Creative work", answerSource: "suggested" },
-    { round: 2, question: "What might change?", answer: "My schedule", answerSource: "suggested" },
+    { round: 1, lensTheme: "What matters?", lensIndex: 0, question: "What matters most?", answer: "Creative work", answerSource: "suggested" },
+    { round: 2, lensTheme: "What changes?", lensIndex: 1, question: "What might change?", answer: "My schedule", answerSource: "suggested" },
   ],
   finishReason: "user",
 } as const;
 
 const roundPayload = {
-  kind: "round",
-  question: "What matters most right now?",
-  answers: ["Creative work", "More influence", "Time to decide"],
+  kind: "discovery",
+  lenses: [
+    { theme: "What matters?", question: "What matters most right now?", answers: ["Creative work", "More influence", "Time to decide"] },
+    { theme: "What changes?", question: "What could change if you accept?", answers: ["My schedule", "My identity", "My relationships"] },
+  ],
+  fortune: "Would the title matter if nobody else knew you had it?",
   transition: "Let’s stay with what has weight.",
   suggestEnding: false,
 } as const;

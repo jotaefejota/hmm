@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   publicErrorSchema,
-  roundPayloadSchema,
+  discoveryPayloadSchema,
   roundRequestSchema,
   summaryPayloadSchema,
   summaryRequestSchema,
@@ -83,7 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if ((body as { kind: string }).kind === "round") {
       const request = roundRequestSchema.parse(body);
-      const payload = roundPayloadSchema.parse(await generateRound(request));
+      const payload = discoveryPayloadSchema.parse(await generateRound(request));
       setNoStore(res);
       res.status(200).json(payload);
       return;
