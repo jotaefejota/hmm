@@ -46,7 +46,6 @@ export function AppShell(props: AppShellProps) {
         <a className="wordmark" href="/" aria-label="Hmm home">
           Hmm<span aria-hidden="true">…</span>
         </a>
-        <span className="mode-chip">Demo path</span>
       </header>
 
       {props.notice ? <RecoveryNotice message={props.notice.message} /> : null}
