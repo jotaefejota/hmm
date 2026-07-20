@@ -71,12 +71,13 @@ Scaffolding must provide and preserve these commands:
 ## Essential visual rules
 
 - One active Hmm… question, exactly three generated suggestions, and one separate **None quite fit** action.
+- Keep a stable progress card showing the original dilemma, selected answers, round count, and a qualitative session status derived from state.
 - Violet belongs to Hmm…; amber belongs to the user; neutral cells are unchosen possibilities. Never rely on colour alone.
 - Only the selected path persists. Remove dead branches and avoid crossed semantic connections.
 - Use deterministic authored positions and controlled transforms—no physics, random layout, or pan/zoom canvas.
 - Questions dominate suggestions through size, label, border, and motion.
 - Previous nodes become quieter but the chosen path remains understandable.
-- Do not display percentages, confidence, probability, or “correct” green states.
+- Do not display percentages, certainty/confidence scores, probability, or “correct” green states. Session progress uses named phases, never a judgment of decision quality.
 - Narrow layouts become a vertical thread; they are not a scaled-down desktop graph.
 - Respect `prefers-reduced-motion`; meaning must survive with simple fades.
 
@@ -95,4 +96,4 @@ Run every check relevant to the changed area, then run `npm run check`. Also ver
 
 ## Definition of done
 
-A task is done only when its observable outcome and acceptance criteria work, relevant tests exist and pass, `npm run check` passes, the full mock demo still works, accessibility and responsive behavior have not regressed, no secret can reach the client, and any changed contract is reflected in the documentation. “It compiles on my path” is not done.
+A task is done only when its observable outcome and acceptance criteria work, relevant tests exist and pass, `npm run check` passes, the full mock demo still works, the progress card agrees with canonical session history, accessibility and responsive behavior have not regressed, no secret can reach the client, and any changed contract is reflected in the documentation. “It compiles on my path” is not done.

@@ -97,6 +97,7 @@ No package versions are specified before the project is scaffolded. Install curr
 │   │   │   ├── WelcomeSeed.tsx
 │   │   │   ├── AnswerCluster.tsx
 │   │   │   ├── CustomAnswerComposer.tsx
+│   │   │   ├── ProgressCard.tsx
 │   │   │   ├── ClarityPrompt.tsx
 │   │   │   ├── GenerationStatus.tsx
 │   │   │   └── SessionActions.tsx
@@ -151,6 +152,7 @@ This is an intended boundary map, not a requirement to create an empty file for 
 | `MembraneBackground` | Renders decorative, inert cellular texture | Semantic nodes or continuously simulated motion |
 | `AnswerCluster` | Renders exactly three suggestions and the separate custom-answer action | Generating new content |
 | `CustomAnswerComposer` | Captures and validates the 160-character custom answer | A fourth suggested answer |
+| `ProgressCard` | Displays the original dilemma, committed answers, round count, and derived qualitative status | Duplicate history state, AI confidence, or graph navigation |
 | `GenerationStatus` | Shows initial/next/summary loading state | Fake percentages |
 | `ClarityPrompt` | Offers ending or one more core question | Deciding that clarity exists |
 | `ResultLens` | Displays the four-part summary and handoff actions | Reconstructing the summary from canvas nodes |
@@ -216,6 +218,8 @@ type SessionState = {
 
 `useReducer` is sufficient because this state is local, synchronous except for two service methods, and never shared between browser tabs or persisted.
 
+The progress card adds no canonical state. A selector derives its items and status from `dilemma`, `history`, `phase`, `currentRound.suggestEnding`, and `extensionUsed`. Tests must prove that it never includes `selectedAnswer` before commitment or an unchosen suggestion.
+
 ## 5. Representation of nodes and connections
 
 The canvas consumes a derived projection rather than the raw session object.
@@ -270,7 +274,8 @@ Use four authored irregular `border-radius` presets. Choose one by hashing the s
 
 For windows at least 900 px wide:
 
-- reserve `x = 0.06–0.40` for the compressed selected trail;
+- reserve a 280–320 px upper-left rectangle for the progress card and keep semantic nodes outside it;
+- reserve `x = 0.06–0.40` below the progress-card exclusion rectangle for the compressed selected trail;
 - place the active question near `(0.54, 0.50)`;
 - place the three suggestions near `(0.75, 0.23)`, `(0.82, 0.50)`, and `(0.74, 0.78)`;
 - distribute prior nodes along one shallow authored curve in the trail band;
@@ -284,6 +289,7 @@ Past-node positions can be interpolated along one path based on their index and 
 
 Below 900 px, do not reuse the wide coordinate map:
 
+- render the progress card as a disclosure in normal flow above the trail strip;
 - render history as a compact horizontal trail strip in normal document flow;
 - render the active question as a full-width cell;
 - stack the three suggestion buttons vertically;
@@ -338,6 +344,7 @@ The decision trail is a projection of `dilemma + history + currentRound`, rebuil
 - Old labels may be visually condensed on wide canvas, but remain available in the DOM and on focus.
 - At the ending, reuse the same trail projection with an `ending` layout; do not build a second history component for desktop.
 - The narrow `TrailStrip` is a separate rendering of the same projection, not separate state.
+- `ProgressCard` reads the same ordered `history` selector as the trail; it is a textual index, not a parallel record.
 
 No trail node is draggable or editable in P0. Clicking old nodes may expose their full label for accessibility, but it does not navigate or mutate the session.
 
@@ -443,6 +450,7 @@ The server may log a request ID, error code, duration, and model name. It should
 | Camera movement | Shift the finite projection inside a clipped stage, not a pan/zoom viewport |
 | Trail compression | Recompute scale and coordinates from node age, not a force layout |
 | Clarity detection | Strict model boolean after round 4 plus a hard round-5 stop, not a confidence score |
+| Sense of progress | Client-derived round count and named status in a stable card, not an AI-generated certainty score |
 | Demo intelligence | One curated fixture and one generic fixture through the production data interface |
 | ChatGPT handoff | Build text locally, copy it, and open a new tab; no cross-product session transfer |
 
@@ -462,6 +470,7 @@ The visual trick is consistency: if the same node always produces the same shape
 | Public endpoint is abused | Unexpected request volume or spend | Same-origin, body limits, provider/platform spend controls | Remove live key and deploy mock-only build |
 | Vercel function setup delays the team | Local function proxy or deployment differs from Vite dev server | Keep function isolated behind `LiveReflectionProvider` | Run the entire demo in mock mode; add live endpoint after visual flow |
 | Narrow layout feels like a different app | Canvas becomes clipped or text becomes tiny | Purpose-built vertical thread and shared semantic styles | Use the narrow layout at all widths for the demo |
+| Progress card crowds the canvas | Active or historical nodes render under the card | Reserve a measured exclusion rectangle in wide layout | Collapse the card to its status row until the ending |
 | Decorative membrane hurts performance | Blur or paint time causes visible frame drops | Static asset, low layer count, transform/opacity only | Replace with a flat gradient and a few fixed outlines |
 | Restart or retry races with old fetch | Old question appears in a new session | Abort requests and compare request IDs before dispatch | Ignore all responses whose session generation changed |
 | ChatGPT tab is blocked | Clipboard succeeds but browser blocks delayed `window.open` | Open a blank tab synchronously on click, then copy/navigate | Reveal prompt in an on-page copy panel |
@@ -470,7 +479,7 @@ The visual trick is consistency: if the same node always produces the same shape
 ## Two-day build order
 
 1. Reducer, schemas, full mock session, and static narrow layout.
-2. Wide deterministic projection with HTML nodes and SVG trail.
+2. Wide deterministic projection with HTML nodes, SVG trail, and the derived progress card.
 3. Essential selection/transition/ending animations.
 4. Result lens and ChatGPT handoff.
 5. Serverless endpoint and live provider.

@@ -57,6 +57,8 @@ The primary action is **Think it through**. It stays disabled until the input co
 
 After submission, the user’s wording becomes the permanent seed node for the session. It is never silently rewritten.
 
+At the same moment, a compact card titled **Your thread** appears in a stable side area. It shows the original dilemma and starts with **0 of up to 5 · Starting out**. This card remains throughout exploration and the ending.
+
 ### 2.3 Generate the first turn
 
 The seed contracts slightly and moves off-centre. A fine connector grows toward an empty violet outline. Inside it, a short status cycles no more than once:
@@ -79,6 +81,8 @@ The user can:
 - restart from a quiet menu action.
 
 Selecting an answer is a commitment for this linear MVP. The node changes from a suggestion into a user node, receives a check mark, and becomes connected to the question. The two unchosen suggestions soften and dissolve. The selected answer then becomes the launch point for the next question.
+
+When the selection commits, the progress card appends that answer once under **What you’ve chosen so far** and updates its round/status line. The card never updates on hover, focus, or the temporary pressed state.
 
 ### 2.5 Progress through the path
 
@@ -135,6 +139,8 @@ The ending actions are:
 
 An explicitly resumed question does not violate the five-round automatic stop: Hmm… has already paused and will not continue without the user asking it to.
 
+The progress card remains visible beside the result lens, changes its status to **Ready to reflect**, and preserves the exact ordered choices. It does not repeat the generated summary.
+
 ## 3. Required states
 
 | State | What is visible | Available action | Exit condition |
@@ -154,6 +160,33 @@ An explicitly resumed question does not violate the five-round automatic stop: H
 | **Unrecoverable error** | Existing path plus concise error card | Try again; start over; copy current path if any | Retry, reset, or manual preservation |
 
 ### State-specific interaction details
+
+#### Persistent progress card
+
+The progress card is a stable UI control, not a node and not a separate state. Its content is derived from the canonical dilemma, committed history, current phase, and ending signal.
+
+Content:
+
+- heading: **Your thread**;
+- label: **You’re thinking through**;
+- the original dilemma, unchanged;
+- label: **What you’ve chosen so far**;
+- an ordered list of committed answer text, using a small check marker;
+- a factual round count: **{completed} of up to 5**;
+- one qualitative session status.
+
+Status rules:
+
+| Condition | Status |
+| --- | --- |
+| Dilemma submitted, no committed answer | **Starting out** |
+| One committed answer | **Exploring** |
+| Two, three, or four committed answers without an ending signal | **Connecting the dots** |
+| Four answers and `suggestEnding` is true | **A direction is forming** |
+| Ending or summary is visible | **Ready to reflect** |
+| One user-requested extension is active | **Looking once more** |
+
+These labels describe where the session is, not how certain the user is or how good the decision may be. The card must never show a certainty, confidence, clarity, completion, or probability score.
 
 #### Writing a different answer
 
@@ -260,7 +293,7 @@ Green is intentionally avoided as the main selected/result colour because it com
 - every selected question/answer pair as a continuous path;
 - the initial dilemma, either on the canvas or represented in the trail minimap;
 - **I think I’ve got it** from round 2 onward;
-- a quiet round indicator such as **2 of up to 5** for accessibility and expectation-setting.
+- the **Your thread** progress card, containing the unchanged dilemma, every committed answer exactly once, and a quiet round/status line such as **2 of up to 5 · Connecting the dots**.
 
 ### What fades after selection
 
@@ -280,7 +313,7 @@ Green is intentionally avoided as the main selected/result colour because it com
 
 ### At the ending
 
-The complete selected path remains visible as context, occupying roughly one-third of the desktop composition or a compact horizontal strip on narrow screens. It is subdued, not erased. The result lens receives primary focus. Unchosen suggestions are absent.
+The complete selected path remains visible as context, occupying roughly one-third of the desktop composition or a compact horizontal strip on narrow screens. The progress card remains available with **Ready to reflect** and the ordered choices. Both are subdued relative to the result lens, which receives primary focus. Unchosen suggestions are absent.
 
 ## 7. Complete four-round demo microcopy
 
@@ -300,6 +333,8 @@ The complete selected path remains visible as context, occupying roughly one-thi
 
 **Primary action:** Think it through
 
+**Progress card:** Your thread · 0 of up to 5 · Starting out
+
 ### Initial generation
 
 **Status:** Hmm… where’s the useful edge?
@@ -318,6 +353,8 @@ The complete selected path remains visible as context, occupying roughly one-thi
 
 **Selected:** I want more influence.
 
+**Progress card:** 1 of up to 5 · Exploring · I want more influence
+
 **Transition whisper:** So influence matters.
 
 ### Round 2 — surface the cost
@@ -333,6 +370,8 @@ The complete selected path remains visible as context, occupying roughly one-thi
 **Alternative action:** None quite fit
 
 **Selected:** Making things myself.
+
+**Progress card:** 2 of up to 5 · Connecting the dots · I want more influence · Making things myself
 
 **Persistent finish action appears:** I think I’ve got it
 
@@ -352,6 +391,8 @@ The complete selected path remains visible as context, occupying roughly one-thi
 
 **Selected:** Much more appealing.
 
+**Progress card:** 3 of up to 5 · Connecting the dots · I want more influence · Making things myself · Much more appealing
+
 **Transition whisper:** Hmm… then the role itself may not be the problem.
 
 ### Round 4 — make the uncertainty concrete
@@ -367,6 +408,8 @@ The complete selected path remains visible as context, occupying roughly one-thi
 **Alternative action:** None quite fit
 
 **Selected:** Whether the role is flexible.
+
+**Progress card:** 4 of up to 5 · A direction is forming · I want more influence · Making things myself · Much more appealing · Whether the role is flexible
 
 ### Enough clarity
 
@@ -407,6 +450,8 @@ The complete selected path remains visible as context, occupying roughly one-thi
 
 **Handoff confirmation:** Context copied. Paste it into ChatGPT when the new tab opens.
 
+**Progress card:** 4 of up to 5 · Ready to reflect · I want more influence · Making things myself · Much more appealing · Whether the role is flexible
+
 ## 8. Motion specification
 
 Motion carries state and causality. It should never exist merely to keep the canvas busy.
@@ -440,18 +485,20 @@ Avoid continuous floating answers, liquid simulation, spring chains, particle cl
 ### Desktop and wide windows (about 900 px and above)
 
 - Use a single full-height stage with generous safe margins.
+- Reserve a stable 280–320 px upper-left area for **Your thread**; the semantic canvas must not render beneath it.
 - Keep the active question close to the visual centre, not necessarily the geometric centre.
 - Place answer suggestions in three reserved slots—upper right, right, and lower right—chosen to preserve reading order and prevent crossing connectors.
 - Let the selected trail extend primarily leftward or in one shallow arc behind the active cluster.
 - Reframe the stage after each selection instead of shrinking the active cluster to fit the whole history.
 - Keep global actions at stable edges: wordmark/restart at the top and finish action near the lower edge.
-- On ending, place the compact trail on the left third and the result lens on the right two-thirds.
+- On ending, keep **Your thread** and the compact trail in the left third and place the result lens on the right two-thirds.
 
 ### Narrow windows (below about 900 px)
 
 The experience becomes a vertical thread rather than a squeezed radial diagram.
 
 - A compact horizontal trail strip sits beneath the header and can scroll to the active end automatically.
+- **Your thread** becomes a disclosure below the header: its status row remains visible, its dilemma and answer list can expand, and it opens automatically at the ending.
 - The active question occupies the full safe width below the strip.
 - The three suggestions stack vertically in a fixed reading order with comfortable touch targets.
 - Connectors become short vertical or gently curved segments and never cross.
@@ -477,6 +524,7 @@ At no width should the layout simply scale the desktop canvas down. Body text re
 11. **Reframe rather than zoom out.** The active thought stays readable while history moves into the periphery or narrow-window trail strip.
 12. **Motion has one owner.** During a transition, only the selected node, departing suggestions, incoming connector, and new question may move.
 13. **Stop when the idea lands.** Slow the network and offer the ending when a coherent direction appears; do not add nodes to make the canvas look impressive.
+14. **Keep the index outside the graph.** The progress card has no semantic connectors and never occupies a node slot; it summarizes only committed history.
 
 ## Experience acceptance checks
 
@@ -485,6 +533,8 @@ At no width should the layout simply scale the desktop canvas down. Body text re
 - A user whose answer is not represented can write a custom answer without creating a fourth competing suggestion node.
 - At every round, the relationship between the current question and each answer is visible without crossed lines.
 - After four rounds, the initial dilemma and complete selected route remain identifiable, but the active content still dominates.
+- After every committed answer, **Your thread** matches the trail exactly and never includes an unchosen suggestion.
+- The status label is derived from session phase and ending signal; no numeric certainty or decision-quality score appears.
 - Live-generation failure preserves the user’s path and continues automatically with mock content.
 - Reduced-motion mode conveys every state change without relying on travel, pulsing, blur, or morphing.
 - At narrow widths, the three answers remain readable and tappable, the active question is not clipped, and the path becomes a compact thread rather than a miniature canvas.

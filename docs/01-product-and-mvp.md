@@ -22,7 +22,7 @@ The product does not predict outcomes, optimize the user’s life, or make a dec
 
 1. **The user is the source of truth.** Hmm… helps articulate a choice; it does not declare the correct choice.
 2. **One thought at a time.** The interface avoids forms, dashboards, and walls of text.
-3. **Visible thinking.** The path remains on screen so progress feels tangible rather than conversationally disposable.
+3. **Visible thinking.** The path remains on screen, while a compact progress card keeps the original dilemma and chosen answers easy to review.
 4. **Finite by design.** A useful session reaches a natural pause within a few rounds.
 5. **Alive, not elaborate.** Motion, scale, lines, blur, and colour create an organic character without complex physics or 3D.
 6. **Graceful without AI.** A complete, convincing session remains demonstrable when the generation API is unavailable.
@@ -100,6 +100,8 @@ The question cell has the strongest hierarchy. Answer cells are visibly smaller 
 
 The user selects one answer. The selected answer becomes active, grows, and connects to a newly generated question. Earlier nodes recede but remain visible as a trail.
 
+A stable progress card also keeps the original dilemma, the selected answers in order, the current round count, and a qualitative session status visible. It is a readable index of the visual path, not a second conversation or navigation tree.
+
 This repeats for **at least 3 and at most 5 answered questions**:
 
 - rounds 1–2 clarify what matters and surface the main tension;
@@ -125,6 +127,8 @@ The network settles into the background and a concise ending appears with:
 5. **Continue exploring** — return to reflection if the user is not done.
 
 The summary uses language such as “You seem to be leaning toward…” and “Based on what you chose…” It must not convert the reflection into a command.
+
+The progress card remains alongside the result so the user can compare the emerging direction with the exact path they took.
 
 ### 4.6 Take the context elsewhere
 
@@ -157,6 +161,7 @@ The MVP is a single-user, responsive web experience designed for a reliable 2–
 - a separate “None quite fit” action for entering one brief custom answer;
 - selection animation that promotes the chosen answer and reveals the next question;
 - a persistent, non-interactive trail of the selected path;
+- a persistent progress card showing the original dilemma, ordered selected answers, round count, and qualitative session status;
 - a standard 3–5 answered-question journey, with an explicit user-controlled finish available after round 2;
 - a user-controlled “I think I’ve got it” finish action from round 2;
 - an automatic finish after round 5;
@@ -197,6 +202,7 @@ For each round, generation returns one concise question, exactly three concise a
 - Exactly three answer directions per question.
 - A compact custom-answer path when none of the three suggestions fits.
 - Visible trail of chosen thoughts.
+- A readable progress card that stays synchronized with the chosen trail through the ending.
 - Complete 3–5 round session with a finite ending.
 - Final reflection with direction, reasons, doubts, and next step.
 - Continue, restart, and copy/open-ChatGPT actions.
@@ -223,6 +229,7 @@ For each round, generation returns one concise question, exactly three concise a
 - Database storage or a browsable archive of past decisions.
 - Multi-user sessions, shared canvases, comments, or collaboration.
 - Autonomous decisions, predictions, recommendations presented as correct, or probability scores.
+- Numeric certainty, confidence, clarity, completion, or decision-quality scores.
 - Medical, legal, financial, crisis, or therapeutic guidance.
 - Voice input/output, avatars, characters, or a visible assistant persona.
 - Arbitrary tree exploration, branch comparison, undo, or editable history.
@@ -278,6 +285,7 @@ The MVP is successful when all of the following can be demonstrated in a clean b
 - “I think I’ve got it” is available after the second answer, and the session always ends after the fifth.
 - At no point is more than one question or more than three generated answer suggestions presented as active; the separate custom-answer action does not create a fourth suggestion.
 - A user can choose “None quite fit,” enter a brief answer in their own words, and continue through the same selected-answer transition.
+- The progress card always shows the exact original dilemma, every committed answer once and in order, and a round count consistent with the visible trail.
 - The recommended demo path can be completed in 90 seconds or less by a presenter.
 
 ### Output quality
@@ -293,6 +301,7 @@ The MVP is successful when all of the following can be demonstrated in a clean b
 - Questions and answers are distinguishable without relying on colour alone.
 - Selecting an answer produces a visible state change and reveals the next question without a hard page transition.
 - All selected nodes and their connections remain visible as a trail, with the active node retaining strongest hierarchy.
+- The progress card remains legible without competing with the active question and is still available beside the final result.
 - Primary controls work with keyboard only and show a visible focus state.
 - With reduced motion enabled, the flow remains complete and understandable without large scaling or continuous movement.
 - The layout remains usable at representative mobile and laptop widths without clipped primary controls or unreadable active content.

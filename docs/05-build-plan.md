@@ -14,7 +14,7 @@
 
 ## Two-day feasibility check
 
-The plan budgets about 14–15 focused implementation hours plus 2–3 hours of integration and rehearsal buffer. It assumes one implementation path, one curated demo, one generic fallback, and no design-system detour.
+The plan budgets about 15 focused implementation hours plus roughly 2 hours of integration and rehearsal buffer. It assumes one implementation path, one curated demo, one generic fallback, and no design-system detour.
 
 | Day | Blocks | Planned P0 time | End-of-day proof |
 | --- | --- | ---: | --- |
@@ -181,7 +181,7 @@ The welcome seed expands into the input surface rather than swapping abruptly.
 
 **Observable outcome**
 
-The submitted dilemma, first Hmm… question, exactly three suggestions, and their relationships appear as a clear organic cluster on desktop.
+The submitted dilemma, first Hmm… question, exactly three suggestions, their relationships, and a stable **Your thread** progress card appear as a clear desktop composition.
 
 **Files likely to be affected**
 
@@ -190,6 +190,7 @@ The submitted dilemma, first Hmm… question, exactly three suggestions, and the
 - `src/components/canvas/ConnectionLayer.tsx`
 - `src/components/canvas/MembraneBackground.tsx`
 - `src/components/session/AnswerCluster.tsx`
+- `src/components/session/ProgressCard.tsx`
 - `src/layout/projectCanvas.ts`, `src/layout/desktopLayout.ts`, `src/layout/curves.ts`
 - `src/styles/canvas.css`
 
@@ -205,11 +206,14 @@ The submitted dilemma, first Hmm… question, exactly three suggestions, and the
 - SVG connections are behind nodes and do not cross.
 - Colour is reinforced by label, scale, border, and/or marker.
 - Decorative cells are textless, non-interactive, and visually subordinate.
+- **Your thread** shows the exact original dilemma, **0 of up to 5**, and **Starting out** without overlapping the graph.
+- The card contains no certainty, confidence, clarity, or completion score.
 - No graph library, random coordinates, confidence score, or pan/zoom behavior exists.
 
 **Checks Codex must run**
 
 - Pure layout tests for stable coordinates, unique IDs, and three suggestion nodes.
+- Progress-card selector/component test for the initial state.
 - Component test asserting exactly three answer buttons.
 - `npm run check`
 - Inspect at approximately 1440×900 and confirm no overlaps or crossed lines.
@@ -244,6 +248,7 @@ Selecting an answer turns it amber, removes the two unused possibilities, shows 
 - The next question loads from `MockReflectionProvider`.
 - After round 2, **I think I’ve got it** is available.
 - After answer 5, the session routes toward summary generation.
+- Each committed answer appears in **Your thread** exactly once and the qualitative status changes from the documented state rules.
 - Reduced motion can complete the same state sequence without travel or pulsing.
 
 **Checks Codex must run**
@@ -289,17 +294,18 @@ Choosing **None quite fit** opens **Say it your way**; a valid custom response b
 
 ## 5. Visual history
 
-### Task 5.1 — P0: Chosen trail that stays understandable
+### Task 5.1 — P0: Chosen trail and progress card that agree
 
 **Observable outcome**
 
-After four selections, the initial dilemma and every selected question/answer pair form one continuous quieter trail while the current question remains dominant.
+After four selections, the initial dilemma and every selected question/answer pair form one continuous quieter trail while **Your thread** lists the same committed answers in order and the current question remains dominant.
 
 **Files likely to be affected**
 
 - `src/session/session-selectors.ts`
 - `src/layout/projectCanvas.ts`, `desktopLayout.ts`, `curves.ts`
 - `ThoughtCanvas.tsx`, `ConnectionLayer.tsx`, `ThoughtNode.tsx`
+- `ProgressCard.tsx`
 - layout/selector tests and canvas styles
 
 **Dependencies**
@@ -314,11 +320,16 @@ After four selections, the initial dilemma and every selected question/answer pa
 - Recent history remains readable; older history scales/fades without breaking continuity.
 - Stable IDs and deterministic coordinates produce the same trail after rerender.
 - The active cluster remains legible at the longest P0 history.
+- The card is derived from canonical history and never stores its own copy.
+- Its round count matches committed answers and it never displays the pressed-but-uncommitted answer.
+- At the curated fourth answer it shows **A direction is forming** only when the held round has `suggestEnding: true`.
+- No AI-generated or numeric certainty score exists.
 
 **Checks Codex must run**
 
 - Projection tests for 0–5 completed steps and no orphan/cross-linked edges.
 - Determinism test: the same semantic state yields the same projection.
+- Progress-selector tests for 0–5 answers, custom answers, ending, and extension.
 - `npm run check`
 - Manual four-round demo at desktop width, watching for overlap and spaghetti.
 
@@ -355,6 +366,7 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 - **Explore one remaining doubt** permits exactly one extension, then returns to summary.
 - **Start over** confirms, clears in-memory state, and returns to welcome.
 - The complete chosen trail remains visible but subordinate at the ending.
+- **Your thread** remains visible with **Ready to reflect**, the original dilemma, and the ordered committed answers.
 
 **Checks Codex must run**
 
@@ -523,6 +535,7 @@ At a narrow viewport the current question and three answers become a readable ve
 **Acceptance criteria**
 
 - Desktop layout switches to a purpose-built narrow layout around the crowding breakpoint.
+- The progress card becomes an accessible disclosure whose status row remains visible and which opens automatically at the ending.
 - Body text is at least 16 px and touch targets at least 44 px.
 - Suggestions stack in a stable reading order and connectors do not cross.
 - Active history scrolls into view without stealing focus.
@@ -596,6 +609,7 @@ A presenter can open a deterministic demo URL, enter or preload the recommended 
 - Essential transition durations stay within the experience specification.
 - No console errors, clipped controls, duplicate answers, focus traps, dead branches, or visible layout jumps occur.
 - The reference-informed pearl/violet/amber visual hierarchy is clear without narration.
+- The progress card gives the presenter and viewer a stable textual anchor without competing with the active question.
 - Production build loads and completes the session.
 - A cold run and three consecutive rehearsals complete successfully in under 90 seconds.
 
@@ -645,6 +659,7 @@ These are not scheduled tasks and should not receive scaffolding “just in case
 - session restoration or saved decisions;
 - additional curated scenarios beyond the one demo and generic fallback;
 - analytics or experimentation infrastructure;
+- numeric certainty, confidence, clarity, completion, or decision-quality scoring;
 - a visible live/mock/model selector;
 - editable history, undo, branch comparison, arbitrary graphs, or draggable nodes;
 - advanced membrane generation, physics, WebGL, particles, or 3D;
@@ -679,6 +694,7 @@ P0 is complete only when:
 - automatic mode survives a disabled API and still reaches the ending;
 - the live endpoint works when configured and no secret reaches the client;
 - exactly three suggestions appear in every round;
+- the progress card always matches the exact original dilemma and committed answer history, including at the ending;
 - custom answer, early finish, suggested finish, max-round finish, restart, and one extension work;
 - the result always contains direction, reasons, doubts, and next step;
 - ChatGPT handoff copies the complete deterministic context;
