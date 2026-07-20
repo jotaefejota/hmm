@@ -4,7 +4,7 @@ import { settleLocalPressure } from "./pressure-layout";
 import type { CanvasProjection } from "./projectCanvas";
 
 const slot = (id: string, x: number, y: number): CellSlot => ({
-  id, x, y, column: 0, row: 0, size: "medium", footprint: "orb", scale: 1,
+  id, x, y, column: 0, row: 0, size: "medium", region: "centre", footprint: "orb", scale: 1,
   aspectRatio: 1, offsetX: 0, offsetY: 0, shape: 0, role: "cell",
 });
 
@@ -30,6 +30,18 @@ describe("settleLocalPressure", () => {
     const first = [...settleLocalPressure(pressureProjection()).entries()];
     const second = [...settleLocalPressure(pressureProjection()).entries()];
     expect(second).toEqual(first);
+  });
+
+  it("keeps authored offsets for cells outside the pressure neighbourhood", () => {
+    const projection = pressureProjection();
+    projection.cells = [
+      { ...slot("active", 0, 0), offsetX: 0.25, offsetY: -0.4 },
+      { ...slot("distant", 100, 100), offsetX: -0.7, offsetY: 0.6 },
+    ];
+    projection.focusCellId = "active";
+
+    const positions = settleLocalPressure(projection);
+    expect(positions.get("distant")).toEqual({ x: 99.3, y: 100.6 });
   });
 
   it("keeps the active question closer to home than the quiet cell it presses", () => {

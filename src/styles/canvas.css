@@ -87,6 +87,12 @@
 .field-cell.is-answer, .field-cell.is-dilemma, .field-cell.is-selected { border-color: rgba(215, 143, 54, 0.42); background: rgba(250, 232, 201, 0.76); }
 .field-cell.is-suggestion { border-color: rgba(40, 36, 45, 0.22); background: rgba(255, 253, 248, 0.92); z-index: 4; }
 .field-cell.is-suggestion.is-selected { border-color: rgba(215, 143, 54, 0.58); background: rgba(250, 232, 201, 0.9); }
+.field-cell.is-clearing {
+  opacity: 0.42;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(67, 60, 72, 0.46);
+  box-shadow: inset 0 0 2.2rem rgba(255, 255, 255, 0.22);
+}
 /* Keep active cells at pack diameter so neighbours kiss without covering text. */
 .field-cell.is-question.is-active {
   z-index: 5;

@@ -1,6 +1,6 @@
 # Hmm… — Authored Organic Canvas Reset
 
-**Status:** In progress — Slices A, B, and D complete; transition refinement has begun; authored route-region work remains. Replaces the uniform-cell visual foundation and supersedes the selection-membrane experiment.
+**Status:** In progress — Slices A, B, C, and D complete; transition refinement remains. Replaces the uniform-cell visual foundation and supersedes the selection-membrane experiment.
 
 ## 1. Core decision
 
@@ -53,7 +53,7 @@ Semantic role may temporarily raise a slot within its authored allowance. A ques
 | Suggested answer | Neutral `orb`, `pebble`, or `capsule`, chosen by authored slot and copy length. |
 | Selected answer | Amber version of its footprint; permanent trail mark after commitment. |
 | Previous question | Quieter violet footprint; directly reviewable. |
-| Reflection / ending | Teal `pool` spanning a deliberate nearby cluster. |
+| Reflection / ending | Teal `pool` spanning a deliberate nearby cluster; its pressure radius matches its rendered footprint. |
 
 Colour reinforces semantic state; label, icon, border, size, and focus treatment must still communicate it without colour.
 
@@ -98,6 +98,8 @@ Only after this static heterogeneous field and its semantic transitions are sati
 
 **Proof:** two different choice sequences produce visibly different composition, not merely different labels in a repeated template.
 
+**Implementation note (2026-07-21):** Complete initial pass. The authored atlas has separate upper, centre, and lower profile families. Their footprints, proportions, scales, and offsets differ deterministically, so routes bending upward or downward travel through different cellular texture while stable slot identities and semantic routing remain intact.
+
 ### Slice D — bounded pressure layout
 
 - Use `d3-force` only as a short, deterministic collision pass over the active cell and a bounded local neighbourhood.
@@ -108,7 +110,7 @@ Only after this static heterogeneous field and its semantic transitions are sati
 
 **Proof:** growing an active question creates visible, calm pressure through nearby cells and settles reproducibly.
 
-**Implementation note (2026-07-21):** Complete initial pass. `pressure-layout.ts` runs 72 fixed D3 collision ticks over a 4.6-pitch neighbourhood. Active questions and selected answers have stronger home anchors than quiet cells, so nearby substrate yields first. Rendered HTML cells and SVG connectors share the settled coordinate map; the reducer and provider contract do not participate.
+**Implementation note (2026-07-21):** Complete initial pass. `pressure-layout.ts` runs 72 fixed D3 collision ticks over a 4.6-pitch neighbourhood. Active questions and selected answers have stronger home anchors than quiet cells, so nearby substrate yields first. The complete field retains its authored resting coordinates outside that neighbourhood; rendered HTML cells and SVG connectors share one coordinate map. The reducer and provider contract do not participate.
 
 ### Slice E — controlled transitions
 
@@ -117,7 +119,7 @@ Only after this static heterogeneous field and its semantic transitions are sati
 
 **Proof:** the complete mock journey feels coherent without any liquid effect.
 
-**Implementation note (2026-07-21):** Started. Opening a lens now enlarges the active question footprint, and an answer gains a short, visible semantic lift while its neighbours settle under local pressure. SVG connectors interpolate to the same settled endpoints, so the path moves with the cells. Remaining work is route-specific transition timing and full mock/reduced-motion rehearsal.
+**Implementation note (2026-07-21):** Started. Opening a lens now enlarges the active question footprint, and an answer gains a short, visible semantic lift while its neighbours settle under local pressure. Rejected suggestions retreat to quiet substrate treatment before the next lenses emerge. SVG connectors interpolate to the same settled endpoints, so the path moves with the cells. Remaining work is route-specific transition timing and full mock/reduced-motion rehearsal.
 
 ### Slice F — optional material experiment
 

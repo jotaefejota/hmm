@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   CELL_PITCH, CELL_SLOTS, FIELD_COLUMN_COUNT, FIELD_ROW_COUNT, FIELD_START_ROW,
-  cellDistance, getCellSlot, getHistoryAnswerCellId, getLensCellIds, getQuestionCellId,
+  cellDistance, getCellSlot, getHistoryAnswerCellId, getLensCellIds, getQuestionCellId, regionForRow,
   getSuggestionCellIds, getFinishCellId, getFinishFootprintCellIds, getContinueCellId, rowAfterSteps, type RouteStep,
 } from "./cell-field";
 
@@ -20,6 +20,15 @@ describe("cell-field packed discovery world", () => {
     expect(footprints.size).toBeGreaterThan(3);
     expect(scales.size).toBeGreaterThan(3);
     expect(getCellSlot("cell-c3-r7")).toEqual(CELL_SLOTS.find((slot) => slot.id === "cell-c3-r7"));
+  });
+
+  it("authors distinct upper, centre, and lower route regions", () => {
+    expect(regionForRow(FIELD_START_ROW - 1)).toBe("upper");
+    expect(regionForRow(FIELD_START_ROW)).toBe("centre");
+    expect(regionForRow(FIELD_START_ROW + 1)).toBe("lower");
+    expect(getCellSlot(`cell-c4-r${FIELD_START_ROW - 3}`).region).toBe("upper");
+    expect(getCellSlot(`cell-c4-r${FIELD_START_ROW}`).region).toBe("centre");
+    expect(getCellSlot(`cell-c4-r${FIELD_START_ROW + 3}`).region).toBe("lower");
   });
 
   it("keeps extreme five-round lens and answer routes legal", () => {

@@ -40,8 +40,9 @@ function physicsFor(slot: CellSlot, projection: CanvasProjection) {
  * semantic state: it merely settles rendered positions near the current focus.
  */
 export function settleLocalPressure(projection: CanvasProjection): CellPositionMap {
+  const positions = new Map(projection.cells.map((slot) => [slot.id, authoredPosition(slot)]));
   const focusSlot = projection.cells.find((slot) => slot.id === projection.focusCellId);
-  if (!focusSlot) return new Map();
+  if (!focusSlot) return positions;
 
   const focus = authoredPosition(focusSlot);
   const localSlots = projection.cells.filter((slot) => {
@@ -73,5 +74,6 @@ export function settleLocalPressure(projection: CanvasProjection): CellPositionM
 
   for (let tick = 0; tick < SETTLE_TICKS; tick += 1) simulation.tick();
 
-  return new Map(nodes.map((node) => [node.id, { x: node.x ?? node.homeX, y: node.y ?? node.homeY }]));
+  nodes.forEach((node) => positions.set(node.id, { x: node.x ?? node.homeX, y: node.y ?? node.homeY }));
+  return positions;
 }

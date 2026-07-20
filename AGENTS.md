@@ -18,12 +18,13 @@ Read the relevant files in `docs/` before changing product behavior. In particul
 - Plain CSS with custom properties
 - Accessible HTML nodes over one SVG connection layer
 - Motion for React for controlled transitions
+- `d3-force` for a bounded, deterministic local collision pass only
 - React `useReducer` + Context for session state
 - Zod for shared contracts and fixture validation
 - Vitest for pure state, schema, provider, and layout tests
 - One TypeScript Vercel Function for live OpenAI calls
 
-Do not introduce a graph library, physics engine, global state library, CSS framework, database, or authentication without an explicit scope change.
+Do not introduce a graph library, another physics engine, global state library, CSS framework, database, or authentication without an explicit scope change. `d3-force` is permitted only for the documented local pressure pass; it must never become a continuous whole-canvas simulation.
 
 ## Repository structure
 
@@ -82,7 +83,7 @@ Scaffolding must provide and preserve these commands:
 - Derive the route from the sequence of selected option indices: upper, middle, and lower choices bend the next path segment differently. Different choices must produce visibly different routes.
 - Violet belongs to Hmm…; amber belongs to the user; neutral cells are unchosen possibilities. Never rely on colour alone.
 - Only the selected semantic path persists. Remove dead branch content and connectors, but preserve the shared cellular substrate.
-- Use a deterministic preset lattice and controlled camera transforms—no physics, random layout, user-controlled pan/zoom, or fitting the full path back into one viewport.
+- Use a deterministic preset lattice and controlled camera transforms. A fixed, bounded D3 collision pass may derive rendered positions around the active focus, but no continuous whole-canvas simulation, random layout, user-controlled pan/zoom, or fitting the full path back into one viewport.
 - Questions dominate suggestions through size, label, border, and motion.
 - Previous nodes become quieter but the chosen path remains understandable.
 - Do not display percentages, certainty/confidence scores, probability, or “correct” green states. Session progress uses named phases, never a judgment of decision quality.

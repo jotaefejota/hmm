@@ -1,5 +1,6 @@
 export type CellShape = 0 | 1 | 2 | 3;
 export type CellFootprint = "seed" | "pebble" | "orb" | "shell" | "capsule";
+export type CellRegion = "upper" | "centre" | "lower";
 
 export type CellSlot = {
   id: string;
@@ -8,6 +9,7 @@ export type CellSlot = {
   x: number;
   y: number;
   size: "medium";
+  region: CellRegion;
   footprint: CellFootprint;
   scale: number;
   aspectRatio: number;
@@ -47,17 +49,52 @@ const xForColumn = (column: number) => ORIGIN_X + column * COL_STEP;
 const yForCell = (column: number, row: number) =>
   ORIGIN_Y + row * ROW_STEP + (column % 2 === 1 ? ROW_STEP / 2 : 0);
 const idFor = (column: number, row: number) => `cell-c${column}-r${row}`;
-const footprintCycle: readonly CellFootprint[] = ["seed", "pebble", "orb", "seed", "capsule", "pebble", "orb", "shell"];
-const scaleCycle = [0.76, 0.86, 0.96, 0.82, 1.04, 0.9, 1, 1.1] as const;
-const aspectCycle = [1, 0.9, 1.08, 0.96, 1.22, 0.88, 1.04, 1.14] as const;
-const offsetCycle = [-1.04, 0.62, 0.86, -0.68, 0.38, -0.9, 0.76, -0.3] as const;
+type AtlasProfile = {
+  footprint: CellFootprint;
+  scale: number;
+  aspectRatio: number;
+  offsetX: number;
+  offsetY: number;
+};
+
+const REGION_ATLAS: Record<CellRegion, readonly AtlasProfile[]> = {
+  upper: [
+    { footprint: "seed", scale: 0.76, aspectRatio: 0.92, offsetX: -1.08, offsetY: -0.7 },
+    { footprint: "pebble", scale: 0.88, aspectRatio: 0.86, offsetX: 0.52, offsetY: 0.9 },
+    { footprint: "shell", scale: 1.05, aspectRatio: 0.94, offsetX: 0.94, offsetY: -0.44 },
+    { footprint: "orb", scale: 0.82, aspectRatio: 1.02, offsetX: -0.48, offsetY: 0.54 },
+    { footprint: "capsule", scale: 0.96, aspectRatio: 0.84, offsetX: 0.28, offsetY: -1.02 },
+  ],
+  centre: [
+    { footprint: "seed", scale: 0.8, aspectRatio: 1, offsetX: -1.04, offsetY: 0.38 },
+    { footprint: "pebble", scale: 0.9, aspectRatio: 0.92, offsetX: 0.62, offsetY: -0.9 },
+    { footprint: "orb", scale: 0.98, aspectRatio: 1.08, offsetX: 0.86, offsetY: 0.76 },
+    { footprint: "seed", scale: 0.84, aspectRatio: 0.96, offsetX: -0.68, offsetY: -0.3 },
+    { footprint: "capsule", scale: 1.04, aspectRatio: 1.22, offsetX: 0.38, offsetY: -1.04 },
+  ],
+  lower: [
+    { footprint: "orb", scale: 0.9, aspectRatio: 1.14, offsetX: -0.94, offsetY: 0.62 },
+    { footprint: "capsule", scale: 1.08, aspectRatio: 1.28, offsetX: 0.76, offsetY: -0.62 },
+    { footprint: "pebble", scale: 0.82, aspectRatio: 1.06, offsetX: 0.42, offsetY: 1.02 },
+    { footprint: "shell", scale: 1.02, aspectRatio: 1.16, offsetX: -0.76, offsetY: -0.38 },
+    { footprint: "seed", scale: 0.78, aspectRatio: 0.94, offsetX: 0.18, offsetY: 0.84 },
+  ],
+};
+
+export function regionForRow(row: number): CellRegion {
+  if (row < FIELD_START_ROW) return "upper";
+  if (row > FIELD_START_ROW) return "lower";
+  return "centre";
+}
 
 export const CELL_SLOTS: readonly CellSlot[] = Array.from(
   { length: FIELD_COLUMN_COUNT * FIELD_ROW_COUNT },
   (_, index) => {
     const column = Math.floor(index / FIELD_ROW_COUNT);
     const row = index % FIELD_ROW_COUNT;
-    const profile = (column * 5 + row * 3) % footprintCycle.length;
+    const region = regionForRow(row);
+    const profiles = REGION_ATLAS[region];
+    const profile = profiles[(column * 7 + row * 3) % profiles.length];
     return {
       id: idFor(column, row),
       column,
@@ -65,11 +102,12 @@ export const CELL_SLOTS: readonly CellSlot[] = Array.from(
       x: xForColumn(column),
       y: yForCell(column, row),
       size: "medium",
-      footprint: footprintCycle[profile],
-      scale: scaleCycle[profile],
-      aspectRatio: aspectCycle[profile],
-      offsetX: offsetCycle[profile],
-      offsetY: offsetCycle[(profile + 3) % offsetCycle.length],
+      region,
+      footprint: profile.footprint,
+      scale: profile.scale,
+      aspectRatio: profile.aspectRatio,
+      offsetX: profile.offsetX,
+      offsetY: profile.offsetY,
       shape: (column * 3 + row) % 4 as CellShape,
       role: "cell",
     };

@@ -28,7 +28,7 @@ export function geometryForCell(slot: CellSlot, item: CanvasOccupancy | undefine
   }
   if (item.kind === "answer") return { footprint: "capsule", scale: 1.04, aspectRatio: 1.1 };
   if (item.kind === "fortune") return { footprint: "capsule", scale: 0.9, aspectRatio: 1.24 };
-  if (item.kind === "finish") return { footprint: "shell", scale: 2.3, aspectRatio: 1.365 };
+  if (item.kind === "finish") return { footprint: "shell", scale: 2.73, aspectRatio: 1.365 };
   if (item.kind === "continue") return { footprint: "orb", scale: 1.1, aspectRatio: 1 };
   return { footprint: slot.footprint, scale: slot.scale, aspectRatio: slot.aspectRatio };
 }
