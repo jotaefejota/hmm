@@ -14,9 +14,10 @@ type EndingExperienceProps = {
   onExploreDoubt: (focus: string) => void;
   onRetry: () => void;
   onUsePrepared: () => void;
+  onDismiss: () => void;
 };
 
-export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, onUsePrepared }: EndingExperienceProps) {
+export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, onUsePrepared, onDismiss }: EndingExperienceProps) {
   const { review, reviewCellId, isReviewing, focusHistoryAnswer, focusHistoryNode, clearReviewFocus } = useTrailReviewFocus(state);
   const projection = projectCanvas({
     dilemma: state.dilemma,
@@ -64,7 +65,9 @@ export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, on
           dilemma={state.dilemma}
           history={state.history}
           canExtend={canExtend}
+          canContinue={Boolean(state.currentDiscovery)}
           onExploreDoubt={onExploreDoubt}
+          onDismiss={onDismiss}
           onRestart={onRestart}
         />
       ) : null}

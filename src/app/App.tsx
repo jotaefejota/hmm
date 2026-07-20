@@ -269,31 +269,11 @@ export function App() {
 
   const commitSelection = () => {
     if (state.phase !== "answer-selected" || !state.currentDiscovery || state.selectedLensIndex === null || !state.selectedAnswer) return;
-    const selectedLens = state.currentDiscovery.lenses[state.selectedLensIndex];
-    const committedHistory: ReflectionStep[] = [
-      ...state.history,
-      {
-        round: state.history.length + 1,
-        lensTheme: selectedLens.theme,
-        lensIndex: state.selectedLensIndex,
-        question: selectedLens.question,
-        answer: state.selectedAnswer.text,
-        answerSource: state.selectedAnswer.source,
-        choiceIndex: state.selectedAnswer.choiceIndex,
-      },
-    ];
-    const finishingExtension = state.extensionUsed;
-    const reachedCoreLimit = !state.extensionUsed && committedHistory.length >= MAX_CORE_ROUNDS;
     dispatch({ type: "COMMIT_SELECTION" });
-    if (finishingExtension) {
-      void loadSummary(committedHistory, "extension", state.activeRequestId);
-    } else if (reachedCoreLimit) {
-      void loadSummary(committedHistory, "max_rounds", state.activeRequestId);
-    }
   };
 
   const finish = (reason: "user" | "suggested") => {
-    if (state.history.length < 2 || state.extensionUsed) return;
+    if (state.history.length < 2 || (state.extensionUsed && state.phase !== "finish-offered")) return;
     const { requestId } = beginRequest();
     dispatch({ type: "REQUEST_FINISH", reason, requestId });
     void loadSummary(state.history, reason, requestId);
@@ -353,12 +333,13 @@ export function App() {
       onCloseCustomAnswer={() => dispatch({ type: "CLOSE_CUSTOM_ANSWER" })}
       onCommitSelection={commitSelection}
       onTransitionComplete={() => dispatch({ type: "TRANSITION_COMPLETE" })}
-      onContinueAfterClarity={() => dispatch({ type: "CONTINUE_AFTER_CLARITY" })}
       onFinish={finish}
+      onContinueFromFinish={() => dispatch({ type: "CONTINUE_FROM_FINISH" })}
       onExploreDoubt={exploreDoubt}
       onRetry={() => recoverRequest(false)}
       onUsePrepared={() => recoverRequest(true)}
       onRestart={restart}
+      onDismissSummary={() => dispatch({ type: "DISMISS_SUMMARY" })}
     />
   );
 }

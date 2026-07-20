@@ -45,4 +45,39 @@ describe("session reducer discovery flow", () => {
     const restarted = sessionReducer(sessionReducer(ready(), { type: "OPEN_LENS", lensIndex: 0 }), { type: "RESTART", requestId: 9 });
     expect(restarted).toMatchObject({ phase: "welcome", history: [], currentDiscovery: null, selectedLensIndex: null, activeRequestId: 9 });
   });
+
+  it("offers a finish lens after four answers and preserves the prepared next discovery", () => {
+    const history = Array.from({ length: 4 }, (_, index) => ({
+      round: index + 1,
+      lensTheme: discoveries[index].lenses[0].theme,
+      lensIndex: 0 as const,
+      question: discoveries[index].lenses[0].question,
+      answer: discoveries[index].lenses[0].answers[1],
+      answerSource: "suggested" as const,
+      choiceIndex: 1 as const,
+    }));
+    const state = sessionReducer({ ...ready(), history, phase: "transitioning", currentDiscovery: discoveries[3], transitionFinished: true, activeRequestId: 9 }, { type: "NEXT_DISCOVERY_LOADED", discovery: discoveries[4], requestId: 9 });
+    expect(state.phase).toBe("finish-offered");
+    expect(state.currentDiscovery).toEqual(discoveries[4]);
+  });
+
+  it("returns to the prepared next round when a four-round recap is dismissed", () => {
+    const discovery = discoveries[4];
+    const state = sessionReducer({ ...ready(), phase: "ending", history: Array.from({ length: 4 }, (_, index) => ({
+      round: index + 1,
+      lensTheme: discoveries[index].lenses[0].theme,
+      lensIndex: 0 as const,
+      question: discoveries[index].lenses[0].question,
+      answer: discoveries[index].lenses[0].answers[0],
+      answerSource: "suggested" as const,
+      choiceIndex: 0 as const,
+    })), currentDiscovery: discovery, summary: mockDataset.scenarios[0].summary }, { type: "DISMISS_SUMMARY" });
+    expect(state).toMatchObject({ phase: "lens-ready", currentDiscovery: discovery, summary: null });
+  });
+
+  it("lets the smaller continuation bubble skip the recap and reveal prepared lenses", () => {
+    const discovery = discoveries[4];
+    const state = sessionReducer({ ...ready(), phase: "finish-offered", currentDiscovery: discovery }, { type: "CONTINUE_FROM_FINISH" });
+    expect(state).toMatchObject({ phase: "lens-ready", currentDiscovery: discovery });
+  });
 });

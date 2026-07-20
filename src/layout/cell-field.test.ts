@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   CELL_PITCH, CELL_SLOTS, FIELD_COLUMN_COUNT, FIELD_ROW_COUNT, FIELD_START_ROW,
   cellDistance, getCellSlot, getHistoryAnswerCellId, getLensCellIds, getQuestionCellId,
-  getSuggestionCellIds, rowAfterSteps, type RouteStep,
+  getSuggestionCellIds, getFinishCellId, getFinishFootprintCellIds, getContinueCellId, rowAfterSteps, type RouteStep,
 } from "./cell-field";
 
 describe("cell-field packed discovery world", () => {
@@ -54,5 +54,35 @@ describe("cell-field packed discovery world", () => {
     const history = [{ round: 1, lensIndex: 0 as const, choiceIndex: 0 as const }, { round: 2, lensIndex: 1 as const, choiceIndex: 2 as const }];
     expect(getHistoryAnswerCellId(history, 0)).toBe(getSuggestionCellIds(1, [], 0)[0]);
     expect(getHistoryAnswerCellId(history, 1)).toBe(getSuggestionCellIds(2, history.slice(0, 1), 1)[2]);
+  });
+
+  it("places the reflection lens beside, rather than over, the latest selected answer", () => {
+    const history = [{ round: 1, lensIndex: 0 as const, choiceIndex: 1 as const }];
+    const answer = getCellSlot(getHistoryAnswerCellId(history, 0));
+    const finish = getCellSlot(getFinishCellId(history));
+    expect(cellDistance(answer, finish)).toBeCloseTo(CELL_PITCH, 5);
+  });
+
+  it("keeps the continuation bubble inside the authored lattice on extreme routes", () => {
+    const upper = Array.from({ length: 5 }, (_, index) => ({ round: index + 1, lensIndex: 0 as const, choiceIndex: 0 as const }));
+    const lower = Array.from({ length: 5 }, (_, index) => ({ round: index + 1, lensIndex: 1 as const, choiceIndex: 2 as const }));
+    [upper, lower].forEach((history) => expect(() => getCellSlot(getContinueCellId(history))).not.toThrow());
+  });
+
+  it("uses the exact left-middle-middle-right quiet-cell diamond for the reflection membrane", () => {
+    const history = [{ round: 1, lensIndex: 0 as const, choiceIndex: 1 as const }];
+    const [leftId, middleUpperId, middleLowerId, rightId] = getFinishFootprintCellIds(history);
+    const left = getCellSlot(leftId);
+    const middleUpper = getCellSlot(middleUpperId);
+    const middleLower = getCellSlot(middleLowerId);
+    const right = getCellSlot(rightId);
+    expect(left.column).toBe(right.column - 2);
+    expect(middleUpper.column).toBe(left.column + 1);
+    expect(middleLower.column).toBe(middleUpper.column);
+    expect(middleLower.row).toBe(middleUpper.row + 1);
+    expect(cellDistance(left, middleUpper)).toBeCloseTo(CELL_PITCH, 5);
+    expect(cellDistance(left, middleLower)).toBeCloseTo(CELL_PITCH, 5);
+    expect(cellDistance(right, middleUpper)).toBeCloseTo(CELL_PITCH, 5);
+    expect(cellDistance(right, middleLower)).toBeCloseTo(CELL_PITCH, 5);
   });
 });

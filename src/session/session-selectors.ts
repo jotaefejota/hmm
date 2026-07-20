@@ -18,7 +18,7 @@ export const selectProgress = (state: SessionState): ProgressView => {
   let status: ProgressView["status"] = "Starting out";
   if (state.history.length === 1) status = "Exploring";
   if (state.history.length >= 2) status = "Connecting the dots";
-  if (state.phase === "clarity-offered") status = "A direction is forming";
+  if (state.phase === "finish-offered") status = "A direction is forming";
   if (state.extensionUsed && state.phase !== "ending" && state.phase !== "generating-summary") {
     status = "Looking once more";
   }

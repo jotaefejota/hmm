@@ -21,10 +21,10 @@ const committedStep = (state: SessionState): ReflectionStep | null => {
 
 const revealPendingDiscovery = (state: SessionState): SessionState => {
   if (!state.pendingDiscovery) return { ...state, transitionFinished: true };
-  const offerClarity = state.history.length >= 4 && state.pendingDiscovery.suggestEnding && !state.extensionUsed;
+  const offerFinish = state.history.length > 0 && state.history.length % 4 === 0 && !state.extensionUsed;
   return {
     ...state,
-    phase: offerClarity ? "clarity-offered" : "lens-ready",
+    phase: offerFinish ? "finish-offered" : "lens-ready",
     currentDiscovery: state.pendingDiscovery,
     pendingDiscovery: null,
     selectedLensIndex: null,
@@ -80,23 +80,28 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
       const history = [...state.history, step];
       const reachedCoreLimit = !state.extensionUsed && history.length >= MAX_CORE_ROUNDS;
       const finishedExtension = state.extensionUsed;
-      const shouldSummarize = reachedCoreLimit || finishedExtension;
       return {
         ...state,
-        phase: shouldSummarize ? "generating-summary" : "transitioning",
+        phase: reachedCoreLimit || finishedExtension ? "finish-offered" : "transitioning",
         history,
-        currentDiscovery: shouldSummarize ? null : state.currentDiscovery,
-        selectedLensIndex: shouldSummarize ? null : state.selectedLensIndex,
+        currentDiscovery: reachedCoreLimit || finishedExtension ? null : state.currentDiscovery,
+        selectedLensIndex: reachedCoreLimit || finishedExtension ? null : state.selectedLensIndex,
         finishReason: finishedExtension ? "extension" : reachedCoreLimit ? "max_rounds" : state.finishReason,
       };
     }
     case "TRANSITION_COMPLETE":
       return state.phase === "transitioning" ? revealPendingDiscovery(state) : state;
-    case "CONTINUE_AFTER_CLARITY":
-      return state.phase === "clarity-offered" ? { ...state, phase: "lens-ready" } : state;
+    case "CONTINUE_FROM_FINISH":
+      return state.phase === "finish-offered" && state.currentDiscovery
+        ? { ...state, phase: "lens-ready", selectedLensIndex: null, selectedAnswer: null }
+        : state;
+    case "DISMISS_SUMMARY":
+      return state.phase === "ending" && state.currentDiscovery
+        ? { ...state, phase: "lens-ready", summary: null, finishReason: null, selectedLensIndex: null, selectedAnswer: null }
+        : state;
     case "REQUEST_FINISH":
-      return (state.phase === "lens-ready" || state.phase === "round-ready" || state.phase === "clarity-offered") && state.history.length >= 2
-        ? { ...state, phase: "generating-summary", currentDiscovery: null, pendingDiscovery: null, selectedLensIndex: null, selectedAnswer: null, finishReason: event.reason, activeRequestId: event.requestId }
+      return (state.phase === "lens-ready" || state.phase === "round-ready" || state.phase === "finish-offered") && state.history.length >= 2
+        ? { ...state, phase: "generating-summary", pendingDiscovery: null, selectedLensIndex: null, selectedAnswer: null, finishReason: event.reason, activeRequestId: event.requestId }
         : state;
     case "REQUEST_EXTENSION": {
       if (state.phase !== "ending" || state.history.length >= MAX_CORE_ROUNDS || state.extensionUsed || !state.summary) return state;

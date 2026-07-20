@@ -43,4 +43,12 @@ describe("projectCanvas discovery", () => {
       .not.toBe(lower.occupancy.find((item) => item.kind === "question")?.cellId);
     expect(upper.cells).toBe(lower.cells);
   });
+
+  it("adds one tappable reflection lens beside the fourth answer", () => {
+    const fourthHistory = Array.from({ length: 4 }, (_, index) => ({ ...step(0, 1), round: index + 1 }));
+    const projection = projectCanvas({ dilemma: "A dilemma", history: fourthHistory, currentDiscovery: discovery, selectedLensIndex: null, phase: "finish-offered", selectedAnswer: null });
+    const finish = projection.occupancy.filter((item) => item.kind === "finish");
+    expect(finish).toHaveLength(1);
+    expect(finish[0]).toMatchObject({ interactive: true, label: "Reflection lens" });
+  });
 });

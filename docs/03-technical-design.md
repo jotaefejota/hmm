@@ -106,7 +106,6 @@ No package versions are specified before the project is scaffolded. Install curr
 │   │   │   ├── AnswerCluster.tsx
 │   │   │   ├── CustomAnswerComposer.tsx
 │   │   │   ├── ProgressCard.tsx
-│   │   │   ├── ClarityPrompt.tsx
 │   │   │   ├── GenerationStatus.tsx
 │   │   │   └── SessionActions.tsx
 │   │   ├── ending/
@@ -165,7 +164,7 @@ This is an intended boundary map, not a requirement to create an empty file for 
 | `CustomAnswerComposer` | Captures and validates the 160-character custom answer | A fourth suggested answer |
 | `ProgressCard` | Displays the original dilemma, committed answers, round count, and derived qualitative status | Duplicate history state, AI confidence, or graph navigation |
 | `GenerationStatus` | Shows initial/next/summary loading state | Fake percentages |
-| `ClarityPrompt` | Offers ending or one more core question | Deciding that clarity exists |
+| `CellField` reflection lens occupancy | Offers the explicit recap action beside the latest answer | Automatically generating or deciding that clarity exists |
 | `ResultLens` | Displays the four-part summary and handoff actions | Reconstructing the summary from canvas nodes |
 | `RecoveryNotice` | Explains live failure, fallback, and retry without losing context | Raw provider error details |
 | `SessionContext` | Exposes state and semantic events backed by one reducer | Visual styling |
@@ -181,14 +180,14 @@ type SessionPhase =
   | "welcome"
   | "entering"
   | "generating-round"
+  | "lens-ready"
   | "round-ready"
   | "writing-custom-answer"
   | "answer-selected"
   | "transitioning"
-  | "clarity-offered"
+  | "finish-offered"
   | "generating-summary"
   | "ending"
-  | "recovering"
   | "error";
 
 type ReflectionStep = {
@@ -224,7 +223,8 @@ type SessionState = {
 - Increment `activeRequestId` for each generation request. Ignore any response whose identifier is not current.
 - An `AbortController` cancels the previous request on restart or retry.
 - Derive round number as `history.length + 1`; do not trust a visual component to count rounds.
-- After a fifth core answer, generate the summary without requesting another round.
+- After every fourth committed answer, expose a derived `finish` occupancy over one exact quiet-cell diamond: one left slot, two vertically stacked middle slots, and one right slot. `getFinishFootprintCellIds` owns this authored geometry and tests its four touching relationships. The translucent sea-glass membrane spans those four slots, while a normal-sized derived `continue` bubble below it provides an immediate route to the prepared next discovery. Neither is an automatic summary request. Keep the prepared discovery in state so both the bubble and recap dismissal can restore its two lenses.
+- After a fifth core answer, expose the same final reflection lens rather than generating a summary automatically; no next discovery exists in that case.
 - `extensionUsed` permits exactly one post-ending question only while fewer than five answers are committed; after its answer, regenerate the summary immediately. The action is absent and the reducer rejects it once the five-round ceiling is reached.
 - Restart creates the initial state in one reducer event.
 
@@ -284,7 +284,8 @@ Edges are derived in one selector from occupied/marked cell IDs:
 2. question cell → selected-answer cell for every completed step;
 3. selected-answer cell → next question cell when it exists;
 4. current question cell → three currently occupied suggestion cells only while the round is ready;
-5. a dotted preview edge to the custom-answer composer only while it is open.
+5. latest selected-answer cell → the temporary reflection lens when it is offered;
+6. a dotted preview edge to the custom-answer composer only while it is open.
 
 Unchosen suggestions are never added to history. Their content and temporary edges leave through a short occupancy fade; their `Cell` elements and geometry remain mounted.
 
@@ -306,6 +307,7 @@ For windows at least 900 px wide:
 - render the full packed soup of empty cells so neighbours appear to touch; only occupied cells carry readable meaning;
 - place the active question near the desktop focal area while its world position advances along the packed route;
 - place the three suggestions in a touching upper or lower fan selected by the opened lens position;
+- place a reflection lens in a stable touching neighbour of the latest answer after every fourth answer and at the hard final cap;
 - preset enough columns and rows for every five-round combination;
 - derive the current row from the prior `choiceIndex` sequence (`0 = up`, `1 = straight`, `2 = down`) rather than from randomness;
 - reduce older occupied-cell emphasis to a minimum of `0.58`, while the underlying cell geometry remains present;

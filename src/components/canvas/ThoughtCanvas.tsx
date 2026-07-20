@@ -7,7 +7,6 @@ import { projectCanvas } from "../../layout/projectCanvas";
 import { CellField } from "./CellField";
 import { ProgressCard } from "../session/ProgressCard";
 import { CustomAnswerComposer } from "../session/CustomAnswerComposer";
-import { ClarityPrompt } from "../session/ClarityPrompt";
 import { RequestErrorPanel } from "../session/RequestErrorPanel";
 import { TrailReviewCard } from "../session/TrailReviewCard";
 
@@ -21,8 +20,8 @@ type ThoughtCanvasProps = {
   onCloseCustomAnswer: () => void;
   onCommitSelection: () => void;
   onTransitionComplete: () => void;
-  onContinueAfterClarity: () => void;
   onFinish: (reason: "user" | "suggested") => void;
+  onContinueFromFinish: () => void;
   onRetry: () => void;
   onUsePrepared: () => void;
   onRestart: () => void;
@@ -67,14 +66,14 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
   }, [state.phase, state.selectedLensIndex, isReviewing]);
 
   const fieldPhase = state.phase === "lens-ready" || state.phase === "round-ready" || state.phase === "writing-custom-answer" || state.phase === "answer-selected"
-    ? state.phase
-    : state.phase === "transitioning" || state.phase === "clarity-offered"
+      ? state.phase
+      : state.phase === "transitioning" || state.phase === "finish-offered"
       ? state.phase
       : "round-ready";
 
   return (
     <section
-      className={`reflection-stage ${state.phase === "transitioning" ? "transition-stage" : ""} ${state.phase === "clarity-offered" ? "clarity-stage" : ""}`}
+      className={`reflection-stage ${state.phase === "transitioning" ? "transition-stage" : ""} ${state.phase === "finish-offered" ? "finish-stage" : ""}`}
       aria-labelledby={state.phase === "round-ready" ? "active-question" : undefined}
       aria-label={state.phase === "transitioning" ? "Following the selected path" : undefined}
     >
@@ -99,6 +98,8 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
         }}
         onReviewNode={focusHistoryNode}
         onCommit={props.onCommitSelection}
+        onOpenFinish={() => props.onFinish("suggested")}
+        onContinueFromFinish={props.onContinueFromFinish}
         reviewCellId={reviewCellId}
       />
 
@@ -115,9 +116,6 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
       {state.phase === "transitioning" ? (
         <TransitionMoment state={state} onComplete={props.onTransitionComplete} />
       ) : null}
-      {state.phase === "clarity-offered" ? (
-        <ClarityPrompt onFinish={() => props.onFinish("suggested")} onContinue={props.onContinueAfterClarity} />
-      ) : null}
       {state.phase === "error" && state.requestError ? (
         <RequestErrorPanel
           error={state.requestError}
@@ -126,7 +124,7 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
           onRestart={props.onRestart}
         />
       ) : null}
-      {selectCanFinish(state) ? (
+      {selectCanFinish(state) && state.phase !== "finish-offered" ? (
         <button className="finish-action" type="button" onClick={() => props.onFinish("user")}>
           I think I’ve got it
         </button>

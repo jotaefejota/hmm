@@ -4,6 +4,8 @@ import {
   CELL_SLOTS,
   DILEMMA_CELL_ID,
   getCellSlot,
+  getContinueCellId,
+  getFinishCellId,
   getFortuneCellId,
   getLensCellIds,
   getQuestionCellId,
@@ -15,7 +17,7 @@ import {
 export type CanvasOccupancy = {
   cellId: string;
   semanticId: string;
-  kind: "dilemma" | "lens" | "question" | "suggestion" | "answer" | "fortune";
+  kind: "dilemma" | "lens" | "question" | "suggestion" | "answer" | "fortune" | "finish" | "continue";
   status: "active" | "selected" | "previous" | "clearing";
   text: string;
   label: string;
@@ -97,10 +99,38 @@ export function projectCanvas({
     }
   }
 
+  if (phase === "finish-offered" && history.length > 0) {
+    const finishCellId = getFinishCellId(history);
+    occupancy.push({
+      cellId: finishCellId,
+      semanticId: `finish-${history.length}`,
+      kind: "finish",
+      status: "active",
+      text: history.length >= 5 ? "Let this settle" : "What is taking shape?",
+      label: "Reflection lens",
+      age: 0,
+      interactive: true,
+    });
+    edges.push(edge(`edge-${previousCellId}-${finishCellId}`, previousCellId, finishCellId, "active"));
+    if (currentDiscovery) {
+      occupancy.push({
+        cellId: getContinueCellId(history),
+        semanticId: `continue-${history.length}`,
+        kind: "continue",
+        status: "active",
+        text: "Keep going",
+        label: "Continue exploring",
+        age: 0,
+        interactive: true,
+      });
+    }
+  }
+
   const nextRound = Math.min(history.length + 1, 5);
   const lensCells = getLensCellIds(nextRound, completed);
-  const settlesOnTrailEnd = phase === "clarity-offered" || phase === "generating-summary" || phase === "ending";
-  const derivedFocusCellId = settlesOnTrailEnd ? previousCellId : selectedLensIndex === null ? lensCells[0] : lensCells[selectedLensIndex];
+  const finishCellId = phase === "finish-offered" && history.length > 0 ? getFinishCellId(history) : null;
+  const settlesOnTrailEnd = phase === "generating-summary" || phase === "ending";
+  const derivedFocusCellId = finishCellId ?? (settlesOnTrailEnd ? previousCellId : selectedLensIndex === null ? lensCells[0] : lensCells[selectedLensIndex]);
   return {
     cells: CELL_SLOTS, occupancy, edges,
     focusCellId: focusOverrideCellId && CELL_SLOTS.some((slot) => slot.id === focusOverrideCellId) ? focusOverrideCellId : derivedFocusCellId,

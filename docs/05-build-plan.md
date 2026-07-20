@@ -491,17 +491,17 @@ Activating an item under **What you’ve chosen so far** pans the desktop camera
 
 ## 6. Session ending and summary
 
-### Task 6.1 — P0: Clarity prompt, result lens, restart, and one extension
+### Task 6.1 — P0: Reflection lens, result panel, restart, and one extension
 
-**Implementation status:** Complete — 2026-07-20. Clarity prompt, early/suggested/max-round summaries, result lens, confirmed restart, and exactly one post-ending extension are implemented.
+**Implementation status:** Complete — 2026-07-20. A reflection lens now appears beside the fourth answer (and at the fifth-round cap); it opens the result only on tap. The result can be dismissed back to the already-prepared next round.
 
 **Observable outcome**
 
-After the curated fourth answer, **A direction is taking shape** appears. The user can reveal the four-part mock summary, start over, or explore exactly one remaining doubt and return to an updated ending.
+After the curated fourth answer, a violet **What is taking shape?** bubble appears beside the last amber answer. The user can tap it to reveal the four-part mock summary, dismiss that panel to continue with the preloaded fifth round, start over, or explore one remaining doubt where applicable.
 
 **Files likely to be affected**
 
-- `src/components/session/ClarityPrompt.tsx`, `SessionActions.tsx`
+- `src/layout/projectCanvas.ts`, `src/layout/cell-field.ts`, `src/components/canvas/CellField.tsx`
 - `src/components/ending/ResultLens.tsx`
 - reducer/context/provider integration
 - ending layout and styles
@@ -513,11 +513,11 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 
 **Acceptance criteria**
 
-- The curated round-5 payload is held while the clarity prompt is shown.
-- **See what’s emerging** displays direction, 2–3 reasons, 1–2 doubts, and one next step.
+- The curated round-5 payload is held while the reflection lens is shown.
+- Tapping **What is taking shape?** displays direction, 2–3 reasons, 1–2 doubts, and one next step.
 - The result is tentative and contains no confidence score.
-- **One more question** reveals the held fifth round.
-- **Explore one remaining doubt** permits exactly one extension before the five-answer ceiling, then returns to summary; it is absent after round five.
+- **Keep exploring** dismisses the result and reveals the held fifth round.
+- **Explore one remaining doubt** permits exactly one extension only when no prepared core round remains; it is absent while **Keep exploring** can resume that core path and after round five.
 - **Start over** confirms, clears in-memory state, and returns to welcome.
 - The complete chosen trail remains marked on the same cellular field, visible but subordinate at the ending.
 - **Your thread** remains visible with **Ready to reflect**, the original dilemma, and the ordered committed answers.
@@ -527,7 +527,7 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 - Reducer tests for user finish, suggested finish, max-round finish, extension, extension cap, and restart.
 - Summary component tests for required section counts.
 - `npm run check`
-- Manual runs for finish after round 2, suggested finish after round 4, and forced finish after round 5.
+- Manual runs for finish after round 2, reflection lens after round 4, dismissal into round 5, and final reflection lens after round 5.
 
 ---
 

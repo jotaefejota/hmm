@@ -9,7 +9,7 @@ const scenario = mockDataset.scenarios[0];
 const callbacks = () => ({
   onSelectAnswer: vi.fn(), onOpenLens: vi.fn(), onReturnToLenses: vi.fn(), onSelectCustomAnswer: vi.fn(),
   onOpenCustomAnswer: vi.fn(), onCloseCustomAnswer: vi.fn(), onCommitSelection: vi.fn(),
-  onTransitionComplete: vi.fn(), onContinueAfterClarity: vi.fn(), onFinish: vi.fn(),
+  onTransitionComplete: vi.fn(), onFinish: vi.fn(), onContinueFromFinish: vi.fn(),
   onRetry: vi.fn(), onUsePrepared: vi.fn(), onRestart: vi.fn(),
 });
 const historyStep = (round = 1): ReflectionStep => {
@@ -67,5 +67,25 @@ describe("ThoughtCanvas discovery", () => {
     rerender(<ThoughtCanvas state={{ ...first, history: [historyStep()], currentDiscovery: scenario.discoveries[1], activeRequestId: 2 }} {...props} />);
     const later = Array.from(container.querySelectorAll("[data-cell-slot]"));
     expect(later.every((cell, index) => cell === cells[index])).toBe(true);
+  });
+
+  it("offers a reflection lens after four answers instead of opening a recap", async () => {
+    const props = callbacks();
+    const history = Array.from({ length: 4 }, (_, index) => historyStep(index + 1));
+    const state = { ...createInitialSessionState(5), phase: "finish-offered" as const, dilemma: TEAM_LEAD_DILEMMA, history, currentDiscovery: scenario.discoveries[4], dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...props} />);
+    const finish = screen.getByRole("button", { name: "Open reflection lens" });
+    await userEvent.click(finish);
+    expect(props.onFinish).toHaveBeenCalledWith("suggested");
+    expect(screen.queryByText("A direction is taking shape.")).not.toBeInTheDocument();
+  });
+
+  it("offers a smaller continuation bubble when another discovery is prepared", async () => {
+    const props = callbacks();
+    const history = Array.from({ length: 4 }, (_, index) => historyStep(index + 1));
+    const state = { ...createInitialSessionState(5), phase: "finish-offered" as const, dilemma: TEAM_LEAD_DILEMMA, history, currentDiscovery: scenario.discoveries[4], dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...props} />);
+    await userEvent.click(screen.getByRole("button", { name: "Keep exploring with new questions" }));
+    expect(props.onContinueFromFinish).toHaveBeenCalledOnce();
   });
 });

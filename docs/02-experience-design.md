@@ -124,18 +124,9 @@ This alternating rhythm makes authorship readable even when the text is too smal
 
 ### 2.6 Recognize enough clarity
 
-After the fourth selected answer, if the reflection response indicates that a coherent direction is visible, the surrounding membrane becomes still and a small non-modal clarity card appears near the active path. The curated demo always produces this signal:
+After every fourth committed question/answer pair, the path grows one distinct **reflection lens** beside the last amber answer. It is anchored over exactly four quiet cells in the packed lattice: one left, two vertically stacked in the middle, and one right. Its translucent sea-glass membrane uses that precise diamond footprint, letting the existing cellular soup supply the subtle internal arcs. There are no decorative internal lines. This is a layer over the field, not a replacement bubble. It says **What is taking shape?** and is an invitation, not a diagnosis. Nothing is summarised until the user taps it.
 
-> A direction is taking shape.
->
-> You can see what’s emerging, or stay with it for one more question.
-
-Actions:
-
-- **See what’s emerging** — primary;
-- **One more question** — secondary.
-
-This is an invitation, not a diagnosis. It does not show a percentage, score, or celebratory success state. The persistent **I think I’ve got it** action remains available from round 2; round 5 proceeds to the ending automatically after selection.
+Below it, a normal-sized sea-glass **Keep going** bubble lets the user decline the pause immediately and reveal the already-prepared next pair of question lenses. It behaves like a fourth optional cell rather than a secondary text control. Opening the lens gathers and reveals the result; **Keep exploring** there offers the same return path. The persistent **I think I’ve got it** action remains available from round 2. At the fifth-round ceiling, a final **Let this settle** lens replaces automatic summary generation; tapping it explicitly opens the recap.
 
 ### 2.7 End the session
 
@@ -155,7 +146,8 @@ The result remains framed as a reflection of the user’s path, never as the mod
 The ending actions are:
 
 - **Continue in ChatGPT** — copies the prepared context and opens ChatGPT;
-- **Explore one remaining doubt** — when fewer than five answers have been committed, adds exactly one user-initiated question and then returns to an updated ending; it is absent after the fifth core answer;
+- **Keep exploring** — only when the next round was prepared before the recap; dismisses the result and returns to those lenses without rewriting history;
+- **Explore one remaining doubt** — when no prepared core round remains and fewer than five answers have been committed, adds exactly one user-initiated question and then returns to an updated ending;
 - **Start over** — asks for confirmation before clearing the current in-memory path.
 
 An explicitly resumed question does not violate the five-round automatic stop: Hmm… has already paused and will not continue without the user asking it to.
@@ -173,10 +165,10 @@ The progress card remains visible beside the result lens, changes its status to 
 | **Three possible answers** | Exactly three neutral cells holding suggestions around/below the question | Hover/focus, select, open custom answer | One suggestion is selected or custom input opens |
 | **Different answer** | Suggestions remain visible but subdued; attached input cell or narrow-window sheet | Enter up to 160 characters, use answer, cancel | Valid custom text becomes the selected answer |
 | **Selected answer** | One amber occupied cell with check mark; stronger connector to its question | None during the brief committed animation | Automatically enters transition |
-| **Transition** | Chosen cells remain marked; unused text clears; focus moves as existing cells receive the next content | Wait | Next question becomes active, or ending generation begins |
-| **Enough clarity** | Non-modal clarity card, settled network, current path | See what’s emerging; one more question | Ending generation or another round |
+| **Transition** | Chosen cells remain marked; unused text clears; focus moves as existing cells receive the next content | Wait | Next question becomes active, or a reflection lens appears |
+| **Reflection lens** | One tappable violet bubble touching the latest amber answer | See what’s emerging | Ending generation; or remain on the path until tapped |
 | **Ending generation** | Entire path, dimmed but readable; gathering copy; forming result lens | Wait; retry after failure | Final result becomes available |
-| **Ending** | Result lens, subdued full path, four-part reflection, three actions | Continue in ChatGPT, explore one doubt, start over | External handoff, one extra round, or reset |
+| **Ending** | Result lens, subdued full path, four-part reflection, contextual actions | Continue in ChatGPT, keep exploring when available, explore one doubt, start over | External handoff, resumed path, one extra round, or reset |
 | **API unavailable** | Existing context stays visible; calm inline recovery message; fallback begins automatically | Wait for demo path; try live again | Fallback succeeds, retry succeeds, or user restarts |
 | **Unrecoverable error** | Existing path plus concise error card | Try again; start over; copy current path if any | Retry, reset, or manual preservation |
 
@@ -263,15 +255,15 @@ stateDiagram-v2
     RoundReady --> EndingGeneration: I think I've got it (round 2+)
 
     AnswerSelected --> Transitioning
-    Transitioning --> ClarityOffered: Ending suggested after round 4
-    Transitioning --> EndingGeneration: Round 5 complete
+    Transitioning --> FinishOffered: Every fourth answer commits
+    AnswerSelected --> FinishOffered: Round 5 complete
     Transitioning --> Generating: Continue to next round
 
-    ClarityOffered --> EndingGeneration: See what's emerging
-    ClarityOffered --> Generating: One more question
+    FinishOffered --> EndingGeneration: Open reflection lens
 
     EndingGeneration --> Ending: Summary succeeds
     EndingGeneration --> ApiUnavailable: Summary generation fails
+    Ending --> RoundReady: Keep exploring (prepared next round)
     Ending --> Generating: Explore one remaining doubt
     Ending --> Welcome: Confirm start over
     Ending --> ExternalHandoff: Continue in ChatGPT
@@ -438,15 +430,13 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 **Progress card:** 4 of up to 5 · A direction is forming · I want more influence · Making things myself · Much more appealing · Whether the role is flexible
 
-### Enough clarity
+### Reflection lens
 
-**Heading:** A direction is taking shape.
+**Label:** Reflection lens
 
-**Body:** You can see what’s emerging, or stay with it for one more question.
+**Bubble copy:** What is taking shape?
 
-**Primary action:** See what’s emerging
-
-**Secondary action:** One more question
+**Action:** Tap the bubble to gather the recap. If a fifth round is prepared, the result includes **Keep exploring** to dismiss it and return to that round.
 
 ### Ending generation
 

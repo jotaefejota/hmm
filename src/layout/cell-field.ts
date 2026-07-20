@@ -136,6 +136,40 @@ export const getHistoryAnswerCellId = (
   stepIndex: number,
 ) => getHistoryCellId(history, stepIndex, "answer");
 
+/** A temporary reflection lens always touches the most recently committed answer. */
+export function getFinishCellId(
+  history: readonly { round: number; lensIndex: 0 | 1; choiceIndex: 0 | 1 | 2 }[],
+) {
+  if (history.length === 0) throw new Error("A finish lens needs a committed answer.");
+  const answer = getCellSlot(getHistoryAnswerCellId(history, history.length - 1));
+  const column = answer.column % 2 === 0 ? answer.column + 1 : answer.column + 2;
+  const row = Math.min(answer.row, FIELD_ROW_COUNT - 2);
+  return idFor(column, row);
+}
+
+/** The exact quiet-cell diamond covered by the four-cell reflection membrane. */
+export function getFinishFootprintCellIds(
+  history: readonly { round: number; lensIndex: 0 | 1; choiceIndex: 0 | 1 | 2 }[],
+) {
+  const left = getCellSlot(getFinishCellId(history));
+  return [
+    left.id,
+    idFor(left.column + 1, left.row),
+    idFor(left.column + 1, left.row + 1),
+    idFor(left.column + 2, left.row),
+  ] as const;
+}
+
+/** The bypass bubble sits below the centre of the four-cell reflection lens. */
+export function getContinueCellId(
+  history: readonly { round: number; lensIndex: 0 | 1; choiceIndex: 0 | 1 | 2 }[],
+) {
+  if (history.length === 0) throw new Error("A continue bubble needs a committed answer.");
+  const finish = getCellSlot(getFinishCellId(history));
+  const rowOffset = finish.row <= FIELD_START_ROW ? 3 : -2;
+  return idFor(finish.column + 1, finish.row + rowOffset);
+}
+
 export function getCellSlot(id: string) {
   const slot = CELL_SLOTS.find((candidate) => candidate.id === id);
   if (!slot) throw new Error(`Unknown cell slot: ${id}.`);

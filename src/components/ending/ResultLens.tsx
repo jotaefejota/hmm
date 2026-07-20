@@ -9,8 +9,10 @@ type ResultLensProps = {
   dilemma: string;
   history: ReflectionStep[];
   canExtend?: boolean;
+  canContinue?: boolean;
   onExploreDoubt?: (focus: string) => void;
   onRestart: () => void;
+  onDismiss?: () => void;
 };
 
 export function ResultLens({
@@ -18,8 +20,10 @@ export function ResultLens({
   dilemma,
   history,
   canExtend = false,
+  canContinue = false,
   onExploreDoubt,
   onRestart,
+  onDismiss,
 }: ResultLensProps) {
   const [confirmingRestart, setConfirmingRestart] = useState(false);
   const [handoffMessage, setHandoffMessage] = useState<string | null>(null);
@@ -81,7 +85,12 @@ export function ResultLens({
             <button className="primary-action" type="button" onClick={() => void continueInChatGpt()}>
               Continue in ChatGPT
             </button>
-            {canExtend && primaryDoubt && onExploreDoubt ? (
+            {canContinue && onDismiss ? (
+              <button className="quiet-action" type="button" onClick={onDismiss}>
+                Keep exploring
+              </button>
+            ) : null}
+            {canExtend && !canContinue && primaryDoubt && onExploreDoubt ? (
               <button
                 className="quiet-action"
                 type="button"

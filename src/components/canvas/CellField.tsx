@@ -6,12 +6,14 @@ import { ConnectionLayer } from "./ConnectionLayer";
 
 type CellFieldProps = {
   projection: CanvasProjection;
-  phase: "lens-ready" | "round-ready" | "writing-custom-answer" | "answer-selected" | "transitioning" | "clarity-offered" | "generating-summary" | "ending";
+  phase: "lens-ready" | "round-ready" | "writing-custom-answer" | "answer-selected" | "transitioning" | "finish-offered" | "generating-summary" | "ending";
   questionRef?: React.RefObject<HTMLHeadingElement | null>;
   onSelect?: (answer: string) => void;
   onOpenLens?: (lensIndex: 0 | 1) => void;
   onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
   onCommit?: () => void;
+  onOpenFinish?: () => void;
+  onContinueFromFinish?: () => void;
   ending?: boolean;
   reviewCellId?: string | null;
 };
@@ -24,6 +26,8 @@ function CellContent({
   onOpenLens,
   onReviewNode,
   onCommit,
+  onOpenFinish,
+  onContinueFromFinish,
 }: {
   item: CanvasOccupancy;
   phase: CellFieldProps["phase"];
@@ -32,6 +36,8 @@ function CellContent({
   onOpenLens?: (lensIndex: 0 | 1) => void;
   onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
   onCommit?: () => void;
+  onOpenFinish?: () => void;
+  onContinueFromFinish?: () => void;
 }) {
   const reducedMotion = useReducedMotion();
   const isActiveQuestion = item.kind === "question" && item.status === "active";
@@ -89,6 +95,45 @@ function CellContent({
     );
   }
 
+  if (item.kind === "finish") {
+    return (
+      <motion.button
+        key={item.semanticId}
+        className={className}
+        type="button"
+        aria-label="Open reflection lens"
+        onClick={onOpenFinish}
+        initial={{ opacity: 0, scale: 0.82 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={transition}
+      >
+        <svg className="finish-membrane" viewBox="0 0 274 200" aria-hidden="true" preserveAspectRatio="none">
+          <path d="M50 50C72 6 115 1 137 22C160 1 204 6 224 50C268 69 269 130 224 150C204 194 160 199 137 178C115 199 72 194 50 150C6 130 6 69 50 50Z" />
+        </svg>
+        <span className="finish-mark" aria-hidden="true">✦</span>
+        {body}
+      </motion.button>
+    );
+  }
+
+  if (item.kind === "continue") {
+    return (
+      <motion.button
+        key={item.semanticId}
+        className={className}
+        type="button"
+        aria-label="Keep exploring with new questions"
+        onClick={onContinueFromFinish}
+        initial={{ opacity: 0, scale: 0.82 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={transition}
+      >
+        <span className="continue-mark" aria-hidden="true">→</span>
+        <span>{item.text}</span>
+      </motion.button>
+    );
+  }
+
   if (item.interactive && item.stepIndex !== undefined && item.reviewKind) {
     return (
       <motion.button
@@ -134,6 +179,8 @@ export function CellField({
   onOpenLens,
   onReviewNode,
   onCommit,
+  onOpenFinish,
+  onContinueFromFinish,
   ending = false,
   reviewCellId = null,
 }: CellFieldProps) {
@@ -210,6 +257,8 @@ export function CellField({
                   onOpenLens={onOpenLens}
                   onReviewNode={onReviewNode}
                   onCommit={onCommit}
+                  onOpenFinish={onOpenFinish}
+                  onContinueFromFinish={onContinueFromFinish}
                 />
               ) : null}
             </AnimatePresence>

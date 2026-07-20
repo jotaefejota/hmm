@@ -20,12 +20,13 @@ type AppShellProps = {
   onCloseCustomAnswer: () => void;
   onCommitSelection: () => void;
   onTransitionComplete: () => void;
-  onContinueAfterClarity: () => void;
   onFinish: (reason: "user" | "suggested") => void;
+  onContinueFromFinish: () => void;
   onExploreDoubt: (focus: string) => void;
   onRetry: () => void;
   onUsePrepared: () => void;
   onRestart: () => void;
+  onDismissSummary: () => void;
 };
 
 export function AppShell(props: AppShellProps) {
@@ -37,7 +38,7 @@ export function AppShell(props: AppShellProps) {
     "writing-custom-answer",
     "answer-selected",
     "transitioning",
-    "clarity-offered",
+    "finish-offered",
     ...(state.phase === "error" && state.errorPhase !== "generating-summary" ? ["error"] : []),
   ].includes(state.phase);
   const isEnding = state.phase === "generating-summary" || state.phase === "ending" ||
@@ -74,8 +75,8 @@ export function AppShell(props: AppShellProps) {
           onCloseCustomAnswer={props.onCloseCustomAnswer}
           onCommitSelection={props.onCommitSelection}
           onTransitionComplete={props.onTransitionComplete}
-          onContinueAfterClarity={props.onContinueAfterClarity}
           onFinish={props.onFinish}
+          onContinueFromFinish={props.onContinueFromFinish}
           onRetry={props.onRetry}
           onUsePrepared={props.onUsePrepared}
           onRestart={props.onRestart}
@@ -89,6 +90,7 @@ export function AppShell(props: AppShellProps) {
           onExploreDoubt={props.onExploreDoubt}
           onRetry={props.onRetry}
           onUsePrepared={props.onUsePrepared}
+          onDismiss={props.onDismissSummary}
         />
       ) : null}
     </main>

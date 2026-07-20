@@ -20,7 +20,7 @@ export type SessionPhase =
   | "writing-custom-answer"
   | "answer-selected"
   | "transitioning"
-  | "clarity-offered"
+  | "finish-offered"
   | "generating-summary"
   | "ending"
   | "error";
@@ -69,7 +69,8 @@ export type SessionEvent =
   | { type: "NEXT_DISCOVERY_LOADED"; discovery: DiscoveryPayload; requestId: number }
   | { type: "COMMIT_SELECTION" }
   | { type: "TRANSITION_COMPLETE" }
-  | { type: "CONTINUE_AFTER_CLARITY" }
+  | { type: "CONTINUE_FROM_FINISH" }
+  | { type: "DISMISS_SUMMARY" }
   | { type: "REQUEST_FINISH"; reason: Exclude<FinishReason, "max_rounds" | "extension">; requestId: number }
   | { type: "REQUEST_EXTENSION"; focus: string; requestId: number }
   | { type: "SUMMARY_LOADED"; summary: SummaryPayload; requestId: number }
