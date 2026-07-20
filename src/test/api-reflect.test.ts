@@ -1,18 +1,18 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { PublicError } from "../shared/ai-contract";
+import type { PublicError } from "../../shared/ai-contract";
 
 const generators = vi.hoisted(() => ({
   round: vi.fn(),
   summary: vi.fn(),
 }));
 
-vi.mock("./lib/openai-reflect", () => ({
+vi.mock("../../api/lib/openai-reflect", () => ({
   generateRound: generators.round,
   generateSummary: generators.summary,
 }));
 
-import handler from "./reflect";
+import handler from "../../api/reflect";
 
 const roundRequest = {
   contractVersion: "1",

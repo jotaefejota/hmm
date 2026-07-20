@@ -6,9 +6,9 @@ import {
   summaryPayloadSchema,
   summaryRequestSchema,
   type PublicError,
-} from "../shared/ai-contract";
-import { generateRound, generateSummary } from "./lib/openai-reflect";
-import { createPublicError } from "./lib/validate-output";
+} from "../shared/ai-contract.js";
+import { generateRound, generateSummary } from "./lib/openai-reflect.js";
+import { createPublicError } from "./lib/validate-output.js";
 
 const MAX_BODY_BYTES = 24_576;
 

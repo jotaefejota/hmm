@@ -5,7 +5,7 @@ import {
   MAX_CORE_ROUNDS,
   QUESTION_MAX_LENGTH,
   SUGGESTED_ANSWER_MAX_LENGTH,
-} from "./limits";
+} from "./limits.js";
 
 const trimmedString = (max: number) => z.string().trim().min(1).max(max);
 

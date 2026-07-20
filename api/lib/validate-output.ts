@@ -1,5 +1,5 @@
-import type { RoundPayload, RoundRequest, SummaryPayload } from "../../shared/ai-contract";
-import { publicErrorSchema, type PublicError } from "../../shared/ai-contract";
+import type { RoundPayload, RoundRequest, SummaryPayload } from "../../shared/ai-contract.js";
+import { publicErrorSchema, type PublicError } from "../../shared/ai-contract.js";
 
 const AUTHORITY_PATTERN = /\byou should\b|\byou need to\b|\bthe best choice\b|\d+\s*%/i;
 const MULTI_QUESTION = /\?[\s\S]*\?/;
