@@ -290,8 +290,8 @@ Green is intentionally avoided as the main selected/result colour because it com
 - the active question;
 - its three current suggestions;
 - the separate **None quite fit** action;
-- every selected question/answer pair as a continuous path;
-- the initial dilemma, either on the canvas or represented in the trail minimap;
+- every selected question/answer pair as a continuous path of the actual semantic nodes;
+- the initial dilemma as the first semantic node in that path on desktop;
 - **I think I’ve got it** from round 2 onward;
 - the **Your thread** progress card, containing the unchanged dilemma, every committed answer exactly once, and a quiet round/status line such as **2 of up to 5 · Connecting the dots**.
 
@@ -307,13 +307,14 @@ Green is intentionally avoided as the main selected/result colour because it com
 
 - the immediately previous question and answer remain fully readable;
 - nodes two rounds back reduce in scale and contrast but retain their text;
-- older nodes may collapse to labelled beads in the overview layer, with full text restored on focus or pointer hover;
+- on desktop, committed questions and answers never collapse into an abstract-only `?`/`✓` bead strip; their authored text and violet/amber identity remain visible;
+- only the narrow-window overview may use labelled beads, and it supplements rather than replaces the vertical semantic thread;
 - the path connector never drops below the contrast required to understand continuity;
 - decorative membrane cells never contain text and never compete with the path.
 
 ### At the ending
 
-The complete selected path remains visible as context, occupying roughly one-third of the desktop composition or a compact horizontal strip on narrow screens. The progress card remains available with **Ready to reflect** and the ordered choices. Both are subdued relative to the result lens, which receives primary focus. Unchosen suggestions are absent.
+The complete selected path remains visible as context, occupying roughly one-third of the desktop composition as the same dilemma/question/answer nodes used during exploration. A compact horizontal overview may be used on narrow screens. The progress card remains available with **Ready to reflect** and the ordered choices. Both are subdued relative to the result lens, which receives primary focus. Unchosen suggestions are absent.
 
 ## 7. Complete four-round demo microcopy
 

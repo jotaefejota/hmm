@@ -2,16 +2,34 @@ import type { SessionState } from "../session/session-types";
 import { WelcomeSeed } from "../components/session/WelcomeSeed";
 import { GenerationStatus } from "../components/session/GenerationStatus";
 import { ThoughtCanvas } from "../components/canvas/ThoughtCanvas";
+import { EndingExperience } from "../components/ending/EndingExperience";
 
 type AppShellProps = {
   state: SessionState;
   onOpenEntry: () => void;
   onCancelEntry: () => void;
   onSubmitDilemma: (dilemma: string) => Promise<void>;
+  onSelectAnswer: (answer: string) => void;
+  onSelectCustomAnswer: (answer: string) => void;
+  onOpenCustomAnswer: () => void;
+  onCloseCustomAnswer: () => void;
+  onCommitSelection: () => void;
+  onTransitionComplete: () => void;
+  onContinueAfterClarity: () => void;
+  onFinish: (reason: "user" | "suggested") => void;
+  onRestart: () => void;
 };
 
-export function AppShell({ state, onOpenEntry, onCancelEntry, onSubmitDilemma }: AppShellProps) {
+export function AppShell(props: AppShellProps) {
+  const { state } = props;
   const isWelcome = state.phase === "welcome" || state.phase === "entering";
+  const isExploring = [
+    "round-ready",
+    "writing-custom-answer",
+    "answer-selected",
+    "transitioning",
+    "clarity-offered",
+  ].includes(state.phase);
 
   return (
     <main className="app-shell">
@@ -25,16 +43,30 @@ export function AppShell({ state, onOpenEntry, onCancelEntry, onSubmitDilemma }:
       {isWelcome ? (
         <WelcomeSeed
           phase={state.phase}
-          onOpen={onOpenEntry}
-          onCancel={onCancelEntry}
-          onSubmit={onSubmitDilemma}
+          onOpen={props.onOpenEntry}
+          onCancel={props.onCancelEntry}
+          onSubmit={props.onSubmitDilemma}
         />
       ) : null}
 
       {state.phase === "generating-round" ? <GenerationStatus dilemma={state.dilemma} /> : null}
 
-      {state.phase === "round-ready" && state.currentRound ? (
-        <ThoughtCanvas state={state} round={state.currentRound} />
+      {isExploring ? (
+        <ThoughtCanvas
+          state={state}
+          onSelectAnswer={props.onSelectAnswer}
+          onSelectCustomAnswer={props.onSelectCustomAnswer}
+          onOpenCustomAnswer={props.onOpenCustomAnswer}
+          onCloseCustomAnswer={props.onCloseCustomAnswer}
+          onCommitSelection={props.onCommitSelection}
+          onTransitionComplete={props.onTransitionComplete}
+          onContinueAfterClarity={props.onContinueAfterClarity}
+          onFinish={props.onFinish}
+        />
+      ) : null}
+
+      {state.phase === "generating-summary" || state.phase === "ending" ? (
+        <EndingExperience state={state} onRestart={props.onRestart} />
       ) : null}
     </main>
   );

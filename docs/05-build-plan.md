@@ -1,6 +1,6 @@
 # Hmm… — Two-Day Build Plan
 
-**Status:** Implementation in progress — P0 tasks in Blocks 1–3 completed on 2026-07-20
+**Status:** Implementation in progress — P0 tasks in Blocks 1–4 complete; Block 5 requires the full semantic trail; Block 6 requested ending flow is complete while the planned post-ending extension remains
 
 **Purpose:** Build the smallest complete, visually memorable session through demonstrable vertical slices.
 
@@ -230,7 +230,9 @@ The submitted dilemma, first Hmm… question, exactly three suggestions, their r
 
 ## 4. Selection and transitions between simulated rounds
 
-### Task 4.1 — P0: Complete mock interaction loop
+### Task 4.1 — P0: Complete mock interaction loop ✅
+
+**Implementation status:** Complete — 2026-07-20
 
 **Observable outcome**
 
@@ -266,7 +268,9 @@ Selecting an answer turns it amber, removes the two unused possibilities, shows 
 - `npm run check`
 - Manually complete all five rounds in mock mode and confirm there are never more than three suggestions.
 
-### Task 4.2 — P0: Custom answer without a fourth suggestion
+### Task 4.2 — P0: Custom answer without a fourth suggestion ✅
+
+**Implementation status:** Complete — 2026-07-20
 
 **Observable outcome**
 
@@ -304,6 +308,8 @@ Choosing **None quite fit** opens **Say it your way**; a valid custom response b
 
 ### Task 5.1 — P0: Chosen trail and progress card that agree
 
+**Implementation status:** In progress — the textual progress card and compact overview are working, but the desktop canvas still replaces prior nodes with abstract beads. Completion requires the actual dilemma, question, and selected-answer nodes to persist as one connected path.
+
 **Observable outcome**
 
 After four selections, the initial dilemma and every selected question/answer pair form one continuous quieter trail while **Your thread** lists the same committed answers in order and the current question remains dominant.
@@ -324,6 +330,7 @@ After four selections, the initial dilemma and every selected question/answer pa
 
 - Nodes and edges are derived from dilemma, history, and current round; layout is not stored in session state.
 - The trail alternates violet question and amber user answer.
+- Desktop history uses the actual text-bearing dilemma, question, and selected-answer nodes; a bead-only strip does not satisfy this task.
 - Only chosen nodes persist; no dead suggestion branches remain.
 - Recent history remains readable; older history scales/fades without breaking continuity.
 - Stable IDs and deterministic coordinates produce the same trail after rerender.
@@ -348,6 +355,8 @@ After four selections, the initial dilemma and every selected question/answer pa
 ## 6. Session ending and summary
 
 ### Task 6.1 — P0: Clarity prompt, result lens, restart, and one extension
+
+**Implementation status:** In progress — clarity prompt, early/suggested/max-round summaries, result lens, and confirmed restart are complete. The post-ending extension remains unimplemented and is not marked complete.
 
 **Observable outcome**
 

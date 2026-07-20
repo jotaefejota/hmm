@@ -339,11 +339,12 @@ The decision trail is a projection of `dilemma + history + currentRound`, rebuil
 - Each completed step contributes one Hmm… question and one amber user answer.
 - The current question is appended but styled active.
 - Current suggestions exist only as temporary spokes.
+- On desktop, `ThoughtCanvas` renders the complete semantic projection directly. A separate bead-only `TrailView` must not replace committed question and answer nodes.
 - Age is calculated from the active round, then used to reduce scale, contrast, label prominence, and halo strength.
 - The immediately previous pair remains fully readable.
-- Old labels may be visually condensed on wide canvas, but remain available in the DOM and on focus.
+- Older desktop labels may wrap more tightly and reduce in size, but remain visibly attached to their nodes; abstract `?`/`✓` beads are reserved for the narrow overview.
 - At the ending, reuse the same trail projection with an `ending` layout; do not build a second history component for desktop.
-- The narrow `TrailStrip` is a separate rendering of the same projection, not separate state.
+- The narrow `TrailStrip` is a compact overview of the same projection, not separate state and not the only visible history.
 - `ProgressCard` reads the same ordered `history` selector as the trail; it is a textual index, not a parallel record.
 
 No trail node is draggable or editable in P0. Clicking old nodes may expose their full label for accessibility, but it does not navigate or mutate the session.

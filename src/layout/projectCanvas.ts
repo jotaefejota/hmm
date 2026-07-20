@@ -11,38 +11,36 @@ export type CanvasEdge = {
   id: string;
   from: CanvasNodePosition;
   to: CanvasNodePosition;
+  status: "origin" | "active";
 };
 
-const positions = {
-  dilemma: { id: "dilemma", x: 28, y: 75, shape: 2 },
-  question: { id: "question-1", x: 53, y: 50, shape: 0 },
-  suggestions: [
-    { id: "suggestion-1-1", x: 76, y: 23, shape: 1 },
-    { id: "suggestion-1-2", x: 82, y: 50, shape: 3 },
-    { id: "suggestion-1-3", x: 75, y: 78, shape: 2 },
-  ] satisfies CanvasNodePosition[],
-} as const;
+const suggestionPositions = [
+  { x: 77, y: 23, shape: 1 },
+  { x: 83, y: 50, shape: 3 },
+  { x: 76, y: 78, shape: 2 },
+] as const;
 
-export function projectFirstRound(round: RoundPayload) {
-  const nodes = {
-    dilemma: positions.dilemma,
-    question: positions.question,
-    suggestions: positions.suggestions.map((position, index) => ({
-      ...position,
-      text: round.answers[index],
-    })),
-  };
-
+export function projectActiveRound(round: RoundPayload, roundNumber: number, hasHistory: boolean) {
+  const dilemma: CanvasNodePosition = { id: "dilemma", x: 28, y: 75, shape: 2 };
+  const trailAnchor: CanvasNodePosition = { id: "trail-anchor", x: 35, y: 76, shape: 0 };
+  const question: CanvasNodePosition = { id: `question-${roundNumber}`, x: 54, y: 50, shape: roundNumber % 4 as 0 | 1 | 2 | 3 };
+  const suggestions = suggestionPositions.map((position, index) => ({
+    ...position,
+    id: `suggestion-${roundNumber}-${index + 1}`,
+    text: round.answers[index],
+  }));
+  const origin = hasHistory ? trailAnchor : dilemma;
   const edges: CanvasEdge[] = [
-    { id: "edge-dilemma-question-1", from: nodes.dilemma, to: nodes.question },
-    ...nodes.suggestions.map((suggestion) => ({
-      id: `edge-question-1-${suggestion.id}`,
-      from: nodes.question,
+    { id: `edge-${origin.id}-${question.id}`, from: origin, to: question, status: "origin" },
+    ...suggestions.map((suggestion) => ({
+      id: `edge-${question.id}-${suggestion.id}`,
+      from: question,
       to: suggestion,
+      status: "active" as const,
     })),
   ];
 
-  return { nodes, edges };
+  return { nodes: { dilemma, question, suggestions }, edges };
 }
 
-export type FirstRoundProjection = ReturnType<typeof projectFirstRound>;
+export type ActiveRoundProjection = ReturnType<typeof projectActiveRound>;

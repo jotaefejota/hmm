@@ -2,24 +2,108 @@ import { describe, expect, it } from "vitest";
 import { mockDataset } from "../content/mock-dataset";
 import { sessionReducer } from "./session-reducer";
 import { initialSessionState } from "./session-types";
+import type { SessionState } from "./session-types";
+
+const rounds = mockDataset.scenarios[0].rounds;
+
+const readyAtFirstRound = (): SessionState => {
+  const entering = sessionReducer(initialSessionState, { type: "OPEN_ENTRY" });
+  const generating = sessionReducer(entering, { type: "SUBMIT_DILEMMA", dilemma: "A real question?", requestId: 1 });
+  return sessionReducer(generating, { type: "ROUND_LOADED", round: rounds[0], requestId: 1 });
+};
+
+const completeRound = (state: SessionState, answerIndex: number, requestId: number, nextRoundIndex: number) => {
+  const selected = sessionReducer(state, {
+    type: "SELECT_ANSWER",
+    answer: { text: state.currentRound!.answers[answerIndex], source: "suggested" },
+    requestId,
+  });
+  const loaded = sessionReducer(selected, { type: "NEXT_ROUND_LOADED", round: rounds[nextRoundIndex], requestId });
+  const committed = sessionReducer(loaded, { type: "COMMIT_SELECTION" });
+  return sessionReducer(committed, { type: "TRANSITION_COMPLETE" });
+};
 
 describe("sessionReducer", () => {
   it("moves through welcome, entry, generation, and first round", () => {
-    const entering = sessionReducer(initialSessionState, { type: "OPEN_ENTRY" });
-    const generating = sessionReducer(entering, { type: "SUBMIT_DILEMMA", dilemma: "  A real question?  " });
-    const ready = sessionReducer(generating, { type: "ROUND_LOADED", round: mockDataset.scenarios[0].rounds[0] });
-
-    expect(entering.phase).toBe("entering");
-    expect(generating).toMatchObject({ phase: "generating-round", dilemma: "A real question?" });
-    expect(ready).toMatchObject({ phase: "round-ready", dataSource: "mock" });
+    const ready = readyAtFirstRound();
+    expect(ready).toMatchObject({ phase: "round-ready", dataSource: "mock", activeRequestId: 1 });
   });
 
-  it("rejects empty and duplicate submissions", () => {
+  it("rejects whitespace, duplicate selections, duplicate commits, and stale responses", () => {
     const entering = sessionReducer(initialSessionState, { type: "OPEN_ENTRY" });
-    expect(sessionReducer(entering, { type: "SUBMIT_DILEMMA", dilemma: "   " })).toBe(entering);
+    expect(sessionReducer(entering, { type: "SUBMIT_DILEMMA", dilemma: "   ", requestId: 1 })).toBe(entering);
 
-    const generating = sessionReducer(entering, { type: "SUBMIT_DILEMMA", dilemma: "A question" });
-    expect(sessionReducer(generating, { type: "SUBMIT_DILEMMA", dilemma: "Another" })).toBe(generating);
+    const ready = readyAtFirstRound();
+    const selected = sessionReducer(ready, {
+      type: "SELECT_ANSWER",
+      answer: { text: rounds[0].answers[0], source: "suggested" },
+      requestId: 2,
+    });
+    const repeated = sessionReducer(selected, {
+      type: "SELECT_ANSWER",
+      answer: { text: rounds[0].answers[1], source: "suggested" },
+      requestId: 3,
+    });
+    expect(repeated).toBe(selected);
+    expect(sessionReducer(selected, { type: "NEXT_ROUND_LOADED", round: rounds[1], requestId: 99 })).toBe(selected);
+
+    const committed = sessionReducer(selected, { type: "COMMIT_SELECTION" });
+    expect(committed.history).toHaveLength(1);
+    expect(sessionReducer(committed, { type: "COMMIT_SELECTION" })).toBe(committed);
+  });
+
+  it("completes four rounds, offers clarity, and can continue to the fifth-round limit", () => {
+    let state = readyAtFirstRound();
+    state = completeRound(state, 0, 2, 1);
+    state = completeRound(state, 0, 3, 2);
+    state = completeRound(state, 0, 4, 3);
+    state = completeRound(state, 0, 5, 4);
+
+    expect(state.phase).toBe("clarity-offered");
+    expect(state.history).toHaveLength(4);
+
+    state = sessionReducer(state, { type: "CONTINUE_AFTER_CLARITY" });
+    state = sessionReducer(state, {
+      type: "SELECT_ANSWER",
+      answer: { text: rounds[4].answers[0], source: "suggested" },
+      requestId: 6,
+    });
+    state = sessionReducer(state, { type: "COMMIT_SELECTION" });
+    expect(state).toMatchObject({ phase: "generating-summary", finishReason: "max_rounds" });
+    expect(state.history).toHaveLength(5);
+  });
+
+  it("allows an early finish after two answers and rejects it before then", () => {
+    let state = readyAtFirstRound();
+    expect(sessionReducer(state, { type: "REQUEST_FINISH", reason: "user", requestId: 2 })).toBe(state);
+    state = completeRound(state, 0, 2, 1);
+    state = completeRound(state, 0, 3, 2);
+    state = sessionReducer(state, { type: "REQUEST_FINISH", reason: "user", requestId: 4 });
+    expect(state).toMatchObject({ phase: "generating-summary", finishReason: "user", activeRequestId: 4 });
+  });
+
+  it("commits a custom answer through the same guarded path", () => {
+    let state = readyAtFirstRound();
+    state = sessionReducer(state, { type: "OPEN_CUSTOM_ANSWER" });
+    state = sessionReducer(state, {
+      type: "SELECT_ANSWER",
+      answer: { text: "The chance to mentor", source: "custom" },
+      requestId: 2,
+    });
+    state = sessionReducer(state, { type: "COMMIT_SELECTION" });
+    expect(state.history[0]).toMatchObject({ answer: "The chance to mentor", answerSource: "custom" });
+  });
+
+  it("restart clears the session and makes an old response harmless", () => {
+    const selected = sessionReducer(readyAtFirstRound(), {
+      type: "SELECT_ANSWER",
+      answer: { text: rounds[0].answers[0], source: "suggested" },
+      requestId: 2,
+    });
+    const restarted = sessionReducer(selected, { type: "RESTART", requestId: 3 });
+    const stale = sessionReducer(restarted, { type: "NEXT_ROUND_LOADED", round: rounds[1], requestId: 2 });
+    expect(stale).toBe(restarted);
+    expect(restarted).toMatchObject({ phase: "welcome", history: [], activeRequestId: 3 });
   });
 });
 
