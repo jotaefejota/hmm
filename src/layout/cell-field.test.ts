@@ -14,6 +14,14 @@ describe("cell-field packed discovery world", () => {
     expect(cellDistance(origin, getCellSlot(`cell-c1-r${FIELD_START_ROW}`))).toBeCloseTo(CELL_PITCH, 5);
   });
 
+  it("authors a varied but deterministic resting membrane field", () => {
+    const footprints = new Set(CELL_SLOTS.map((slot) => slot.footprint));
+    const scales = new Set(CELL_SLOTS.map((slot) => slot.scale));
+    expect(footprints.size).toBeGreaterThan(3);
+    expect(scales.size).toBeGreaterThan(3);
+    expect(getCellSlot("cell-c3-r7")).toEqual(CELL_SLOTS.find((slot) => slot.id === "cell-c3-r7"));
+  });
+
   it("keeps extreme five-round lens and answer routes legal", () => {
     const upper = Array.from({ length: 5 }, () => ({ lensIndex: 0, choiceIndex: 0 }) as const);
     const lower = Array.from({ length: 5 }, () => ({ lensIndex: 1, choiceIndex: 2 }) as const);

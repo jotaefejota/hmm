@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { CanvasOccupancy, CanvasProjection } from "../../layout/projectCanvas";
 import { CELL_SIZE_RATIO, FIELD_HEIGHT, FIELD_WIDTH, getCellSlot } from "../../layout/cell-field";
+import { geometryForCell } from "../../layout/cell-geometry";
+import { settleLocalPressure } from "../../layout/pressure-layout";
 import { ConnectionLayer } from "./ConnectionLayer";
 
 type CellFieldProps = {
@@ -184,13 +186,19 @@ export function CellField({
   ending = false,
   reviewCellId = null,
 }: CellFieldProps) {
+  const pressurePositions = useMemo(() => settleLocalPressure(projection), [projection]);
   const focusedSlot = getCellSlot(projection.focusCellId);
   const visibleLensSlots = phase === "lens-ready"
     ? projection.occupancy.filter((item) => item.kind === "lens").map((item) => getCellSlot(item.cellId))
     : [];
+  const focusedPosition = pressurePositions.get(focusedSlot.id) ?? focusedSlot;
   const focus = visibleLensSlots.length === 2
-    ? { x: (visibleLensSlots[0].x + visibleLensSlots[1].x) / 2, y: (visibleLensSlots[0].y + visibleLensSlots[1].y) / 2 }
-    : focusedSlot;
+    ? (() => {
+      const first = pressurePositions.get(visibleLensSlots[0].id) ?? visibleLensSlots[0];
+      const second = pressurePositions.get(visibleLensSlots[1].id) ?? visibleLensSlots[1];
+      return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+    })()
+    : focusedPosition;
   const [openedCookies, setOpenedCookies] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
@@ -220,9 +228,11 @@ export function CellField({
       } as React.CSSProperties}
       data-cell-count={projection.cells.length}
     >
-      <ConnectionLayer edges={projection.edges} />
+      <ConnectionLayer edges={projection.edges} positions={pressurePositions} />
       {projection.cells.map((slot) => {
         const item = projection.occupancy.find((candidate) => candidate.cellId === slot.id);
+        const geometry = geometryForCell(slot, item);
+        const position = pressurePositions.get(slot.id) ?? slot;
         const isReviewTarget = reviewCellId === slot.id;
         const cellClass = item
           ? `is-occupied is-${item.kind} is-${item.status}${isReviewTarget ? " is-review-focus" : ""}`
@@ -231,10 +241,12 @@ export function CellField({
           <div
             key={slot.id}
             data-cell-slot={slot.id}
-            className={`field-cell field-cell-${slot.size} field-role-${slot.role} shape-${slot.shape} ${cellClass}`}
+            className={`field-cell field-cell-${slot.size} field-footprint-${geometry.footprint} field-role-${slot.role} shape-${slot.shape} ${cellClass}`}
             style={{
-              "--cell-x": `${(slot.x / FIELD_WIDTH) * 100}%`,
-              "--cell-y": `${(slot.y / FIELD_HEIGHT) * 100}%`,
+              "--cell-x": `${(position.x / FIELD_WIDTH) * 100}%`,
+              "--cell-y": `${(position.y / FIELD_HEIGHT) * 100}%`,
+              "--cell-scale": String(geometry.scale),
+              "--cell-aspect": String(geometry.aspectRatio),
             } as React.CSSProperties}
           >
             <AnimatePresence mode="wait" initial={false}>

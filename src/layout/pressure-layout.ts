@@ -1,0 +1,66 @@
+import { forceCollide, forceSimulation, forceX, forceY, type SimulationNodeDatum } from "d3-force";
+import { CELL_DIAMETER, CELL_PITCH, type CellSlot } from "./cell-field";
+import { geometryForCell } from "./cell-geometry";
+import type { CanvasProjection } from "./projectCanvas";
+
+export type CellPosition = { x: number; y: number };
+export type CellPositionMap = ReadonlyMap<string, CellPosition>;
+
+type PressureNode = SimulationNodeDatum & {
+  id: string;
+  homeX: number;
+  homeY: number;
+  radius: number;
+};
+
+const LOCAL_PRESSURE_RADIUS = CELL_PITCH * 4.6;
+const SETTLE_TICKS = 72;
+
+function authoredPosition(slot: CellSlot): CellPosition {
+  return { x: slot.x + slot.offsetX, y: slot.y + slot.offsetY };
+}
+
+function radiusFor(slot: CellSlot, projection: CanvasProjection) {
+  const item = projection.occupancy.find((candidate) => candidate.cellId === slot.id);
+  const geometry = geometryForCell(slot, item);
+  return (CELL_DIAMETER * geometry.scale * Math.max(geometry.aspectRatio, 1 / geometry.aspectRatio)) / 2;
+}
+
+/**
+ * A deterministic, finite collision pass. It has no timer and no ownership of
+ * semantic state: it merely settles rendered positions near the current focus.
+ */
+export function settleLocalPressure(projection: CanvasProjection): CellPositionMap {
+  const focusSlot = projection.cells.find((slot) => slot.id === projection.focusCellId);
+  if (!focusSlot) return new Map();
+
+  const focus = authoredPosition(focusSlot);
+  const localSlots = projection.cells.filter((slot) => {
+    const position = authoredPosition(slot);
+    return Math.hypot(position.x - focus.x, position.y - focus.y) <= LOCAL_PRESSURE_RADIUS;
+  });
+  const nodes: PressureNode[] = localSlots.map((slot) => {
+    const position = authoredPosition(slot);
+    return {
+      id: slot.id,
+      homeX: position.x,
+      homeY: position.y,
+      x: position.x,
+      y: position.y,
+      radius: radiusFor(slot, projection),
+    };
+  });
+
+  const simulation = forceSimulation(nodes)
+    .force("home-x", forceX<PressureNode>((node) => node.homeX).strength(0.1))
+    .force("home-y", forceY<PressureNode>((node) => node.homeY).strength(0.1))
+    .force("collide", forceCollide<PressureNode>((node) => node.radius + 0.18).strength(0.82).iterations(3))
+    .alpha(0.9)
+    .alphaDecay(0.045)
+    .velocityDecay(0.58)
+    .stop();
+
+  for (let tick = 0; tick < SETTLE_TICKS; tick += 1) simulation.tick();
+
+  return new Map(nodes.map((node) => [node.id, { x: node.x ?? node.homeX, y: node.y ?? node.homeY }]));
+}

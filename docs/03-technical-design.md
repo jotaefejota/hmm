@@ -6,13 +6,13 @@ The validated discovery payload includes one contextual `fortune` string. Projec
 
 **Status:** Implemented architecture; production deployment verified 2026-07-20
 
-**Depends on:** `docs/01-product-and-mvp.md`, `docs/02-experience-design.md`, and `docs/04-ai-contract.md`. The proposed, separately evaluated route toward more fluid node motion is recorded in `docs/06-organic-node-dynamics.md`.
+**Depends on:** `docs/01-product-and-mvp.md`, `docs/02-experience-design.md`, and `docs/04-ai-contract.md`. The replacement authored-canvas direction is recorded in `docs/07-authored-organic-canvas.md`.
 
-**Goal:** Deliver the complete hackathon experience with strong visual quality in two days, without building a general graph editor, a physics simulation, or a persistent backend.
+**Goal:** Deliver the complete hackathon experience with strong visual quality in two days, without building a general graph editor, a whole-canvas physics toy, or a persistent backend.
 
 ## Architecture decision in one sentence
 
-Build a single React/Vite application whose session is managed by one reducer, render one persistent authored field of accessible HTML cells over one SVG connection layer, derive content occupancy and marks from semantic history, animate controlled focus changes with Motion, and obtain validated reflection content through one Vercel Function with an automatic local mock fallback.
+Build a single React/Vite application whose session is managed by one reducer, render one persistent authored field of accessible HTML cells over one SVG connection layer, derive content occupancy and marks from semantic history, use a bounded D3 collision pass to settle local cell pressure, animate controlled focus changes with Motion, and obtain validated reflection content through one Vercel Function with an automatic local mock fallback.
 
 ```mermaid
 flowchart LR
@@ -38,7 +38,8 @@ The semantic session—not the canvas—is the source of truth. The cell field i
 | Styling | Plain CSS files, CSS custom properties, and semantic class names | The organic visual treatment needs bespoke shapes, layers, blur, and responsive rules. A utility framework would not remove meaningful work. |
 | Cells | A persistent set of absolutely positioned HTML containers holding native buttons/articles | Preserves stable spatial memory, native text wrapping, focus, keyboard behavior, and screen-reader semantics while allowing art-directed placement. |
 | Connections | One non-interactive SVG layer behind the HTML cells | SVG paths are easy to draw, fade, and animate while occupied-cell content remains accessible HTML. |
-| Animation | Motion for React (`motion`) for focus and content transitions; CSS for simple halos | Motion provides controlled transforms, occupancy fades, and reduced-motion support without introducing a full scene or physics engine. Stable cell elements avoid remount-heavy transition choreography. |
+| Local pressure layout | `d3-force` (`forceCollide`, `forceX`, `forceY`) | A short, deterministic local simulation lets a grown active node displace nearby membranes through several rings while authored home positions prevent drift. It is stopped after settling; it never owns session state or becomes a free canvas. |
+| Animation | Motion for React (`motion`) for focus and content transitions; CSS for simple halos | Motion provides controlled transforms, occupancy fades, and reduced-motion support. Stable cell elements avoid remount-heavy transition choreography. |
 | Validation | Zod in a root `shared/` module | One schema can validate browser requests, server input, model output, and mock fixtures. An exact-length array enforces three answers while producing JSON Schema accepted by Structured Outputs. |
 | AI server | One TypeScript Vercel Function in `api/reflect.ts` | Vercel supports Vite projects with functions in an `api` directory, so the frontend and secret-bearing endpoint can deploy together without a separate server. |
 | Model API | Official OpenAI JavaScript SDK, Responses API, and Structured Outputs | The SDK can parse a response directly against a Zod schema. Structured Outputs provides schema adherence rather than merely valid JSON. |
@@ -50,7 +51,7 @@ The production deployment is [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel
 
 ### Graph-library assessment
 
-Do **not** use React Flow, D3 force layout, Cytoscape, or another graph library for P0.
+Do **not** use React Flow, Cytoscape, or another graph-editor library for P0. `d3-force` is deliberately limited to the bounded local pressure pass described above; it is not the canvas architecture or a general graph layout.
 
 [React Flow](https://reactflow.dev/) is designed for interactive node editors and includes dragging, selection, connection handles, pan/zoom, and viewport state. Hmm… needs none of those capabilities. It has one short linear path, three temporary possibilities, no user-positioned nodes, and a highly specific visual grammar. Adopting a graph editor would mean translating our session into its node model, disabling editor behavior, overriding its viewport assumptions, and fighting its wrappers while still writing the custom layout and styling.
 
@@ -274,7 +275,7 @@ type CanvasProjection = {
 };
 ```
 
-`cell-field.ts` owns a finite deterministic **hex-offset packed** lattice of stable slot IDs and world coordinates. Packing is computed once as module constants—no runtime physics. Odd columns are vertically offset by half a row pitch so each empty cell has six near-neighbours. Empty-cell diameter is set to approximately the pitch (with a small membrane gap of about 2–4% of pitch) so neighbours appear to kiss. `projectOccupancy.ts` (or the equivalent projection inside `projectCanvas.ts`) maps semantic IDs such as `question-2` and `suggestion-2-1` into those slots by replaying the selected option indices. React keys the outer cell elements by `cellId`, never by `semanticId` or an array index.
+`cell-field.ts` owns a finite deterministic **hex-offset packed** lattice of stable slot IDs and authored home coordinates. Odd columns are vertically offset by half a row pitch so each empty cell has six near-neighbours. A pure `pressure-layout.ts` view pass then runs a fixed number of `d3-force` collision ticks only around the current focus and returns rendered coordinates; it neither writes the lattice nor changes semantic routing. `projectOccupancy.ts` (or the equivalent projection inside `projectCanvas.ts`) maps semantic IDs such as `question-2` and `suggestion-2-1` into those slots by replaying the selected option indices. React keys the outer cell elements by `cellId`, never by `semanticId` or an array index.
 
 Question cells occupy alternating lattice columns after the origin. Their three suggestions use three immediate hex neighbours as a directional fan rather than one detached column. For the upper lens, one suggestion sits directly above and two use the forward diagonal neighbours; for the lower lens, one sits directly below and two use the forward diagonal neighbours. The semantic option index still supplies the next route delta independently of its rendered slot. Starting from the middle row leaves enough vertical capacity for any five-round sequence. Occupied or active cells may scale slightly above the pack for emphasis; empty substrate cells stay packed and quiet. A development assertion must reject duplicate active occupancy, an unknown slot, a suggestion that does not touch its question, or a route outside the authored lattice.
 

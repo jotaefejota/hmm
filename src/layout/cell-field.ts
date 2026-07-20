@@ -1,4 +1,5 @@
 export type CellShape = 0 | 1 | 2 | 3;
+export type CellFootprint = "seed" | "pebble" | "orb" | "shell" | "capsule";
 
 export type CellSlot = {
   id: string;
@@ -7,6 +8,11 @@ export type CellSlot = {
   x: number;
   y: number;
   size: "medium";
+  footprint: CellFootprint;
+  scale: number;
+  aspectRatio: number;
+  offsetX: number;
+  offsetY: number;
   shape: CellShape;
   role: "cell";
 };
@@ -41,12 +47,17 @@ const xForColumn = (column: number) => ORIGIN_X + column * COL_STEP;
 const yForCell = (column: number, row: number) =>
   ORIGIN_Y + row * ROW_STEP + (column % 2 === 1 ? ROW_STEP / 2 : 0);
 const idFor = (column: number, row: number) => `cell-c${column}-r${row}`;
+const footprintCycle: readonly CellFootprint[] = ["seed", "pebble", "orb", "seed", "capsule", "pebble", "orb", "shell"];
+const scaleCycle = [0.76, 0.86, 0.96, 0.82, 1.04, 0.9, 1, 1.1] as const;
+const aspectCycle = [1, 0.9, 1.08, 0.96, 1.22, 0.88, 1.04, 1.14] as const;
+const offsetCycle = [-0.32, 0.18, 0.28, -0.16, 0.1, -0.26, 0.22, -0.08] as const;
 
 export const CELL_SLOTS: readonly CellSlot[] = Array.from(
   { length: FIELD_COLUMN_COUNT * FIELD_ROW_COUNT },
   (_, index) => {
     const column = Math.floor(index / FIELD_ROW_COUNT);
     const row = index % FIELD_ROW_COUNT;
+    const profile = (column * 5 + row * 3) % footprintCycle.length;
     return {
       id: idFor(column, row),
       column,
@@ -54,6 +65,11 @@ export const CELL_SLOTS: readonly CellSlot[] = Array.from(
       x: xForColumn(column),
       y: yForCell(column, row),
       size: "medium",
+      footprint: footprintCycle[profile],
+      scale: scaleCycle[profile],
+      aspectRatio: aspectCycle[profile],
+      offsetX: offsetCycle[profile],
+      offsetY: offsetCycle[(profile + 3) % offsetCycle.length],
       shape: (column * 3 + row) % 4 as CellShape,
       role: "cell",
     };

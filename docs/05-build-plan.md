@@ -2,13 +2,15 @@
 
 ## 11. Discovery-led canvas revision
 
-## 12. Organic-node dynamics investigation
+## 12. Authored organic-canvas reset
 
-**Status:** Planned. The first directed DOM/SVG prototype was evaluated and intentionally reverted because its selected node visibly returned to its authored slot after commitment, rather than creating the desired sense of material continuity.
+**Status:** In progress — 2026-07-21. The directed node and material-overlay experiments were reverted because their temporary merge had no coherent semantic end state. The replacement plan is `docs/07-authored-organic-canvas.md`.
 
-**Next decision:** Use the staged experiments in `docs/06-organic-node-dynamics.md`: begin with a snapshot-plus-SVG-membrane prototype, then compare bounded local-force and Canvas/Pixi overlay spikes only if the first experiment does not meet the visual bar.
+**Completed foundation:** Slices A, B, and D are complete: the persistent field has deterministic, varied footprints, scales, aspect ratios, and offsets; semantic content receives compatible footprints; and a bounded D3 collision pass settles pressure around the active neighbourhood without changing session state or routing.
 
-**Guardrails:** Keep semantic state, accessible HTML interactions, mock mode, history review, and reduced-motion behaviour independent from whichever visual engine is tested.
+**Next decision:** Tune authored route regions and the semantic transition choreography against the new pressure field.
+
+**Guardrails:** Keep semantic state, accessible HTML interactions, mock mode, history review, and reduced-motion behaviour independent from canvas styling or motion.
 
 ### Task 11.1 — P0: Two-lens discovery rhythm
 
@@ -24,7 +26,7 @@
 
 **Observable outcome:** The chosen lens creates an upper/lower bend, the chosen answer creates the next upper/middle/lower bend, and unused lenses return to the unchanged substrate.
 
-**Acceptance criteria:** Stable slot identity is preserved, every five-round combination remains within the authored field, and no pan/zoom or physics is introduced.
+**Acceptance criteria:** Stable slot identity is preserved, every five-round combination remains within the authored field, and no pan/zoom or whole-canvas simulation is introduced.
 
 ### Task 11.3 — P0: Direct trail review
 
@@ -299,7 +301,7 @@ The canvas reads as one organic cellular world larger than the viewport. The fir
 - The camera advances toward the active question rather than fitting the full route into the viewport.
 - Selected cells can retain text and a semantic mark; unchosen content can clear while its neutral cell remains.
 - The progress-card exclusion area remains clear.
-- There is no physics, random placement, procedural infinite grid, new cell geometry per round, or user-controlled pan/zoom.
+- There is no continuous whole-canvas physics, random placement, procedural infinite grid, new cell geometry per round, or user-controlled pan/zoom. A bounded, deterministic local collision pass is permitted for active-node pressure.
 
 **Checks Codex must run**
 
@@ -329,7 +331,7 @@ At approximately 1440×900 the empty cellular field reads as a packed soup: neig
 
 **Acceptance criteria**
 
-- Centres use a deterministic hex-offset lattice computed once as constants (no runtime physics).
+- Centres use a deterministic hex-offset lattice computed once as constants. A fixed, local collision pass may derive temporary rendered positions around the active focus without modifying those anchors.
 - Empty-cell diameter is approximately the lattice pitch, with only a small membrane gap so neighbours kiss.
 - Stable slot IDs, count, and relative geometry are preserved across rounds.
 - Upper, middle, and lower choice sequences still produce distinct legal routes within the authored field.
