@@ -4,7 +4,7 @@
 
 The active neighbourhood begins with two violet question-lens cells carrying short theme labels, not a fully revealed question. Choosing a lens transforms that same cell into the active Hmm… question and reveals exactly three neighbouring answer cells. Until an answer is committed, **Try the other angle** restores both lenses without another content request. Once an answer is chosen, the unused lens clears back to the substrate and only the chosen question and answer remain marked.
 
-Committed question and answer cells are buttons in review mode. Activating either focuses that cell and opens one read-only trail card containing the lens theme, full question, and chosen answer. **Back to now** or Escape restores the current neighbourhood. Review never edits history, resurrects an unused lens, or enables free pan and zoom.
+Once an answer commits, its violet question and amber answer settle into one larger amber **decision cell**. It carries the user’s chosen answer, while the full question remains preserved in semantic history. Its larger footprint makes nearby quiet cells yield through the controlled local-pressure layout. Activating a settled decision expands it back into its original question-and-answer pair for review. Only one trail step may be expanded at a time; committing the next answer settles any expanded pair again. Review never edits history, resurrects an unused lens, or enables free pan and zoom.
 
 Each active discovery places one small amber fortune-cookie cell near its two lenses. Opening it once reveals a short, surprising reframing grounded in the original dilemma and committed path. Cookies remain subordinate to lenses, never create connectors, and do not enter the progress card or committed AI history.
 
@@ -50,7 +50,7 @@ The recommended direction is therefore a warm off-white cellular field with ink 
 - Content occupancy uncovers questions and answers inside cells that were already part of that soup. The screen must not fill with edge-to-edge *meaningful* nodes; quiet empty cells remain subordinate substrate.
 - A cell can be empty, hold active content, hold an unchosen suggestion, or retain a selected/previous mark. These are states of the same cell, not different layers of bubbles.
 - Starting a new round does not create a new visible cluster. Content clears from unused cells, the next question and suggestions occupy the next preset cells, and the camera travels to that neighbourhood.
-- A selected cell keeps its amber mark and selected text as part of the trail. A rejected cell loses its suggestion text and returns to its quiet neutral state.
+- A committed question-and-answer pair settles into one larger amber decision cell, carrying the selected text as part of the trail. Tapping it restores the two original cells for read-only review; the next commitment settles it again. A rejected cell loses its suggestion text and returns to its quiet neutral state.
 - The active neighbourhood comes forward through scale, contrast, sharpness, halo, and a controlled camera pan. Recent cells remain near the viewport edge before slipping away; the progress card preserves the complete textual route.
 - Choosing an item under **What you’ve chosen so far** is a review affordance: the camera (or narrow scroll) briefly focuses that committed amber answer cell. It does not edit history or enable free pan/zoom. The next selection, phase change, or **Back to now** returns focus to the active neighbourhood.
 - The three suggestions form a compact fan in cells that physically touch the opened question; they must never read as a detached vertical menu. The fan follows the lens placement: an upper lens uses one cell directly above and two forward neighbours, while a lower lens uses one cell directly below and two forward neighbours. The selected position still determines the next route bend, so repeated choices create a distinct rising, level, falling, or mixed path.
@@ -101,7 +101,7 @@ The user can:
 - after round 2, choose **I think I’ve got it**;
 - restart from a quiet menu action.
 
-Selecting an answer is a commitment for this linear MVP. The occupied cell changes from a suggestion into a user-marked cell, receives a check mark, and becomes connected to the question. The two unchosen texts soften and dissolve while their cells return to the neutral field. The selected cell then becomes the launch point for the next question in a nearby existing cell.
+Selecting an answer is a commitment for this linear MVP. The occupied cell changes from a suggestion into a user-marked cell, receives a check mark, and becomes connected to the question. The two unchosen texts soften and dissolve while their cells return to the neutral field. The question and selected answer then draw together into a larger amber decision cell, and nearby quiet cells make room. The settled decision becomes the launch point for the next question in a nearby existing cell.
 
 When the selection commits, the progress card appends that answer once under **What you’ve chosen so far** and updates its round/status line. The card never updates on hover, focus, or the temporary pressed state. Each listed answer is activatable for trail review: activating it focuses the matching marked cell on the canvas without changing the session.
 
@@ -114,7 +114,7 @@ Each new round repeats the same grammar:
 3. the occupied cell becomes amber and joins the path;
 4. unused suggestion content disappears while the cells remain;
 5. content occupies the next forward cells and the camera pans to keep the new question near the focal area;
-6. older selected cells remain marked in the world, even when they eventually move outside the viewport.
+6. older settled decisions remain marked in the world, even when they eventually move outside the viewport; activating one temporarily unfolds its original question and answer for review.
 
 The route alternates between Hmm… and the user:
 

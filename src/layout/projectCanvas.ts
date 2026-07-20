@@ -17,7 +17,7 @@ import {
 export type CanvasOccupancy = {
   cellId: string;
   semanticId: string;
-  kind: "dilemma" | "lens" | "question" | "suggestion" | "answer" | "fortune" | "finish" | "continue";
+  kind: "dilemma" | "lens" | "question" | "suggestion" | "answer" | "decision" | "fortune" | "finish" | "continue";
   status: "active" | "selected" | "previous" | "clearing";
   text: string;
   label: string;
@@ -40,13 +40,14 @@ type ProjectCanvasInput = {
   phase: SessionPhase;
   selectedAnswer: SelectedAnswer | null;
   focusOverrideCellId?: string | null;
+  expandedDecisionStepIndex?: number | null;
 };
 
 const edge = (id: string, fromCellId: string, toCellId: string, status: CanvasEdge["status"]): CanvasEdge =>
   ({ id, from: getCellSlot(fromCellId), to: getCellSlot(toCellId), status });
 
 export function projectCanvas({
-  dilemma, history, currentDiscovery, selectedLensIndex, phase, selectedAnswer, focusOverrideCellId = null,
+  dilemma, history, currentDiscovery, selectedLensIndex, phase, selectedAnswer, focusOverrideCellId = null, expandedDecisionStepIndex = null,
 }: ProjectCanvasInput): CanvasProjection {
   const occupancy: CanvasOccupancy[] = [{
     cellId: DILEMMA_CELL_ID, semanticId: "dilemma", kind: "dilemma", status: "previous",
@@ -60,14 +61,31 @@ export function projectCanvas({
     const questionCellId = getQuestionCellId(step.round, completed, step.lensIndex);
     const answerCellId = getSuggestionCellIds(step.round, completed, step.lensIndex)[step.choiceIndex];
     const age = (history.length - index) * 2;
-    occupancy.push(
-      { cellId: questionCellId, semanticId: `question-${step.round}`, kind: "question", status: "previous", text: step.question, label: `${step.lensTheme} · ${step.round}`, age, interactive: true, lensIndex: step.lensIndex, stepIndex: index, reviewKind: "question" },
-      { cellId: answerCellId, semanticId: `answer-${step.round}`, kind: "answer", status: "selected", text: step.answer, label: `You chose · ${step.round}`, age: age - 1, interactive: true, optionIndex: step.choiceIndex, stepIndex: index, reviewKind: "answer" },
-    );
-    edges.push(
-      edge(`edge-${previousCellId}-${questionCellId}`, previousCellId, questionCellId, index === 0 ? "origin" : "previous"),
-      edge(`edge-${questionCellId}-${answerCellId}`, questionCellId, answerCellId, "previous"),
-    );
+    const isExpanded = expandedDecisionStepIndex === index;
+    if (isExpanded) {
+      occupancy.push(
+        { cellId: questionCellId, semanticId: `question-${step.round}`, kind: "question", status: "previous", text: step.question, label: `${step.lensTheme} · ${step.round}`, age, interactive: true, lensIndex: step.lensIndex, stepIndex: index, reviewKind: "question" },
+        { cellId: answerCellId, semanticId: `answer-${step.round}`, kind: "answer", status: "selected", text: step.answer, label: `You chose · ${step.round}`, age: age - 1, interactive: true, optionIndex: step.choiceIndex, stepIndex: index, reviewKind: "answer" },
+      );
+      edges.push(
+        edge(`edge-${previousCellId}-${questionCellId}`, previousCellId, questionCellId, index === 0 ? "origin" : "previous"),
+        edge(`edge-${questionCellId}-${answerCellId}`, questionCellId, answerCellId, "previous"),
+      );
+    } else {
+      occupancy.push({
+        cellId: answerCellId,
+        semanticId: `decision-${step.round}`,
+        kind: "decision",
+        status: "selected",
+        text: step.answer,
+        label: `Settled choice · ${step.round}`,
+        age: age - 1,
+        interactive: true,
+        optionIndex: step.choiceIndex,
+        stepIndex: index,
+      });
+      edges.push(edge(`edge-${previousCellId}-${answerCellId}`, previousCellId, answerCellId, index === 0 ? "origin" : "previous"));
+    }
     previousCellId = answerCellId;
     completed.push({ lensIndex: step.lensIndex, choiceIndex: step.choiceIndex });
   });

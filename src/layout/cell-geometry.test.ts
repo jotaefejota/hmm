@@ -18,4 +18,11 @@ describe("geometryForCell", () => {
     expect(geometry.scale).toBe(2.73);
     expect(geometry.aspectRatio).toBe(1.365);
   });
+
+  it("gives a settled decision more room than a normal answer", () => {
+    const slot = CELL_SLOTS[0];
+    const answer = geometryForCell(slot, { cellId: slot.id, semanticId: "answer-1", kind: "answer", status: "selected", text: "Answer", label: "You chose", age: 0, interactive: true });
+    const decision = geometryForCell(slot, { cellId: slot.id, semanticId: "decision-1", kind: "decision", status: "selected", text: "Answer", label: "Settled choice", age: 0, interactive: true });
+    expect(decision.scale).toBeGreaterThan(answer.scale);
+  });
 });

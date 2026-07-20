@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { SessionState } from "../../session/session-types";
 import { selectCanFinish, selectProgress } from "../../session/session-selectors";
@@ -51,6 +51,10 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
   const questionRef = useRef<HTMLHeadingElement>(null);
   const progress = selectProgress(state);
   const { review, reviewCellId, isReviewing, focusHistoryAnswer, focusHistoryNode, clearReviewFocus } = useTrailReviewFocus(state);
+  const [expandedDecision, setExpandedDecision] = useState<{ historyLength: number; stepIndex: number } | null>(null);
+  const expandedDecisionStepIndex = expandedDecision?.historyLength === state.history.length
+    ? expandedDecision.stepIndex
+    : null;
   const projection = projectCanvas({
     dilemma: state.dilemma,
     history: state.history,
@@ -59,6 +63,7 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
     phase: state.phase,
     selectedAnswer: state.selectedAnswer,
     focusOverrideCellId: reviewCellId,
+    expandedDecisionStepIndex,
   });
 
   useEffect(() => {
@@ -79,7 +84,10 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
     >
       <ProgressCard
         progress={progress}
-        onFocusAnswer={focusHistoryAnswer}
+        onFocusAnswer={(stepIndex) => {
+          setExpandedDecision({ historyLength: state.history.length, stepIndex });
+          focusHistoryAnswer(stepIndex);
+        }}
         onReturnToNow={clearReviewFocus}
         reviewing={isReviewing}
       />
@@ -90,13 +98,23 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
         questionRef={questionRef}
         onSelect={(answer) => {
           clearReviewFocus();
+          setExpandedDecision(null);
           props.onSelectAnswer(answer);
         }}
         onOpenLens={(lensIndex) => {
           clearReviewFocus();
           props.onOpenLens(lensIndex);
         }}
-        onReviewNode={focusHistoryNode}
+        onReviewNode={(stepIndex, focusKind) => {
+          setExpandedDecision({ historyLength: state.history.length, stepIndex });
+          focusHistoryNode(stepIndex, focusKind);
+        }}
+        onToggleDecision={(stepIndex) => {
+          clearReviewFocus();
+          setExpandedDecision((current) => current?.historyLength === state.history.length && current.stepIndex === stepIndex
+            ? null
+            : { historyLength: state.history.length, stepIndex });
+        }}
         onCommit={props.onCommitSelection}
         onOpenFinish={() => props.onFinish("suggested")}
         onContinueFromFinish={props.onContinueFromFinish}

@@ -13,6 +13,7 @@ type CellFieldProps = {
   onSelect?: (answer: string) => void;
   onOpenLens?: (lensIndex: 0 | 1) => void;
   onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
+  onToggleDecision?: (stepIndex: number) => void;
   onCommit?: () => void;
   onOpenFinish?: () => void;
   onContinueFromFinish?: () => void;
@@ -27,6 +28,7 @@ function CellContent({
   onSelect,
   onOpenLens,
   onReviewNode,
+  onToggleDecision,
   onCommit,
   onOpenFinish,
   onContinueFromFinish,
@@ -37,6 +39,7 @@ function CellContent({
   onSelect?: (answer: string) => void;
   onOpenLens?: (lensIndex: 0 | 1) => void;
   onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
+  onToggleDecision?: (stepIndex: number) => void;
   onCommit?: () => void;
   onOpenFinish?: () => void;
   onContinueFromFinish?: () => void;
@@ -136,6 +139,25 @@ function CellContent({
     );
   }
 
+  if (item.kind === "decision" && item.stepIndex !== undefined) {
+    return (
+      <motion.button
+        key={item.semanticId}
+        data-history-node={item.semanticId}
+        className={`${className} settled-decision-action`}
+        type="button"
+        aria-label={`Unfold decision from round ${item.stepIndex + 1}: ${item.text}`}
+        onClick={() => onToggleDecision?.(item.stepIndex!)}
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: targetOpacity, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={transition}
+      >
+        {body}
+      </motion.button>
+    );
+  }
+
   if (item.interactive && item.stepIndex !== undefined && item.reviewKind) {
     return (
       <motion.button
@@ -180,6 +202,7 @@ export function CellField({
   onSelect,
   onOpenLens,
   onReviewNode,
+  onToggleDecision,
   onCommit,
   onOpenFinish,
   onContinueFromFinish,
@@ -268,6 +291,7 @@ export function CellField({
                   onSelect={onSelect}
                   onOpenLens={onOpenLens}
                   onReviewNode={onReviewNode}
+                  onToggleDecision={onToggleDecision}
                   onCommit={onCommit}
                   onOpenFinish={onOpenFinish}
                   onContinueFromFinish={onContinueFromFinish}

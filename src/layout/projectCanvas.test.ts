@@ -28,19 +28,29 @@ describe("projectCanvas discovery", () => {
     expect(projection.occupancy.filter((item) => item.kind === "suggestion")).toHaveLength(3);
   });
 
-  it("preserves only the chosen question and answer as reviewable history", () => {
+  it("settles committed history into one larger decision without discarding its semantic pair", () => {
     const projection = projectCanvas({ dilemma: "A dilemma", history: [step(0, 2)], currentDiscovery: mockDataset.scenarios[0].discoveries[1], selectedLensIndex: null, phase: "lens-ready", selectedAnswer: null });
     const history = projection.occupancy.filter((item) => item.stepIndex === 0);
-    expect(history).toHaveLength(2);
-    expect(history.every((item) => item.interactive)).toBe(true);
+    expect(history).toHaveLength(1);
+    expect(history[0]).toMatchObject({ kind: "decision", text: step(0, 2).answer, interactive: true });
     expect(new Set(projection.occupancy.map((item) => item.cellId)).size).toBe(projection.occupancy.length);
+  });
+
+  it("unfolds one settled decision into its original question and answer for review", () => {
+    const projection = projectCanvas({
+      dilemma: "A dilemma", history: [step(0, 2)], currentDiscovery: mockDataset.scenarios[0].discoveries[1],
+      selectedLensIndex: null, phase: "lens-ready", selectedAnswer: null, expandedDecisionStepIndex: 0,
+    });
+    const history = projection.occupancy.filter((item) => item.stepIndex === 0);
+    expect(history.map((item) => item.kind)).toEqual(["question", "answer"]);
+    expect(history.every((item) => item.interactive)).toBe(true);
   });
 
   it("produces different trail cells for different lens choices", () => {
     const upper = projectCanvas({ dilemma: "A dilemma", history: [step(0, 1)], currentDiscovery: null, selectedLensIndex: null, phase: "ending", selectedAnswer: null });
     const lower = projectCanvas({ dilemma: "A dilemma", history: [step(1, 1)], currentDiscovery: null, selectedLensIndex: null, phase: "ending", selectedAnswer: null });
-    expect(upper.occupancy.find((item) => item.kind === "question")?.cellId)
-      .not.toBe(lower.occupancy.find((item) => item.kind === "question")?.cellId);
+    expect(upper.occupancy.find((item) => item.kind === "decision")?.cellId)
+      .not.toBe(lower.occupancy.find((item) => item.kind === "decision")?.cellId);
     expect(upper.cells).toBe(lower.cells);
   });
 

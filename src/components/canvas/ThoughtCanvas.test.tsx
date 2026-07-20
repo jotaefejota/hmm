@@ -49,11 +49,12 @@ describe("ThoughtCanvas discovery", () => {
     expect(props.onReturnToLenses).toHaveBeenCalledOnce();
   });
 
-  it("opens read-only detail by activating a historical bubble", async () => {
+  it("unfolds a settled decision, then opens read-only detail from its answer", async () => {
     const props = callbacks();
     const step = historyStep();
     const state = { ...createInitialSessionState(2), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, history: [step], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const };
     render(<ThoughtCanvas state={state} {...props} />);
+    await userEvent.click(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` }));
     await userEvent.click(screen.getByRole("button", { name: `Review round 1: ${step.answer}` }));
     expect(screen.getByRole("complementary", { name: "Review round 1" })).toHaveTextContent(step.question);
     expect(screen.getByRole("complementary", { name: "Review round 1" })).toHaveTextContent(step.answer);

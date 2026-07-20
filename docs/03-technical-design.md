@@ -2,6 +2,8 @@
 
 > **Contract v2 revision:** A round request returns one discovery payload containing exactly two complete lenses. Each lens includes a short theme, one question, and exactly three answers. Lens switching is local state work and never performs a second request. The stable lattice route is derived from both the chosen lens index and answer index.
 
+> **Settled-decision presentation:** Canonical history continues to retain the separate question and answer. The canvas derives either a single, enlarged decision occupancy at the answer slot or the original pair for one temporarily expanded review step. This view-local state resets whenever another answer commits; it never creates an alternate path or changes provider payloads.
+
 The validated discovery payload includes one contextual `fortune` string. Projection maps it to a deterministic nearby cell-slot ID; opened state remains component-local and deliberately absent from canonical session history. Mock and live providers return the same field.
 
 **Status:** Implemented architecture; production deployment verified 2026-07-20

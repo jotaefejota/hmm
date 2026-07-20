@@ -426,6 +426,18 @@ Choosing **None quite fit** opens **Say it your way**; a valid custom response b
 
 ## 5. Visual history
 
+### P1 — Settled decision cells
+
+**Observable outcome:** After an answer is committed, its question and selected answer visibly settle into one larger amber decision cell. The cell contains the selected answer and moves nearby quiet cells through the existing bounded pressure pass. Activating it unfolds the original question/answer pair for read-only review; the next commitment settles that pair again.
+
+**Likely files:** `src/layout/projectCanvas.ts`, `src/layout/cell-geometry.ts`, `src/components/canvas/CellField.tsx`, `src/components/canvas/ThoughtCanvas.tsx`, `src/styles/canvas.css`, layout/component tests.
+
+**Dependencies:** Stable history projection and bounded local pressure layout.
+
+**Acceptance criteria:** History remains canonical question plus answer data; exactly one step can be unfolded; no new API request or history mutation occurs when unfolding; collapsed decisions, unfolded pairs, keyboard focus, and reduced-motion fallback are testable.
+
+**Checks:** `npm test -- --run`, forced mock session through at least two commitments, desktop/narrow keyboard and reduced-motion visual inspection, then `npm run check`.
+
 ### Task 5.1 — P0: Marked-cell trail and progress card that agree
 
 **Implementation status:** Complete — 2026-07-20. Semantic history projects as marks and occupancy on the persistent field, and the progress card uses the same canonical history; desktop and narrow layouts have been inspected.

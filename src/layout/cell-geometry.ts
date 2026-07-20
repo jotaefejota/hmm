@@ -27,6 +27,7 @@ export function geometryForCell(slot: CellSlot, item: CanvasOccupancy | undefine
     return { footprint: "pebble", scale: 0.94 * selectedLift, aspectRatio: 0.9 };
   }
   if (item.kind === "answer") return { footprint: "capsule", scale: 1.04, aspectRatio: 1.1 };
+  if (item.kind === "decision") return { footprint: "shell", scale: 1.72, aspectRatio: 1.08 };
   if (item.kind === "fortune") return { footprint: "capsule", scale: 0.9, aspectRatio: 1.24 };
   if (item.kind === "finish") return { footprint: "shell", scale: 2.73, aspectRatio: 1.365 };
   if (item.kind === "continue") return { footprint: "orb", scale: 1.1, aspectRatio: 1 };
