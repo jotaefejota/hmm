@@ -62,6 +62,7 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
         question: state.currentRound.question,
         answer: state.selectedAnswer.text,
         answerSource: state.selectedAnswer.source,
+        choiceIndex: state.selectedAnswer.choiceIndex,
       } as const;
       const history = [...state.history, step];
       const reachedLimit = history.length >= 5;
@@ -97,4 +98,3 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
       return createInitialSessionState(event.requestId);
   }
 }
-

@@ -60,8 +60,8 @@ Scaffolding must provide and preserve these commands:
 - Keep TypeScript strict. Do not use `any`; narrow `unknown` at boundaries.
 - Derive API types from the shared Zod schemas. Do not duplicate wire-contract interfaces.
 - Keep the semantic session in one reducer. Components dispatch events; they do not invent phases.
-- Store dilemma, selected history, current round, and summary—not rendered nodes or coordinates.
-- Derive canvas nodes, edges, ages, and positions with pure selectors/layout functions.
+- Store dilemma, selected history, current round, and summary—not rendered cells, occupancy, or coordinates.
+- Derive stable cell occupancy, semantic marks, edges, ages, and focus treatment with pure selectors/layout functions.
 - Keep service calls outside presentational components.
 - Use stable semantic IDs such as `question-2`; never use array indexes as React identity.
 - Prefer native `button`, `textarea`, headings, and live regions over clickable generic elements.
@@ -72,9 +72,13 @@ Scaffolding must provide and preserve these commands:
 
 - One active Hmm… question, exactly three generated suggestions, and one separate **None quite fit** action.
 - Keep a stable progress card showing the original dilemma, selected answers, round count, and a qualitative session status derived from state.
+- Treat the canvas as one persistent, authored field of reusable cells. A new round changes which stable cells hold content; it does not spawn a fresh set of bubbles.
+- Key rendered cells by stable cell-slot ID, not by question or answer ID. Selected cells keep a permanent semantic mark; rejected suggestion content clears while the underlying cells remain.
+- The field is larger than the viewport. Automatically pan it so the active question stays near the focal area while the chosen path naturally travels away from its origin.
+- Derive the route from the sequence of selected option indices: upper, middle, and lower choices bend the next path segment differently. Different choices must produce visibly different routes.
 - Violet belongs to Hmm…; amber belongs to the user; neutral cells are unchosen possibilities. Never rely on colour alone.
-- Only the selected path persists. Remove dead branches and avoid crossed semantic connections.
-- Use deterministic authored positions and controlled transforms—no physics, random layout, or pan/zoom canvas.
+- Only the selected semantic path persists. Remove dead branch content and connectors, but preserve the shared cellular substrate.
+- Use a deterministic preset lattice and controlled camera transforms—no physics, random layout, user-controlled pan/zoom, or fitting the full path back into one viewport.
 - Questions dominate suggestions through size, label, border, and motion.
 - Previous nodes become quieter but the chosen path remains understandable.
 - Do not display percentages, certainty/confidence scores, probability, or “correct” green states. Session progress uses named phases, never a judgment of decision quality.

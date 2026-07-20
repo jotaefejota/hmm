@@ -1,46 +1,149 @@
 import type { RoundPayload } from "../../shared/ai-contract";
+import type { ReflectionStep, SelectedAnswer, SessionPhase } from "../session/session-types";
+import {
+  CELL_SLOTS,
+  DILEMMA_CELL_ID,
+  getCellSlot,
+  getQuestionCellId,
+  getSuggestionCellIds,
+  type CellSlot,
+} from "./cell-field";
 
-export type CanvasNodePosition = {
-  id: string;
-  x: number;
-  y: number;
-  shape: 0 | 1 | 2 | 3;
+export type CanvasOccupancy = {
+  cellId: string;
+  semanticId: string;
+  kind: "dilemma" | "question" | "suggestion" | "answer";
+  status: "active" | "selected" | "previous" | "clearing";
+  text: string;
+  label: string;
+  age: number;
+  interactive: boolean;
+  optionIndex?: 0 | 1 | 2;
 };
 
 export type CanvasEdge = {
   id: string;
-  from: CanvasNodePosition;
-  to: CanvasNodePosition;
-  status: "origin" | "active";
+  from: CellSlot;
+  to: CellSlot;
+  status: "origin" | "active" | "previous";
 };
 
-const suggestionPositions = [
-  { x: 77, y: 23, shape: 1 },
-  { x: 83, y: 50, shape: 3 },
-  { x: 76, y: 78, shape: 2 },
-] as const;
+export type CanvasProjection = {
+  cells: readonly CellSlot[];
+  occupancy: CanvasOccupancy[];
+  edges: CanvasEdge[];
+  focusCellId: string;
+};
 
-export function projectActiveRound(round: RoundPayload, roundNumber: number, hasHistory: boolean) {
-  const dilemma: CanvasNodePosition = { id: "dilemma", x: 28, y: 75, shape: 2 };
-  const trailAnchor: CanvasNodePosition = { id: "trail-anchor", x: 35, y: 76, shape: 0 };
-  const question: CanvasNodePosition = { id: `question-${roundNumber}`, x: 54, y: 50, shape: roundNumber % 4 as 0 | 1 | 2 | 3 };
-  const suggestions = suggestionPositions.map((position, index) => ({
-    ...position,
-    id: `suggestion-${roundNumber}-${index + 1}`,
-    text: round.answers[index],
-  }));
-  const origin = hasHistory ? trailAnchor : dilemma;
-  const edges: CanvasEdge[] = [
-    { id: `edge-${origin.id}-${question.id}`, from: origin, to: question, status: "origin" },
-    ...suggestions.map((suggestion) => ({
-      id: `edge-${question.id}-${suggestion.id}`,
-      from: question,
-      to: suggestion,
-      status: "active" as const,
-    })),
-  ];
+type ProjectCanvasInput = {
+  dilemma: string;
+  history: ReflectionStep[];
+  currentRound: RoundPayload | null;
+  phase: SessionPhase;
+  selectedAnswer: SelectedAnswer | null;
+};
 
-  return { nodes: { dilemma, question, suggestions }, edges };
+function edge(id: string, fromCellId: string, toCellId: string, status: CanvasEdge["status"]): CanvasEdge {
+  return { id, from: getCellSlot(fromCellId), to: getCellSlot(toCellId), status };
 }
 
-export type ActiveRoundProjection = ReturnType<typeof projectActiveRound>;
+export function projectCanvas({ dilemma, history, currentRound, phase, selectedAnswer }: ProjectCanvasInput): CanvasProjection {
+  const occupancy: CanvasOccupancy[] = [{
+    cellId: DILEMMA_CELL_ID,
+    semanticId: "dilemma",
+    kind: "dilemma",
+    status: "previous",
+    text: dilemma,
+    label: "You brought",
+    age: history.length * 2 + 1,
+    interactive: false,
+  }];
+  const edges: CanvasEdge[] = [];
+  let previousCellId = DILEMMA_CELL_ID;
+  const committedChoices: (0 | 1 | 2)[] = [];
+
+  history.forEach((step, index) => {
+    const questionCellId = getQuestionCellId(step.round, committedChoices);
+    const suggestionCellIds = getSuggestionCellIds(step.round, committedChoices);
+    const answerCellId = suggestionCellIds[step.choiceIndex];
+    const age = (history.length - index) * 2;
+    occupancy.push(
+      {
+        cellId: questionCellId,
+        semanticId: `question-${step.round}`,
+        kind: "question",
+        status: "previous",
+        text: step.question,
+        label: `Hmm… asked · ${step.round}`,
+        age,
+        interactive: false,
+      },
+      {
+        cellId: answerCellId,
+        semanticId: `answer-${step.round}`,
+        kind: "answer",
+        status: "selected",
+        text: step.answer,
+        label: `You chose · ${step.round}`,
+        age: age - 1,
+        interactive: false,
+        optionIndex: step.choiceIndex,
+      },
+    );
+    edges.push(
+      edge(`edge-${previousCellId}-${questionCellId}`, previousCellId, questionCellId, index === 0 ? "origin" : "previous"),
+      edge(`edge-${questionCellId}-${answerCellId}`, questionCellId, answerCellId, "previous"),
+    );
+    previousCellId = answerCellId;
+    committedChoices.push(step.choiceIndex);
+  });
+
+  const showsRound = currentRound && ["round-ready", "writing-custom-answer", "answer-selected"].includes(phase);
+  if (showsRound && currentRound) {
+    const roundNumber = history.length + 1;
+    const questionCellId = getQuestionCellId(roundNumber, committedChoices);
+    const suggestionCellIds = getSuggestionCellIds(roundNumber, committedChoices);
+    occupancy.push({
+      cellId: questionCellId,
+      semanticId: `question-${roundNumber}`,
+      kind: "question",
+      status: "active",
+      text: currentRound.question,
+      label: "Hmm… asks",
+      age: 0,
+      interactive: false,
+    });
+    edges.push(edge(`edge-${previousCellId}-${questionCellId}`, previousCellId, questionCellId, history.length ? "previous" : "origin"));
+
+    currentRound.answers.forEach((answerText, index) => {
+      const optionIndex = index as 0 | 1 | 2;
+      const isSelected = phase === "answer-selected" && selectedAnswer?.choiceIndex === optionIndex;
+      const isClearing = phase === "answer-selected" && !isSelected;
+      const cellId = suggestionCellIds[optionIndex];
+      occupancy.push({
+        cellId,
+        semanticId: `suggestion-${roundNumber}-${index + 1}`,
+        kind: "suggestion",
+        status: isSelected ? "selected" : isClearing ? "clearing" : "active",
+        text: isSelected ? selectedAnswer.text : answerText,
+        label: isSelected ? "Your answer" : `Possibility ${index + 1}`,
+        age: 0,
+        interactive: phase !== "answer-selected",
+        optionIndex,
+      });
+      if (!isClearing) {
+        edges.push(edge(`edge-${questionCellId}-${cellId}`, questionCellId, cellId, isSelected ? "previous" : "active"));
+      }
+    });
+  }
+
+  const nextRound = Math.min(history.length + 1, 5);
+  const focusChoices = committedChoices.slice(0, nextRound - 1);
+  const settlesOnTrailEnd = phase === "clarity-offered" || phase === "generating-summary" || phase === "ending";
+  return {
+    cells: CELL_SLOTS,
+    occupancy,
+    edges,
+    focusCellId: settlesOnTrailEnd ? previousCellId : getQuestionCellId(nextRound, focusChoices),
+  };
+}

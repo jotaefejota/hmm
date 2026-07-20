@@ -1,6 +1,6 @@
 # Hmm… — Two-Day Build Plan
 
-**Status:** Implementation in progress — P0 tasks in Blocks 1–4 complete; Block 5 requires the full semantic trail; Block 6 requested ending flow is complete while the planned post-ending extension remains
+**Status:** Blocks 1–5 complete, including the P0 persistent-world and choice-dependent route revision; later blocks remain as documented
 
 **Purpose:** Build the smallest complete, visually memorable session through demonstrable vertical slices.
 
@@ -14,11 +14,11 @@
 
 ## Two-day feasibility check
 
-The plan budgets about 15 focused implementation hours plus roughly 2 hours of integration and rehearsal buffer. It assumes one implementation path, one curated demo, one generic fallback, and no design-system detour.
+The original plan budgets about 15 focused implementation hours plus roughly 2 hours of integration and rehearsal buffer. The persistent-cell revision replaces the current growing-node projection and is budgeted as a focused 2.5–3 hour correction, paid for by deferring all P1 motion flourishes until P0 is green. It assumes one implementation path, one curated demo, one generic fallback, and no design-system detour.
 
 | Day | Blocks | Planned P0 time | End-of-day proof |
 | --- | --- | ---: | --- |
-| Day 1 | 1–5 | ~7 hours | A user can enter the demo dilemma, choose answers through four simulated rounds, and see a coherent visual trail in forced mock mode. |
+| Day 1 | 1–5 | ~9.5 hours including the visual correction | A user can enter the demo dilemma, move through four rounds on one persistent cellular field, and see a coherent marked trail in forced mock mode. |
 | Day 2 | 6–10 | ~7.5 hours | The trail reaches a summary, survives API failure, hands off to ChatGPT, works narrowly and by keyboard, and is ready to record. |
 
 P1 work may use only remaining buffer after the entire P0 journey passes. P2 work is not started.
@@ -226,34 +226,76 @@ The submitted dilemma, first Hmm… question, exactly three suggestions, their r
 - `npm run check`
 - Inspect at approximately 1440×900 and confirm no overlaps or crossed lines.
 
+### Task 3.2 — P0: Persistent cellular field and occupancy model
+
+**Implementation status:** Complete — 2026-07-20. The stable lattice extends beyond the viewport, each answer chooses the next route row, and the camera follows the active area without fitting the whole path.
+
+**Observable outcome**
+
+The canvas reads as one organic cellular world larger than the viewport. The first question and its three suggestions inhabit existing cells; later rounds move forward through that world along a route determined by the selected cell.
+
+**Files likely to be affected**
+
+- `src/components/canvas/ThoughtCanvas.tsx`
+- new `src/components/canvas/CellField.tsx`, `Cell.tsx`, and `CellContent.tsx`, or equivalent focused replacements
+- `src/components/canvas/ConnectionLayer.tsx`, `MembraneBackground.tsx`
+- new `src/layout/cell-field.ts`, `projectOccupancy.ts`, or equivalent pure layout modules
+- `src/layout/projectCanvas.ts`, layout tests, and `src/styles/canvas.css`
+
+**Dependencies**
+
+- Task 3.1 for the proven visual hierarchy.
+- Existing session types and mock round contract; neither should change for this visual correction.
+
+**Acceptance criteria**
+
+- One finite preset lattice large enough for every five-round path is rendered for the session.
+- Outer cell elements use stable slot IDs and keep the same count and relative geometry across round changes.
+- Semantic question/answer IDs map into cells as occupancy; they are not React identities for the outer cells.
+- The active question and exactly three suggestions occupy the next forward column at upper, middle, and lower rows with visible, uncrossed relationships.
+- Choosing upper, middle, or lower changes the row of the next question and therefore the visible route.
+- The camera advances toward the active question rather than fitting the full route into the viewport.
+- Selected cells can retain text and a semantic mark; unchosen content can clear while its neutral cell remains.
+- The progress-card exclusion area remains clear.
+- There is no physics, random placement, procedural infinite grid, new cell geometry per round, or user-controlled pan/zoom.
+
+**Checks Codex must run**
+
+- Pure tests asserting stable cell IDs, count, geometry, legal occupancy, and no duplicate occupied slot.
+- Component test rerendering consecutive rounds and asserting that outer cell elements retain identity.
+- `npm run check`
+- Inspect upper, middle, and lower choice paths at approximately 1440×900; verify that the same world pans to three different routes without a new cluster appearing.
+
 ---
 
 ## 4. Selection and transitions between simulated rounds
 
-### Task 4.1 — P0: Complete mock interaction loop ✅
+### Task 4.1 — P0: Complete mock interaction loop
 
-**Implementation status:** Complete — 2026-07-20
+**Implementation status:** Complete — 2026-07-20. Session guards, stable-cell selection transitions, and choice-dependent camera movement pass automated and browser checks.
 
 **Observable outcome**
 
-Selecting an answer turns it amber, removes the two unused possibilities, shows the transition whisper, and advances to the next mock question. This works through all five possible rounds.
+Selecting an answer marks its existing cell amber, clears the two unused possibility texts while leaving their cells in place, shows the transition whisper, and moves focus to the next mock question in an adjacent authored cell. This works through all five possible rounds.
 
 **Files likely to be affected**
 
 - `src/session/session-reducer.ts`, `session-selectors.ts`, `SessionContext.tsx`
-- `ThoughtCanvas.tsx`, `ThoughtNode.tsx`, `AnswerCluster.tsx`
+- `ThoughtCanvas.tsx`, `CellField.tsx`, `CellContent.tsx`, `AnswerCluster.tsx`
 - `src/styles/motion.css`
 - reducer and interaction tests
 
 **Dependencies**
 
-- Task 3.1.
+- Tasks 3.1–3.2.
 
 **Acceptance criteria**
 
 - Only reducer events change phases.
 - A selected answer commits once and is added to history once.
-- Unselected answers finish their exit before the next round becomes interactive.
+- Unselected content finishes clearing before the next round becomes interactive; its outer cells remain mounted and neutral.
+- Selecting an answer never changes the stable cell count, slot IDs, or relative world geometry.
+- The next question and suggestions occupy the forward lattice cells implied by the selected row, and the camera follows without appending a new bubble cluster.
 - A new-round request begins when selection starts; the animation does not wait unnecessarily.
 - The next question loads from `MockReflectionProvider`.
 - After round 2, **I think I’ve got it** is available.
@@ -306,35 +348,36 @@ Choosing **None quite fit** opens **Say it your way**; a valid custom response b
 
 ## 5. Visual history
 
-### Task 5.1 — P0: Chosen trail and progress card that agree
+### Task 5.1 — P0: Marked-cell trail and progress card that agree
 
-**Implementation status:** In progress — the textual progress card and compact overview are working, but the desktop canvas still replaces prior nodes with abstract beads. Completion requires the actual dilemma, question, and selected-answer nodes to persist as one connected path.
+**Implementation status:** Complete — 2026-07-20. Semantic history projects as marks and occupancy on the persistent field, and the progress card uses the same canonical history; desktop and narrow layouts have been inspected.
 
 **Observable outcome**
 
-After four selections, the initial dilemma and every selected question/answer pair form one continuous quieter trail while **Your thread** lists the same committed answers in order and the current question remains dominant.
+After four selections, the initial dilemma and every selected question/answer pair remain marked in their original occupied cells as one continuous quieter trail, while **Your thread** lists the same committed answers in order and the current question remains dominant.
 
 **Files likely to be affected**
 
 - `src/session/session-selectors.ts`
-- `src/layout/projectCanvas.ts`, `desktopLayout.ts`, `curves.ts`
-- `ThoughtCanvas.tsx`, `ConnectionLayer.tsx`, `ThoughtNode.tsx`
+- `src/layout/cell-field.ts`, `projectOccupancy.ts`, `desktopLayout.ts`, `curves.ts`
+- `ThoughtCanvas.tsx`, `CellField.tsx`, `CellContent.tsx`, `ConnectionLayer.tsx`
 - `ProgressCard.tsx`
 - layout/selector tests and canvas styles
 
 **Dependencies**
 
-- Tasks 4.1–4.2.
+- Tasks 3.2 and 4.1–4.2.
 
 **Acceptance criteria**
 
-- Nodes and edges are derived from dilemma, history, and current round; layout is not stored in session state.
+- Occupancy, marks, and edges are derived from dilemma, history, and current round; cell geometry is stable configuration and is not stored in session state.
 - The trail alternates violet question and amber user answer.
-- Desktop history uses the actual text-bearing dilemma, question, and selected-answer nodes; a bead-only strip does not satisfy this task.
-- Only chosen nodes persist; no dead suggestion branches remain.
+- Desktop history uses the actual text-bearing dilemma, question, and selected-answer cells; a bead-only strip does not satisfy this task.
+- Only chosen semantic content and marks persist; no dead suggestion content or branches remain, but all substrate cells persist.
 - Recent history remains readable; older history scales/fades without breaking continuity.
-- Stable IDs and deterministic coordinates produce the same trail after rerender.
-- The active cluster remains legible at the longest P0 history.
+- Stable cell IDs and deterministic world geometry produce the same field after rerender and after advancing rounds.
+- Different `choiceIndex` sequences produce different marked cell routes; replaying the same sequence produces the same route.
+- The active neighbourhood remains legible at the longest P0 history.
 - The card is derived from canonical history and never stores its own copy.
 - Its round count matches committed answers and it never displays the pressed-but-uncommitted answer.
 - At the curated fourth answer it shows **A direction is forming** only when the held round has `suggestEnding: true`.
@@ -342,13 +385,13 @@ After four selections, the initial dilemma and every selected question/answer pa
 
 **Checks Codex must run**
 
-- Projection tests for 0–5 completed steps and no orphan/cross-linked edges.
-- Determinism test: the same semantic state yields the same projection.
+- Occupancy projection tests for 0–5 completed steps and no orphan/cross-linked edges.
+- Determinism test: the same semantic state yields the same occupancy, and consecutive states preserve the cell-slot set and geometry.
 - Progress-selector tests for 0–5 answers, custom answers, ending, and extension.
 - `npm run check`
-- Manual four-round demo at desktop width, watching for overlap and spaghetti.
+- Manual four-round demo at desktop width, confirming that the camera travels away from the origin and that different selections bend the route differently.
 
-**Day 1 exit gate:** forced mock mode completes four selections and shows a stable path. If this gate is not green, do not begin live API work.
+**Day 1 exit gate:** forced mock mode completes four selections on one persistent cellular field and shows a stable marked path. If this gate is not green, do not begin live API work.
 
 ---
 
@@ -382,7 +425,7 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 - **One more question** reveals the held fifth round.
 - **Explore one remaining doubt** permits exactly one extension, then returns to summary.
 - **Start over** confirms, clears in-memory state, and returns to welcome.
-- The complete chosen trail remains visible but subordinate at the ending.
+- The complete chosen trail remains marked on the same cellular field, visible but subordinate at the ending.
 - **Your thread** remains visible with **Ready to reflect**, the original dilemma, and the ordered committed answers.
 
 **Checks Codex must run**
@@ -680,6 +723,7 @@ These are not scheduled tasks and should not receive scaffolding “just in case
 - a visible live/mock/model selector;
 - editable history, undo, branch comparison, arbitrary graphs, or draggable nodes;
 - advanced membrane generation, physics, WebGL, particles, or 3D;
+- procedural or infinite cell fields and new cell geometry generated per round;
 - authentication, database, collaboration, localization, voice, or notifications;
 - a broad end-to-end testing framework beyond the focused P0 test suite;
 - production-grade rate-limiting infrastructure beyond platform controls and spend limits.
@@ -690,7 +734,8 @@ These are not scheduled tasks and should not receive scaffolding “just in case
 flowchart LR
     A["1. Scaffold + contracts"] --> B["2. Enter dilemma"]
     B --> C["3. First molecule"]
-    C --> D["4. Select + advance"]
+    C --> C2["3.2 Persistent field"]
+    C2 --> D["4. Select + move focus"]
     D --> E["5. Visual trail"]
     E --> F["6. Ending"]
     F --> G["7. Live + fallback"]
@@ -711,6 +756,8 @@ P0 is complete only when:
 - automatic mode survives a disabled API and still reaches the ending;
 - the live endpoint works when configured and no secret reaches the client;
 - exactly three suggestions appear in every round;
+- the same preset cell lattice remains mounted while the camera follows the active area; content occupancy changes without new bubble clusters;
+- different upper/middle/lower selection sequences visibly produce different paths through the field;
 - the progress card always matches the exact original dilemma and committed answer history, including at the ending;
 - custom answer, early finish, suggested finish, max-round finish, restart, and one extension work;
 - the result always contains direction, reasons, doubts, and next step;

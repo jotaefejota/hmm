@@ -10,7 +10,7 @@
 
 Hmm… is a curious companion for thinking through a decision.
 
-It gives the user a small, calm space to state what is on their mind, respond to one useful question at a time, and see their line of thought take shape as an organic trail of connected cells. Each response opens a new question and three plausible directions. After a short journey, Hmm… reflects back the direction that appears to be emerging, why it matters, what remains uncertain, and one practical next step.
+It gives the user a small, calm space to state what is on their mind, respond to one useful question at a time, and see their line of thought take shape across a persistent field of connected cells. The cells are the stable surface of the experience: questions and possibilities move into focus within them, while selected cells keep a visible mark of the route taken. After a short journey, Hmm… reflects back the direction that appears to be emerging, why it matters, what remains uncertain, and one practical next step.
 
 The product does not predict outcomes, optimize the user’s life, or make a decision on the user’s behalf. Its value comes from helping the user hear and examine their own reasoning. The intended feeling is less “an AI gave me the answer” and more “I can finally see what I think.”
 
@@ -22,10 +22,11 @@ The product does not predict outcomes, optimize the user’s life, or make a dec
 
 1. **The user is the source of truth.** Hmm… helps articulate a choice; it does not declare the correct choice.
 2. **One thought at a time.** The interface avoids forms, dashboards, and walls of text.
-3. **Visible thinking.** The path remains on screen, while a compact progress card keeps the original dilemma and chosen answers easy to review.
-4. **Finite by design.** A useful session reaches a natural pause within a few rounds.
-5. **Alive, not elaborate.** Motion, scale, lines, blur, and colour create an organic character without complex physics or 3D.
-6. **Graceful without AI.** A complete, convincing session remains demonstrable when the generation API is unavailable.
+3. **Visible thinking.** The recent path remains around the active area, while a compact progress card keeps the original dilemma and complete chosen sequence easy to review when older cells travel off-screen.
+4. **One world, moving attention.** Rounds travel across a stable cellular field larger than the viewport. Content changes and the camera follows; the interface does not manufacture a new molecule after every choice.
+5. **Finite by design.** A useful session reaches a natural pause within a few rounds.
+6. **Alive, not elaborate.** Motion, scale, lines, blur, and colour create an organic character without complex physics or 3D.
+7. **Graceful without AI.** A complete, convincing session remains demonstrable when the generation API is unavailable.
 
 ## 2. The problem it solves
 
@@ -92,13 +93,13 @@ The product sets the expectation that this is a brief reflection, not an answer 
 
 ### 4.2 First question
 
-The user’s original thought becomes the seed cell. Hmm… generates one central follow-up question and three answer cells around it.
+The user’s original thought occupies the seed cell in a persistent authored cellular field. Hmm… places one follow-up question and three answers into nearby existing cells and brings that neighbourhood into focus.
 
 The question cell has the strongest hierarchy. Answer cells are visibly smaller and differentiated through shape treatment, typography, border, colour, and subtle motion. Connecting lines make the relationship legible.
 
 ### 4.3 Explore
 
-The user selects one answer. The selected answer becomes active, grows, and connects to a newly generated question. Earlier nodes recede but remain visible as a trail.
+The user selects one answer. Its cell becomes active, grows slightly, receives a lasting user mark, and determines whether the route bends upward, continues forward, or bends downward. The next question occupies the following existing cell in that direction. The two rejected answers clear from their cells, which return to the quiet substrate. The camera follows the new neighbourhood instead of pulling the route back into the original viewport.
 
 A stable progress card also keeps the original dilemma, the selected answers in order, the current round count, and a qualitative session status visible. It is a readable index of the visual path, not a second conversation or navigation tree.
 
@@ -157,10 +158,12 @@ The MVP is a single-user, responsive web experience designed for a reliable 2–
 
 - one landing state with a text input for a single decision, question, or idea;
 - one visual exploration canvas built from simple DOM/SVG shapes and connecting lines;
+- one stable deterministic field of reusable cell slots extending beyond the viewport; rounds change content occupancy and camera focus rather than adding new bubble geometry;
+- a choice-dependent route in which selecting the upper, middle, or lower possibility produces a different next segment;
 - one active central question with exactly three suggested answer options per round;
 - a separate “None quite fit” action for entering one brief custom answer;
 - selection animation that promotes the chosen answer and reveals the next question;
-- a persistent, non-interactive trail of the selected path;
+- a persistent, non-interactive trail made from marked cells and selected-path connectors;
 - a persistent progress card showing the original dilemma, ordered selected answers, round count, and qualitative session status;
 - a standard 3–5 answered-question journey, with an explicit user-controlled finish available after round 2;
 - a user-controlled “I think I’ve got it” finish action from round 2;
@@ -190,6 +193,8 @@ For each round, generation returns one concise question, exactly three concise a
 - Refreshing the page resets the session.
 - English is the only supported language for the hackathon build.
 - The visual network uses authored transitions, not a physics engine.
+- The cellular field has a finite preset lattice large enough for every five-round route. It is not infinite, random, or generated as the user advances.
+- Automatic camera movement follows the route; user-controlled pan and zoom remain out of scope.
 - The live AI provider is replaceable behind one server-side boundary, but the MVP needs only one configured provider.
 
 ## 6. Priorities
@@ -197,7 +202,7 @@ For each round, generation returns one concise question, exactly three concise a
 ### P0 — required for the hackathon demo
 
 - Clear landing prompt and session start.
-- Organic node-and-connection visual language with unmistakable question/answer hierarchy.
+- Organic persistent-cell visual language with unmistakable question/answer hierarchy and moving focus.
 - Smooth selection and transition between rounds.
 - Exactly three answer directions per question.
 - A compact custom-answer path when none of the three suggestions fits.
@@ -240,6 +245,7 @@ For each round, generation returns one concise question, exactly three concise a
 - Localization beyond English.
 - Native mobile apps or offline/PWA installation.
 - Advanced physics, liquid simulation, 3D rendering, WebGL, or generative particle systems.
+- Procedural infinite grids, newly generated cell geometry per round, or user-controlled canvas navigation.
 - Comprehensive analytics, experimentation platforms, or production-scale infrastructure.
 
 ## 7. Recommended demo scenario
@@ -272,7 +278,7 @@ The exact wording may evolve, but the deterministic demo should support this nar
 
 ### Suggested video beat
 
-Start with the blank canvas, enter the scenario, make four choices while the molecule grows, finish with “I think I’ve got it,” reveal the summary, then click “Continue in ChatGPT” to show the prompt-copy handoff. The full sequence should be understandable without narration and fit comfortably within 90 seconds.
+Start with the quiet cellular field, enter the scenario, make four choices while focus travels and selected cells become marked, finish with “I think I’ve got it,” reveal the summary, then click “Continue in ChatGPT” to show the prompt-copy handoff. The full sequence should be understandable without narration and fit comfortably within 90 seconds.
 
 ## 8. Verifiable success criteria
 
@@ -300,7 +306,11 @@ The MVP is successful when all of the following can be demonstrated in a clean b
 
 - Questions and answers are distinguishable without relying on colour alone.
 - Selecting an answer produces a visible state change and reveals the next question without a hard page transition.
-- All selected nodes and their connections remain visible as a trail, with the active node retaining strongest hierarchy.
+- The same authored cell slots remain spatially recognizable across rounds; no fresh set of bubbles appears after selection.
+- Two sessions that choose different option positions produce visibly different spatial routes through the same field.
+- The camera follows the active cells toward new territory and does not compress the complete path into the current viewport.
+- All selected cells and their connections remain visible as a trail, with the active content retaining strongest hierarchy.
+- Rejected suggestion content disappears, but its underlying neutral cells remain part of the field.
 - The progress card remains legible without competing with the active question and is still available beside the final result.
 - Primary controls work with keyboard only and show a visible focus state.
 - With reduced motion enabled, the flow remains complete and understandable without large scaling or continuous movement.

@@ -5,6 +5,7 @@ export type ReflectionStep = {
   question: string;
   answer: string;
   answerSource: "suggested" | "custom";
+  choiceIndex: 0 | 1 | 2;
 };
 
 export type SessionPhase =
@@ -22,6 +23,7 @@ export type SessionPhase =
 export type SelectedAnswer = {
   text: string;
   source: "suggested" | "custom";
+  choiceIndex: 0 | 1 | 2;
 };
 
 export type FinishReason = "user" | "suggested" | "max_rounds";

@@ -11,6 +11,12 @@ const MINIMUM_GENERATION_MS = 420;
 
 const pause = (duration: number) => new Promise((resolve) => window.setTimeout(resolve, duration));
 const wasAborted = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
+const toContractHistory = (history: ReflectionStep[]) => history.map((step) => ({
+  round: step.round,
+  question: step.question,
+  answer: step.answer,
+  answerSource: step.answerSource,
+}));
 
 export function App() {
   const [state, dispatch] = useReducer(sessionReducer, initialSessionState);
@@ -69,6 +75,7 @@ export function App() {
       question: state.currentRound.question,
       answer: answer.text,
       answerSource: answer.source,
+      choiceIndex: answer.choiceIndex,
     };
     const nextHistory = [...state.history, completedStep];
     dispatch({ type: "SELECT_ANSWER", answer, requestId });
@@ -82,7 +89,7 @@ export function App() {
       roundNumber: nextHistory.length + 1,
       requestMode: "core",
       maxCoreRounds: MAX_CORE_ROUNDS,
-      history: nextHistory,
+      history: toContractHistory(nextHistory),
       focus: null,
     });
 
@@ -104,7 +111,7 @@ export function App() {
       contractVersion: "1",
       kind: "summary",
       dilemma: state.dilemma,
-      history,
+      history: toContractHistory(history),
       finishReason: reason,
     });
 
@@ -128,6 +135,7 @@ export function App() {
         question: state.currentRound.question,
         answer: state.selectedAnswer.text,
         answerSource: state.selectedAnswer.source,
+        choiceIndex: state.selectedAnswer.choiceIndex,
       },
     ];
     dispatch({ type: "COMMIT_SELECTION" });
@@ -156,8 +164,12 @@ export function App() {
       onOpenEntry={() => dispatch({ type: "OPEN_ENTRY" })}
       onCancelEntry={() => dispatch({ type: "CANCEL_ENTRY" })}
       onSubmitDilemma={submitDilemma}
-      onSelectAnswer={(text) => void selectAnswer({ text, source: "suggested" })}
-      onSelectCustomAnswer={(text) => void selectAnswer({ text, source: "custom" })}
+      onSelectAnswer={(text) => {
+        const index = state.currentRound?.answers.indexOf(text) ?? 0;
+        const choiceIndex = (index >= 0 ? index : 0) as 0 | 1 | 2;
+        void selectAnswer({ text, source: "suggested", choiceIndex });
+      }}
+      onSelectCustomAnswer={(text) => void selectAnswer({ text, source: "custom", choiceIndex: 1 })}
       onOpenCustomAnswer={() => dispatch({ type: "OPEN_CUSTOM_ANSWER" })}
       onCloseCustomAnswer={() => dispatch({ type: "CLOSE_CUSTOM_ANSWER" })}
       onCommitSelection={commitSelection}

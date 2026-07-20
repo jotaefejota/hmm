@@ -10,7 +10,7 @@
 
 The session should feel like a thought becoming visible.
 
-The user begins with one unresolved dilemma. Hmm… introduces one useful question, then three possible ways to respond. Each selection adds one short segment to a living path. The interface never tries to display every possible branch. It shows only the route the user is actually taking, lets the unused possibilities dissolve, and gently recognizes when the route has produced enough clarity to pause.
+The user begins with one unresolved dilemma. Hmm… introduces one useful question, then three possible ways to respond. Each selection marks one cell in a stable field and adds one short segment to a living path. The interface never tries to display every possible branch. It shows only the route the user is actually taking, clears unused content from the field, and gently recognizes when the route has produced enough clarity to pause.
 
 The experience is not a chat transcript arranged in circles. It is a focused reflection with spatial memory: the active thought is unmistakable, the chosen path is still present, and everything else makes room.
 
@@ -33,7 +33,17 @@ The MVP should not copy several elements shown in the references:
 - no promise that sessions remain saved;
 - no use of glow alone to distinguish node meaning.
 
-The recommended direction is therefore a warm off-white cellular field with ink text, violet for Hmm… questions, amber for the user’s words, and neutral suggested answers. The background may hint at a membrane, but only the reflection path carries content.
+The recommended direction is therefore a warm off-white cellular field with ink text, violet for Hmm… questions, amber for the user’s words, and neutral suggested answers. This field is not merely decorative background: it is the persistent interface substrate that receives content and records the selected route.
+
+### Persistent field model
+
+- The stage is a window onto a finite preset lattice of softly irregular cells that extends beyond the viewport; cell positions and identities remain stable for the session.
+- A cell can be empty, hold active content, hold an unchosen suggestion, or retain a selected/previous mark. These are states of the same cell, not different layers of bubbles.
+- Starting a new round does not create a new visible cluster. Content clears from unused cells, the next question and suggestions occupy the next preset cells, and the camera travels to that neighbourhood.
+- A selected cell keeps its amber mark and selected text as part of the trail. A rejected cell loses its suggestion text and returns to its quiet neutral state.
+- The active neighbourhood comes forward through scale, contrast, sharpness, halo, and a controlled camera pan. Recent cells remain near the viewport edge before slipping away; the progress card preserves the complete textual route.
+- The three suggestions occupy forward cells above, level with, and below the current direction. The selected position determines the row of the next question, so repeated choices create a distinct rising, level, falling, or mixed path.
+- Semantic connectors join only selected relationships. Empty substrate cells never receive decorative cross-links.
 
 ## 2. Journey from arrival to ending
 
@@ -61,7 +71,7 @@ At the same moment, a compact card titled **Your thread** appears in a stable si
 
 ### 2.3 Generate the first turn
 
-The seed contracts slightly and moves off-centre. A fine connector grows toward an empty violet outline. Inside it, a short status cycles no more than once:
+The seed contracts slightly and focus shifts toward a nearby empty cell. A fine connector grows toward its violet inner outline. Inside it, a short status cycles no more than once:
 
 > Hmm… where’s the useful edge?
 
@@ -71,7 +81,7 @@ No fake progress percentage appears. The input is temporarily locked so the user
 
 ### 2.4 Explore one round
 
-The first Hmm… question resolves into the largest node near the centre. Three neutral suggestion cells arrive around it in fixed, non-overlapping positions. They enter in quick sequence, but all become available within roughly half a second.
+The first Hmm… question resolves inside the dominant cell near the centre. Three nearby neutral cells receive suggestion content in fixed, non-overlapping positions. Their content enters in quick sequence, but all become available within roughly half a second; the underlying cells were already present.
 
 The user can:
 
@@ -80,7 +90,7 @@ The user can:
 - after round 2, choose **I think I’ve got it**;
 - restart from a quiet menu action.
 
-Selecting an answer is a commitment for this linear MVP. The node changes from a suggestion into a user node, receives a check mark, and becomes connected to the question. The two unchosen suggestions soften and dissolve. The selected answer then becomes the launch point for the next question.
+Selecting an answer is a commitment for this linear MVP. The occupied cell changes from a suggestion into a user-marked cell, receives a check mark, and becomes connected to the question. The two unchosen texts soften and dissolve while their cells return to the neutral field. The selected cell then becomes the launch point for the next question in a nearby existing cell.
 
 When the selection commits, the progress card appends that answer once under **What you’ve chosen so far** and updates its round/status line. The card never updates on hover, focus, or the temporary pressed state.
 
@@ -90,10 +100,10 @@ Each new round repeats the same grammar:
 
 1. current Hmm… question in violet;
 2. three neutral suggestions plus the separate custom-answer action;
-3. selection becomes amber and joins the path;
-4. unused suggestions disappear;
-5. the camera or layout reframes so the new question becomes central;
-6. older nodes remain as a quieter trail.
+3. the occupied cell becomes amber and joins the path;
+4. unused suggestion content disappears while the cells remain;
+5. content occupies the next forward cells and the camera pans to keep the new question near the focal area;
+6. older selected cells remain marked in the world, even when they eventually move outside the viewport.
 
 The route alternates between Hmm… and the user:
 
@@ -147,12 +157,12 @@ The progress card remains visible beside the result lens, changes its status to 
 | --- | --- | --- | --- |
 | **Welcome** | Wordmark, empty seed cell, invitation, one-line promise, example | Start with a thought | Opens the input state |
 | **Entering dilemma** | Expanded seed with text area, submit action, quiet cancel action | Type, submit, cancel | Valid submission starts generation |
-| **Generation** | Submitted seed, growing connector, empty/pulsing Hmm… node, short status | Wait; retry only after timeout | Valid response opens active round; failure uses fallback or error state |
-| **Active question** | One dominant violet question node, chosen trail, session controls | Read, choose an answer, finish when eligible | Answer selection or finish action |
-| **Three possible answers** | Exactly three neutral suggestion nodes around/below the question | Hover/focus, select, open custom answer | One suggestion is selected or custom input opens |
+| **Generation** | Submitted seed, growing connector, one empty/pulsing violet cell, short status | Wait; retry only after timeout | Valid response fills the active cells; failure uses fallback or error state |
+| **Active question** | One dominant violet occupied cell, marked trail, quiet cellular field, session controls | Read, choose an answer, finish when eligible | Answer selection or finish action |
+| **Three possible answers** | Exactly three neutral cells holding suggestions around/below the question | Hover/focus, select, open custom answer | One suggestion is selected or custom input opens |
 | **Different answer** | Suggestions remain visible but subdued; attached input cell or narrow-window sheet | Enter up to 160 characters, use answer, cancel | Valid custom text becomes the selected answer |
-| **Selected answer** | One amber answer node with check mark; stronger connector to its question | None during the brief committed animation | Automatically enters transition |
-| **Transition** | Chosen path retained; unused answers dissolve; next Hmm… node forms | Wait | Next question becomes active, or ending generation begins |
+| **Selected answer** | One amber occupied cell with check mark; stronger connector to its question | None during the brief committed animation | Automatically enters transition |
+| **Transition** | Chosen cells remain marked; unused text clears; focus moves as existing cells receive the next content | Wait | Next question becomes active, or ending generation begins |
 | **Enough clarity** | Non-modal clarity card, settled network, current path | See what’s emerging; one more question | Ending generation or another round |
 | **Ending generation** | Entire path, dimmed but readable; gathering copy; forming result lens | Wait; retry after failure | Final result becomes available |
 | **Ending** | Result lens, subdued full path, four-part reflection, three actions | Continue in ChatGPT, explore one doubt, start over | External handoff, one extra round, or reset |
@@ -267,9 +277,9 @@ Colour reinforces meaning but is never the only signal. Every semantic type also
 | --- | --- | --- | --- | --- |
 | **User’s initial dilemma** | Large seed-shaped rounded cell; second only to the active question | Warm amber tint, solid amber edge | Small label **You brought**; exact user text; small seed mark | One initial breath, then stable |
 | **Question from Hmm…** | Largest active circular/organic cell; double membrane | Pale violet fill, violet inner ring, soft outer halo | Small label **Hmm… asks**; question mark pin; medium-weight question text | Slow two-beat pulse while active |
-| **Suggested answer** | Three medium cells of equal visual weight | Warm white fill, thin neutral ink border | First-person text; no check mark; label exposed to assistive tech as **Possible answer** | Small lift on hover/focus; no ambient bobbing |
-| **Selected answer** | Same cell grows 8–12% and joins the path | Amber fill/edge replaces neutral styling | Small check mark; assistive label **Your answer** | Brief press, expand, connector draw |
-| **Previous node** | Reduced to 65–80% of original scale according to age | Original semantic hue desaturated; thinner halo | Text remains available; oldest labels may collapse visually but expand on focus/hover | Becomes still; no repeated animation |
+| **Suggested answer** | Three existing medium cells hold content at equal visual weight | Warm white fill, thin neutral ink border | First-person text; no check mark; label exposed to assistive tech as **Possible answer** | Small lift on hover/focus; no ambient bobbing |
+| **Selected answer** | Its cell grows 8–12% and joins the path without changing identity | Amber fill/edge replaces neutral styling | Small check mark; assistive label **Your answer** | Brief press, expand, connector draw |
+| **Previous node** | The same selected cell reduces to 65–80% emphasis according to age | Original semantic hue desaturated; thinner halo | Text remains available; oldest labels may collapse visually but expand on focus/hover | Becomes still; no repeated animation |
 | **Final result** | Large translucent lens/card, not a circle in the chain | Ink text on soft pearl surface; paired violet/amber rim | Label **What seems to be emerging** and four structured sections | Trail settles; lens clarifies from blur to sharp |
 
 ### Palette roles
@@ -287,6 +297,7 @@ Green is intentionally avoided as the main selected/result colour because it com
 
 ### Always visible during exploration
 
+- the persistent cellular field, including quiet empty cells around the active neighbourhood;
 - the active question;
 - its three current suggestions;
 - the separate **None quite fit** action;
@@ -297,8 +308,8 @@ Green is intentionally avoided as the main selected/result colour because it com
 
 ### What fades after selection
 
-- the two unchosen suggestions begin fading only after the selected state is unmistakable;
-- they disappear completely before the next question becomes interactive;
+- the two unchosen suggestion texts begin fading only after the selected state is unmistakable;
+- their content and interaction disappear completely before the next question becomes interactive, but their cell outlines remain;
 - their connectors are removed with them and never remain as dead branches;
 - the previous active question loses its glow but keeps its violet identity;
 - older selected answers keep amber identity but become quieter.
@@ -310,11 +321,11 @@ Green is intentionally avoided as the main selected/result colour because it com
 - on desktop, committed questions and answers never collapse into an abstract-only `?`/`✓` bead strip; their authored text and violet/amber identity remain visible;
 - only the narrow-window overview may use labelled beads, and it supplements rather than replaces the vertical semantic thread;
 - the path connector never drops below the contrast required to understand continuity;
-- decorative membrane cells never contain text and never compete with the path.
+- quiet empty cells never contain stale text and never compete with occupied or marked cells.
 
 ### At the ending
 
-The complete selected path remains visible as context, occupying roughly one-third of the desktop composition as the same dilemma/question/answer nodes used during exploration. A compact horizontal overview may be used on narrow screens. The progress card remains available with **Ready to reflect** and the ordered choices. Both are subdued relative to the result lens, which receives primary focus. Unchosen suggestions are absent.
+At the ending, the camera eases back enough to show a compact overview of the selected route where practical; it does not need to force every full-size cell into one viewport. The progress card remains available with **Ready to reflect** and the ordered choices. Both are subdued relative to the result lens, which receives primary focus. Unchosen suggestions are absent.
 
 ## 7. Complete four-round demo microcopy
 
@@ -460,11 +471,11 @@ Motion carries state and causality. It should never exist merely to keep the can
 ### Essential animations
 
 1. **Seed opens (300–450 ms).** The welcome cell expands into the input surface. This preserves spatial continuity between invitation and dilemma.
-2. **Generation pulse (900–1,200 ms loop).** Only the empty incoming Hmm… node breathes while waiting. It stops as soon as content arrives.
-3. **Question and answer arrival (350–550 ms).** The question sharpens first; three answers scale from 96% to 100% with a 60–90 ms stagger.
+2. **Generation pulse (900–1,200 ms loop).** Only the empty cell reserved for the incoming Hmm… question breathes while waiting. It stops as soon as content arrives.
+3. **Content occupancy (350–550 ms).** The question sharpens inside its existing cell first; suggestion text and controls appear in three nearby cells with a 60–90 ms stagger. Cell geometry does not enter or exit.
 4. **Selection commitment (450–650 ms).** The chosen answer depresses, grows 8–12%, changes to amber, gains a check, and pulls its connector into focus.
-5. **Branch pruning (250–350 ms).** Unchosen answers fade and shrink only after the selection is clear.
-6. **Path advance (600–850 ms).** The selected answer shifts into the trail while the next connector draws and the camera/layout recentres on the forming question.
+5. **Content clearing (250–350 ms).** Unchosen answer content fades only after the selection is clear; its cells settle back to neutral rather than leaving the field.
+6. **Focus advance (600–850 ms).** The selected cell settles into the trail, the next connector draws, adjacent cells receive new content, and focus recentres on that existing neighbourhood.
 7. **Clarity settling (500–700 ms).** Background movement and halos slow; the clarity card fades in without blocking the path.
 8. **Result reveal (650–900 ms).** The trail compresses, the result lens moves from soft blur to sharp focus, and its four sections appear in reading order.
 
@@ -475,7 +486,7 @@ All content must remain usable if animation events fail. Under `prefers-reduced-
 - a very slow background membrane drift with a movement range below 4 px;
 - a slight organic border interpolation between two authored shapes;
 - a tiny glint travelling once along a newly completed connector;
-- a soft gravitational nudge where nearby decorative cells make room for a new semantic node;
+- a subtle local emphasis ripple across the existing cells as focus moves;
 - a single violet/amber ripple when the result lens resolves;
 - pointer parallax limited to the decorative background, never the text-bearing nodes.
 
@@ -487,16 +498,17 @@ Avoid continuous floating answers, liquid simulation, spring chains, particle cl
 
 - Use a single full-height stage with generous safe margins.
 - Reserve a stable 280–320 px upper-left area for **Your thread**; the semantic canvas must not render beneath it.
+- Render one authored field whose cell centres remain fixed relative to one another throughout the session.
 - Keep the active question close to the visual centre, not necessarily the geometric centre.
 - Place answer suggestions in three reserved slots—upper right, right, and lower right—chosen to preserve reading order and prevent crossing connectors.
 - Let the selected trail extend primarily leftward or in one shallow arc behind the active cluster.
-- Reframe the stage after each selection instead of shrinking the active cluster to fit the whole history.
+- Pan forward across the finite field after each selection instead of adding a new cluster or shrinking everything to fit the whole history.
 - Keep global actions at stable edges: wordmark/restart at the top and finish action near the lower edge.
 - On ending, keep **Your thread** and the compact trail in the left third and place the result lens on the right two-thirds.
 
 ### Narrow windows (below about 900 px)
 
-The experience becomes a vertical thread rather than a squeezed radial diagram.
+The experience uses an alternate authored view of the same logical cell slots rather than a squeezed radial diagram.
 
 - A compact horizontal trail strip sits beneath the header and can scroll to the active end automatically.
 - **Your thread** becomes a disclosure below the header: its status row remains visible, its dilemma and answer list can expand, and it opens automatically at the ending.
@@ -512,20 +524,21 @@ At no width should the layout simply scale the desktop canvas down. Body text re
 
 ## 10. Rules that prevent molecular spaghetti
 
-1. **One path, not a tree.** Persist only chosen nodes. Remove unchosen nodes and their connectors before advancing.
-2. **One active cluster.** Show at most one active question, three generated suggestions, and one separate custom-answer action.
-3. **One edge per relationship.** Connect dilemma to question, question to selected answer, and selected answer to next question. No decorative cross-links.
-4. **Never cross semantic connectors.** Use reserved placement slots and reframe the canvas instead of routing around collisions.
-5. **Cap the automatic journey.** The core path contains no more than the dilemma plus five question/answer pairs before the ending.
-6. **Compress history by age.** Preserve the route while reducing the scale, contrast, and label prominence of older nodes.
-7. **Separate scenery from meaning.** Decorative membrane cells are faint, textless, non-interactive, and never connected to the semantic path.
-8. **Use only six semantic treatments.** Dilemma, Hmm… question, suggested answer, selected answer, previous node, and result. Do not invent a new colour for each round.
-9. **No numerical judgment.** Do not add confidence, completion, importance, or probability percentages to nodes.
-10. **Keep text short at generation time.** Questions should normally fit within 90 characters; suggested answers within 40; custom answers within 160.
-11. **Reframe rather than zoom out.** The active thought stays readable while history moves into the periphery or narrow-window trail strip.
-12. **Motion has one owner.** During a transition, only the selected node, departing suggestions, incoming connector, and new question may move.
-13. **Stop when the idea lands.** Slow the network and offer the ending when a coherent direction appears; do not add nodes to make the canvas look impressive.
-14. **Keep the index outside the graph.** The progress card has no semantic connectors and never occupies a node slot; it summarizes only committed history.
+1. **One path, not a tree.** Persist only chosen semantic content and marks. Clear unchosen content and connectors before advancing, without removing the underlying cells.
+2. **One field, not accumulating clusters.** Render one stable set of cell slots. Never append a fresh question-and-answer molecule after a selection.
+3. **One active neighbourhood.** Show at most one active question, three generated suggestions, and one separate custom-answer action.
+4. **One edge per relationship.** Connect dilemma to question, question to selected answer, and selected answer to next question. No decorative cross-links.
+5. **Never cross semantic connectors.** Use reserved placement slots and reframe the canvas instead of routing around collisions.
+6. **Cap the automatic journey.** The core path contains no more than the dilemma plus five question/answer pairs before the ending.
+7. **Compress history by age.** Preserve the route while reducing the scale, contrast, and label prominence of older marked cells.
+8. **Separate occupancy from substrate.** Empty cells are faint, textless, non-interactive, and never connected to the semantic path; they are still the same cells later used for content.
+9. **Use only six semantic treatments.** Dilemma, Hmm… question, suggested answer, selected answer, previous node, and result. Do not invent a new colour for each round.
+10. **No numerical judgment.** Do not add confidence, completion, importance, or probability percentages to nodes.
+11. **Keep text short at generation time.** Questions should normally fit within 90 characters; suggested answers within 40; custom answers within 160.
+12. **Follow rather than fit.** The active thought stays readable while the camera advances through the persistent field. Do not continually zoom out or pull old cells back into the viewport.
+13. **Motion has one owner.** During a transition, only the selected cell treatment, clearing content, connector, new content, and field focus may animate.
+14. **Stop when the idea lands.** Slow the network and offer the ending when a coherent direction appears; do not populate cells merely to make the canvas look impressive.
+15. **Keep the index outside the graph.** The progress card has no semantic connectors and never occupies a cell slot; it summarizes only committed history.
 
 ## Experience acceptance checks
 
@@ -533,6 +546,9 @@ At no width should the layout simply scale the desktop canvas down. Body text re
 - A user can complete the curated four-round scenario, including the ending, without leaving the canvas or encountering an unexplained screen.
 - A user whose answer is not represented can write a custom answer without creating a fourth competing suggestion node.
 - At every round, the relationship between the current question and each answer is visible without crossed lines.
+- The field exposes the same stable cell identities and geometry before and after a round transition; only occupancy, marks, connectors, and focus treatment change.
+- Selecting an answer marks its existing cell, clears rejected content without removing those cells, and focuses an adjacent existing neighbourhood.
+- Upper, middle, and lower selection sequences generate predictably different routes, and the camera follows each route away from the origin.
 - After four rounds, the initial dilemma and complete selected route remain identifiable, but the active content still dominates.
 - After every committed answer, **Your thread** matches the trail exactly and never includes an unchosen suggestion.
 - The status label is derived from session phase and ending signal; no numeric certainty or decision-quality score appears.

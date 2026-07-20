@@ -1,16 +1,22 @@
 import type { SessionState } from "../../session/session-types";
 import { selectProgress } from "../../session/session-selectors";
+import { projectCanvas } from "../../layout/projectCanvas";
 import { ProgressCard } from "../session/ProgressCard";
-import { TrailView } from "../session/TrailView";
+import { CellField } from "../canvas/CellField";
 import { ResultLens } from "./ResultLens";
-import { MembraneBackground } from "../canvas/MembraneBackground";
 
 export function EndingExperience({ state, onRestart }: { state: SessionState; onRestart: () => void }) {
+  const projection = projectCanvas({
+    dilemma: state.dilemma,
+    history: state.history,
+    currentRound: null,
+    phase: state.phase,
+    selectedAnswer: null,
+  });
   return (
     <section className="ending-stage" aria-live="polite" aria-busy={state.phase === "generating-summary"}>
-      <MembraneBackground />
       <ProgressCard progress={selectProgress(state)} />
-      <TrailView dilemma={state.dilemma} history={state.history} ending />
+      <CellField projection={projection} phase={state.phase === "ending" ? "ending" : "generating-summary"} ending />
       {state.phase === "generating-summary" ? (
         <div className="gathering-lens">
           <span aria-hidden="true">✦</span>
@@ -22,4 +28,3 @@ export function EndingExperience({ state, onRestart }: { state: SessionState; on
     </section>
   );
 }
-

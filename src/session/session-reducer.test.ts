@@ -15,7 +15,7 @@ const readyAtFirstRound = (): SessionState => {
 const completeRound = (state: SessionState, answerIndex: number, requestId: number, nextRoundIndex: number) => {
   const selected = sessionReducer(state, {
     type: "SELECT_ANSWER",
-    answer: { text: state.currentRound!.answers[answerIndex], source: "suggested" },
+    answer: { text: state.currentRound!.answers[answerIndex], source: "suggested", choiceIndex: answerIndex as 0 | 1 | 2 },
     requestId,
   });
   const loaded = sessionReducer(selected, { type: "NEXT_ROUND_LOADED", round: rounds[nextRoundIndex], requestId });
@@ -36,12 +36,12 @@ describe("sessionReducer", () => {
     const ready = readyAtFirstRound();
     const selected = sessionReducer(ready, {
       type: "SELECT_ANSWER",
-      answer: { text: rounds[0].answers[0], source: "suggested" },
+      answer: { text: rounds[0].answers[0], source: "suggested", choiceIndex: 0 },
       requestId: 2,
     });
     const repeated = sessionReducer(selected, {
       type: "SELECT_ANSWER",
-      answer: { text: rounds[0].answers[1], source: "suggested" },
+      answer: { text: rounds[0].answers[1], source: "suggested", choiceIndex: 1 },
       requestId: 3,
     });
     expect(repeated).toBe(selected);
@@ -65,7 +65,7 @@ describe("sessionReducer", () => {
     state = sessionReducer(state, { type: "CONTINUE_AFTER_CLARITY" });
     state = sessionReducer(state, {
       type: "SELECT_ANSWER",
-      answer: { text: rounds[4].answers[0], source: "suggested" },
+      answer: { text: rounds[4].answers[0], source: "suggested", choiceIndex: 0 },
       requestId: 6,
     });
     state = sessionReducer(state, { type: "COMMIT_SELECTION" });
@@ -87,7 +87,7 @@ describe("sessionReducer", () => {
     state = sessionReducer(state, { type: "OPEN_CUSTOM_ANSWER" });
     state = sessionReducer(state, {
       type: "SELECT_ANSWER",
-      answer: { text: "The chance to mentor", source: "custom" },
+      answer: { text: "The chance to mentor", source: "custom", choiceIndex: 1 },
       requestId: 2,
     });
     state = sessionReducer(state, { type: "COMMIT_SELECTION" });
@@ -97,7 +97,7 @@ describe("sessionReducer", () => {
   it("restart clears the session and makes an old response harmless", () => {
     const selected = sessionReducer(readyAtFirstRound(), {
       type: "SELECT_ANSWER",
-      answer: { text: rounds[0].answers[0], source: "suggested" },
+      answer: { text: rounds[0].answers[0], source: "suggested", choiceIndex: 0 },
       requestId: 2,
     });
     const restarted = sessionReducer(selected, { type: "RESTART", requestId: 3 });
@@ -106,4 +106,3 @@ describe("sessionReducer", () => {
     expect(restarted).toMatchObject({ phase: "welcome", history: [], activeRequestId: 3 });
   });
 });
-

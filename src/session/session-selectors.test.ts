@@ -5,10 +5,9 @@ import { selectProgress } from "./session-selectors";
 describe("selectProgress", () => {
   it("derives answers and statuses without storing a second history", () => {
     const base = createInitialSessionState();
-    const step = { round: 1, question: "Why?", answer: "Because it matters", answerSource: "custom" as const };
+    const step = { round: 1, question: "Why?", answer: "Because it matters", answerSource: "custom" as const, choiceIndex: 1 as const };
     expect(selectProgress({ ...base, dilemma: "A question", phase: "round-ready" }).status).toBe("Starting out");
     expect(selectProgress({ ...base, dilemma: "A question", phase: "round-ready", history: [step] })).toMatchObject({ status: "Exploring", answers: ["Because it matters"] });
     expect(selectProgress({ ...base, dilemma: "A question", phase: "ending", history: [step] }).status).toBe("Ready to reflect");
   });
 });
-
