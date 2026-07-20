@@ -15,7 +15,7 @@ export type CellSlot = {
  * Centre-to-centre distance for kissing neighbours.
  * All world coordinates are expressed in viewport-width units so packing is isotropic.
  */
-export const CELL_PITCH = 9.2;
+export const CELL_PITCH = 10.5;
 /** Empty-cell diameter as a fraction of pitch (small membrane gap). */
 export const CELL_MEMBRANE_GAP = 0.96;
 export const CELL_DIAMETER = CELL_PITCH * CELL_MEMBRANE_GAP;

@@ -55,7 +55,7 @@ function CellContent({
         disabled={!item.interactive}
         onClick={() => { if (item.interactive) onSelect?.(item.text); }}
         initial={{ opacity: 0, scale: 0.92 }}
-        animate={{ opacity: targetOpacity, scale: isSelected ? 1.08 : item.status === "clearing" ? 0.9 : 1 }}
+        animate={{ opacity: targetOpacity, scale: isSelected ? 1.04 : item.status === "clearing" ? 0.94 : 1 }}
         exit={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
         transition={transition}
       >

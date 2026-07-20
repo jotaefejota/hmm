@@ -68,22 +68,22 @@
 .field-cell.is-occupied { z-index: 3; opacity: 1; }
 .field-cell.is-question { border-color: rgba(118, 87, 220, 0.38); background: rgba(238, 232, 255, 0.7); }
 .field-cell.is-answer, .field-cell.is-dilemma, .field-cell.is-selected { border-color: rgba(215, 143, 54, 0.42); background: rgba(250, 232, 201, 0.76); }
-.field-cell.is-suggestion { border-color: rgba(40, 36, 45, 0.22); background: rgba(255, 253, 248, 0.9); }
+.field-cell.is-suggestion { border-color: rgba(40, 36, 45, 0.22); background: rgba(255, 253, 248, 0.92); z-index: 4; }
 .field-cell.is-suggestion.is-selected { border-color: rgba(215, 143, 54, 0.58); background: rgba(250, 232, 201, 0.9); }
-.field-cell.is-active {
+/* Keep active cells at pack diameter so neighbours kiss without covering text. */
+.field-cell.is-question.is-active {
   z-index: 5;
-  width: calc(var(--field-width) * var(--cell-size-ratio, 0.08) * 1.22);
-  box-shadow: 0 16px 46px rgba(72, 54, 112, 0.12);
+  box-shadow: 0 0 0 0.28rem rgba(118, 87, 220, 0.08), 0 18px 44px rgba(72, 54, 112, 0.16);
 }
-.field-cell.is-selected { z-index: 4; box-shadow: 0 0 0 0.38rem rgba(215, 143, 54, 0.05), 0 12px 32px rgba(139, 87, 29, 0.12); }
+.field-cell.is-selected { z-index: 4; box-shadow: 0 0 0 0.28rem rgba(215, 143, 54, 0.08), 0 12px 32px rgba(139, 87, 29, 0.12); }
 .field-cell.is-dilemma {
-  width: calc(var(--field-width) * var(--cell-size-ratio, 0.08) * 1.08);
+  z-index: 3;
 }
 
 .cell-content {
   width: 100%;
   height: 100%;
-  padding: 0.72rem;
+  padding: 0.55rem 0.6rem;
   border: 0;
   border-radius: inherit;
   background: transparent;
@@ -92,29 +92,39 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.25;
   overflow: hidden;
 }
 .cell-content.content-suggestion { cursor: pointer; }
 .cell-content.content-suggestion:hover { background: rgba(255,255,255,0.28); }
 .cell-content.content-question.status-active {
-  width: clamp(14rem, 18vw, 17rem);
-  height: clamp(14rem, 18vw, 17rem);
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  translate: -50% -50%;
-  padding: 1.55rem;
+  padding: 0.7rem 0.75rem;
   border: 1px solid rgba(118, 87, 220, 0.48);
-  background: rgba(238, 232, 255, 0.94);
-  box-shadow: 0 0 0 0.55rem rgba(118, 87, 220, 0.04), 0 20px 58px rgba(93, 65, 174, 0.18);
+  background: rgba(238, 232, 255, 0.96);
+  box-shadow: inset 0 0 0 0.35rem rgba(118, 87, 220, 0.05);
 }
-.cell-content.content-question.status-active::after { content: ""; position: absolute; inset: 0.48rem; border: 1px solid rgba(118, 87, 220, 0.15); border-radius: inherit; pointer-events: none; }
-.cell-content h1 { margin: 0; font-size: clamp(1.15rem, 1.65vw, 1.72rem); line-height: 1.08; letter-spacing: -0.04em; }
+.cell-content.content-question.status-active::after {
+  content: "";
+  position: absolute;
+  inset: 0.38rem;
+  border: 1px solid rgba(118, 87, 220, 0.16);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.cell-content.content-question.status-active {
+  position: relative;
+}
+.cell-content h1 {
+  margin: 0;
+  max-width: 100%;
+  font-size: clamp(0.72rem, 0.95vw, 0.98rem);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
 .cell-content h1:focus { outline: none; }
-.cell-content .node-label { margin-bottom: 0.35rem; font-size: clamp(0.42rem, 0.5vw, 0.58rem); }
-.cell-content .node-copy { font-size: clamp(0.55rem, 0.72vw, 0.75rem); line-height: 1.25; }
-.cell-content.content-suggestion .node-copy { font-size: clamp(0.68rem, 0.82vw, 0.86rem); font-weight: 650; }
+.cell-content .node-label { margin-bottom: 0.25rem; font-size: clamp(0.38rem, 0.45vw, 0.52rem); }
+.cell-content .node-copy { font-size: clamp(0.52rem, 0.68vw, 0.72rem); line-height: 1.22; }
+.cell-content.content-suggestion .node-copy { font-size: clamp(0.58rem, 0.74vw, 0.78rem); font-weight: 650; }
 .cell-content.content-answer, .cell-content.content-dilemma, .cell-content.status-selected { color: var(--amber-deep); }
 .cell-content.content-question { color: var(--violet-deep); }
 .cell-content.status-previous { opacity: 0.76; }
@@ -126,8 +136,30 @@
 .node-label { display: block; margin-bottom: 0.65rem; }
 .node-copy { display: block; }
 
-.question-pin { width: 2rem; height: 2rem; margin-bottom: 0.8rem; display: grid; place-items: center; color: white; background: var(--violet); border-radius: 50%; box-shadow: 0 4px 14px rgba(118, 87, 220, 0.35); font-weight: 750; }
-.selection-check { width: 1.55rem; height: 1.55rem; margin: -0.25rem 0 0.35rem; display: grid; place-items: center; color: white; background: var(--amber); border-radius: 50%; font-size: 0.75rem; }
+.question-pin {
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-bottom: 0.35rem;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: var(--violet);
+  border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(118, 87, 220, 0.32);
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+.selection-check {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: -0.15rem 0 0.25rem;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: var(--amber);
+  border-radius: 50%;
+  font-size: 0.62rem;
+}
 
 .custom-answer-hint { min-height: 2.75rem; position: absolute; right: clamp(1.5rem, 4vw, 4rem); bottom: 5.4rem; z-index: 8; padding: 0.5rem 0.75rem; color: var(--ink-soft); border: 0; background: transparent; cursor: pointer; font-size: 0.78rem; text-decoration: underline; text-decoration-color: rgba(40, 36, 45, 0.24); text-underline-offset: 0.25rem; }
 
@@ -259,7 +291,17 @@
   .field-cell.is-question.is-active { min-height: 12rem; order: 90; }
   .field-cell.is-suggestion.is-active { order: 91; }
   .field-cell.is-dilemma, .field-cell.is-previous, .field-cell.is-selected { order: 1; min-height: 6.5rem; }
-  .cell-content.content-question.status-active { width: 100%; height: 100%; position: relative; left: auto; top: auto; translate: none; margin: 0; padding: 1.5rem; }
+  .cell-content.content-question.status-active {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
+    margin: 0;
+    padding: 1.5rem;
+  }
+  .cell-content h1 { font-size: clamp(1.15rem, 5vw, 1.6rem); }
   .cell-content .node-copy { font-size: 0.72rem; }
   .cell-content.content-suggestion .node-copy { font-size: 0.9rem; }
   .custom-answer-hint { position: static; width: 100%; min-height: 2.75rem; padding: 0.75rem; text-align: center; }
