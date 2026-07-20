@@ -134,15 +134,34 @@ export function rowAfterSteps(steps: readonly RouteStep[]) {
 }
 
 export function getLensCellIds(roundNumber: number, priorSteps: readonly RouteStep[]) {
-  const baseRow = rowAfterSteps(priorSteps);
-  const column = roundNumber * 2 - 1;
-  return [idFor(column, baseRow - 1), idFor(column, baseRow + 1)] as const;
+  if (roundNumber === 1) {
+    return [idFor(1, FIELD_START_ROW - 1), idFor(1, FIELD_START_ROW + 1)] as const;
+  }
+
+  const lastStep = priorSteps[priorSteps.length - 1];
+  if (!lastStep) throw new Error(`Round ${roundNumber} needs a prior route step.`);
+  const lastAnswer = getCellSlot(
+    getSuggestionCellIds(roundNumber - 1, priorSteps.slice(0, -1), lastStep.lensIndex)[lastStep.choiceIndex],
+  );
+  const forwardColumn = lastAnswer.column + 1;
+  const [upperRow, lowerRow] = lastAnswer.column % 2 === 0
+    ? [lastAnswer.row - 1, lastAnswer.row]
+    : [lastAnswer.row, lastAnswer.row + 1];
+
+  // A new pair of lenses grows from the two forward hex-neighbours of the
+  // selected answer. Both cells physically touch that answer while the next
+  // choice still determines the following bend through its answer position.
+  return [idFor(forwardColumn, upperRow), idFor(forwardColumn, lowerRow)] as const;
+
 }
 
 export function getFortuneCellId(roundNumber: number, priorSteps: readonly RouteStep[]) {
-  const baseRow = rowAfterSteps(priorSteps);
-  const row = baseRow <= FIELD_START_ROW ? baseRow + 3 : baseRow - 3;
-  return idFor(roundNumber * 2 - 1, row);
+  const [upperLensId, lowerLensId] = getLensCellIds(roundNumber, priorSteps);
+  const upperLens = getCellSlot(upperLensId);
+  const lowerLens = getCellSlot(lowerLensId);
+  const centreRow = (upperLens.row + lowerLens.row) / 2;
+  const row = centreRow <= FIELD_START_ROW ? centreRow + 3 : centreRow - 3;
+  return idFor(upperLens.column, row);
 }
 
 export function getQuestionCellId(roundNumber: number, priorSteps: readonly RouteStep[], lensIndex: 0 | 1) {
@@ -150,8 +169,9 @@ export function getQuestionCellId(roundNumber: number, priorSteps: readonly Rout
 }
 
 export function getSuggestionCellIds(roundNumber: number, priorSteps: readonly RouteStep[], lensIndex: 0 | 1) {
-  const questionRow = rowAfterSteps(priorSteps) + lensDelta(lensIndex);
-  const questionColumn = roundNumber * 2 - 1;
+  const question = getCellSlot(getQuestionCellId(roundNumber, priorSteps, lensIndex));
+  const questionRow = question.row;
+  const questionColumn = question.column;
   const forwardColumn = questionColumn + 1;
 
   // The three answers form a touching fan around the opened lens instead of a

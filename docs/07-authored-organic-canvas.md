@@ -51,7 +51,8 @@ Semantic role may temporarily raise a slot within its authored allowance. A ques
 | Available lens | Violet `orb` / `capsule` with question pin and restrained glow. |
 | Open Hmm… question | Large violet `shell`; this is the local visual centre. |
 | Suggested answer | Neutral `orb`, `pebble`, or `capsule`, chosen by authored slot and copy length. |
-| Selected answer | Amber version of its footprint; permanent trail mark after commitment. |
+| Selected answer | Amber version of its footprint during commitment. |
+| Settled decision | Larger amber shell carrying the selected answer; it displaces nearby quiet cells and unfolds back into its question/answer pair on activation. |
 | Previous question | Quieter violet footprint; directly reviewable. |
 | Reflection / ending | Teal `pool` spanning a deliberate nearby cluster; its pressure radius matches its rendered footprint. |
 
@@ -59,15 +60,15 @@ Colour reinforces semantic state; label, icon, border, size, and focus treatment
 
 ## 6. Selection and path behaviour
 
-The first reset implementation does **not** attempt a fluid merge. Selection must be clear and complete before adding material dynamics:
+Selection has a defined semantic end state: after commitment, the question and selected answer settle into one larger decision cell. This is not a liquid dissolve; it is a deterministic occupancy transformation that lets the pressure field make room:
 
 1. selected answer gains amber treatment and a bounded scale lift;
 2. unselected answers fade back into their quiet authored footprints;
-3. the chosen question and answer settle as readable, persistent trail nodes;
+3. the chosen question and answer settle as one readable, persistent decision node; activating it temporarily restores the original pair for review;
 4. the next two lenses emerge in the next authored region;
 5. camera movement follows the active region after content is stable.
 
-Only after this static heterogeneous field and its semantic transitions are satisfying should we decide whether an intentionally designed transformation belongs between step 1 and step 3. Any future fluid transition needs a defined semantic end state; it must not dissolve two nodes merely to recreate them.
+Any future fluid transition must preserve this same semantic end state. It must not dissolve two nodes merely to recreate them elsewhere.
 
 ## 7. Implementation sequence
 
@@ -98,7 +99,7 @@ Only after this static heterogeneous field and its semantic transitions are sati
 
 **Proof:** two different choice sequences produce visibly different composition, not merely different labels in a repeated template.
 
-**Implementation note (2026-07-21):** Complete initial pass. The authored atlas has separate upper, centre, and lower profile families. Their footprints, proportions, scales, and offsets differ deterministically, so routes bending upward or downward travel through different cellular texture while stable slot identities and semantic routing remain intact.
+**Implementation note (2026-07-21):** Complete initial pass. The authored atlas has separate upper, centre, and lower profile families. Their footprints, proportions, scales, and offsets differ deterministically, so routes bending upward or downward travel through different cellular texture while stable slot identities and semantic routing remain intact. Each next lens pair now occupies the two forward neighbours touching the latest selected answer, keeping the discovery path cellular rather than detached.
 
 ### Slice D — bounded pressure layout
 
@@ -110,7 +111,7 @@ Only after this static heterogeneous field and its semantic transitions are sati
 
 **Proof:** growing an active question creates visible, calm pressure through nearby cells and settles reproducibly.
 
-**Implementation note (2026-07-21):** Complete initial pass. `pressure-layout.ts` runs 72 fixed D3 collision ticks over a 4.6-pitch neighbourhood. Active questions and selected answers have stronger home anchors than quiet cells, so nearby substrate yields first. The complete field retains its authored resting coordinates outside that neighbourhood; rendered HTML cells and SVG connectors share one coordinate map. The reducer and provider contract do not participate.
+**Implementation note (2026-07-21):** Complete initial pass. `pressure-layout.ts` runs 84 fixed D3 collision ticks over a 5.15-pitch neighbourhood. Active questions and settled decisions have stronger home anchors than quiet cells, so nearby substrate yields first; the larger decision footprint carries pressure across several quiet neighbours. The complete field retains its authored resting coordinates outside that neighbourhood; rendered HTML cells and SVG connectors share one coordinate map. The reducer and provider contract do not participate.
 
 ### Slice E — controlled transitions
 
@@ -133,7 +134,7 @@ Only after this static heterogeneous field and its semantic transitions are sati
 - Random layout at render time.
 - User-controlled drag/pan/zoom.
 - Canvas as the primary interaction layer.
-- Liquid merge effects before the semantic end state is agreed.
+- Any liquid-like effect that obscures the settled-decision end state.
 
 ## 9. Acceptance criteria for the reset
 

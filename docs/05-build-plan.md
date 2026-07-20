@@ -272,7 +272,7 @@ The submitted dilemma, first Hmm… question, exactly three suggestions, their r
 
 ### Task 3.2 — P0: Persistent cellular field and occupancy model
 
-**Implementation status:** Complete — 2026-07-20. The stable lattice extends beyond the viewport, each answer chooses the next route row, and the camera follows the active area without fitting the whole path.
+**Implementation status:** Complete — updated 2026-07-21. The stable lattice extends beyond the viewport; after every choice, the next two lenses occupy the forward hex-neighbours touching that selected answer, and the camera follows the active area without fitting the whole path.
 
 **Observable outcome**
 
@@ -297,6 +297,7 @@ The canvas reads as one organic cellular world larger than the viewport. The fir
 - Outer cell elements use stable slot IDs and keep the same count and relative geometry across round changes.
 - Semantic question/answer IDs map into cells as occupancy; they are not React identities for the outer cells.
 - The active question and exactly three suggestions occupy a compact directional fan of touching neighbour cells, with visible, uncrossed relationships and no detached vertical menu.
+- After a committed answer, both next-lens cells physically touch the settled decision; no gap may make the next discovery read as a detached new cluster.
 - Choosing upper, middle, or lower changes the row of the next question and therefore the visible route.
 - The camera advances toward the active question rather than fitting the full route into the viewport.
 - Selected cells can retain text and a semantic mark; unchosen content can clear while its neutral cell remains.

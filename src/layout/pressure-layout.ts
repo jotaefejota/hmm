@@ -14,8 +14,8 @@ type PressureNode = SimulationNodeDatum & {
   anchorStrength: number;
 };
 
-const LOCAL_PRESSURE_RADIUS = CELL_PITCH * 4.6;
-const SETTLE_TICKS = 72;
+const LOCAL_PRESSURE_RADIUS = CELL_PITCH * 5.15;
+const SETTLE_TICKS = 84;
 
 function authoredPosition(slot: CellSlot): CellPosition {
   return { x: slot.x + slot.offsetX, y: slot.y + slot.offsetY };
@@ -27,6 +27,8 @@ function physicsFor(slot: CellSlot, projection: CanvasProjection) {
   const radius = (CELL_DIAMETER * geometry.scale * Math.max(geometry.aspectRatio, 1 / geometry.aspectRatio)) / 2;
   const anchorStrength = item?.kind === "question" && item.status === "active"
     ? 0.2
+    : item?.kind === "decision"
+      ? 0.24
     : item?.status === "selected"
       ? 0.16
       : item
@@ -66,7 +68,7 @@ export function settleLocalPressure(projection: CanvasProjection): CellPositionM
   const simulation = forceSimulation(nodes)
     .force("home-x", forceX<PressureNode>((node) => node.homeX).strength((node) => node.anchorStrength))
     .force("home-y", forceY<PressureNode>((node) => node.homeY).strength((node) => node.anchorStrength))
-    .force("collide", forceCollide<PressureNode>((node) => node.radius + 0.18).strength(0.82).iterations(3))
+    .force("collide", forceCollide<PressureNode>((node) => node.radius + 0.18).strength(0.88).iterations(4))
     .alpha(0.9)
     .alphaDecay(0.045)
     .velocityDecay(0.58)

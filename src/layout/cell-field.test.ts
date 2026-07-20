@@ -52,6 +52,20 @@ describe("cell-field packed discovery world", () => {
       .not.toBe(getQuestionCellId(2, [{ lensIndex: 1, choiceIndex: 2 }], 0));
   });
 
+  it("grows each next lens pair from forward neighbours that touch the selected answer", () => {
+    for (const lensIndex of [0, 1] as const) {
+      for (const choiceIndex of [0, 1, 2] as const) {
+        const prior = [{ lensIndex, choiceIndex }] as const;
+        const answer = getCellSlot(getSuggestionCellIds(1, [], lensIndex)[choiceIndex]);
+        const nextLenses = getLensCellIds(2, prior).map(getCellSlot);
+        nextLenses.forEach((lens) => {
+          expect(cellDistance(answer, lens)).toBeCloseTo(CELL_PITCH, 5);
+          expect(lens.column).toBe(answer.column + 1);
+        });
+      }
+    }
+  });
+
   it("fans all three answers through cells touching the opened lens", () => {
     for (const lensIndex of [0, 1] as const) {
       const question = getCellSlot(getQuestionCellId(1, [], lensIndex));

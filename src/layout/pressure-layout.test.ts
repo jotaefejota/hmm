@@ -58,4 +58,20 @@ describe("settleLocalPressure", () => {
     const quietDistance = Math.abs((positions.get("quiet")?.x ?? 10.5) - 10.5);
     expect(quietDistance).toBeGreaterThan(activeDistance);
   });
+
+  it("keeps a settled decision near its answer position while quiet neighbours make room", () => {
+    const projection = pressureProjection();
+    projection.cells = [slot("decision", 0, 0), slot("quiet", 10.5, 0), slot("outer", 21, 0)];
+    projection.occupancy = [{
+      cellId: "decision", semanticId: "decision-1", kind: "decision", status: "selected",
+      text: "I want to shape the team's direction", label: "Settled choice", age: 0, interactive: true,
+    }];
+    projection.focusCellId = "decision";
+
+    const positions = settleLocalPressure(projection);
+    const decisionDistance = Math.abs((positions.get("decision")?.x ?? 0) - 0);
+    const quietDistance = Math.abs((positions.get("quiet")?.x ?? 10.5) - 10.5);
+    expect(quietDistance).toBeGreaterThan(decisionDistance);
+    expect(positions.get("outer")?.x).toBeGreaterThan(21);
+  });
 });
