@@ -97,12 +97,23 @@ export function getQuestionCellId(roundNumber: number, priorSteps: readonly Rout
 
 export function getSuggestionCellIds(roundNumber: number, priorSteps: readonly RouteStep[], lensIndex: 0 | 1) {
   const questionRow = rowAfterSteps(priorSteps) + lensDelta(lensIndex);
-  const column = roundNumber * 2;
-  return [
-    idFor(column, questionRow - 1),
-    idFor(column, questionRow),
-    idFor(column, questionRow + 1),
-  ] as const;
+  const questionColumn = roundNumber * 2 - 1;
+  const forwardColumn = questionColumn + 1;
+
+  // The three answers form a touching fan around the opened lens instead of a
+  // rigid column. The first option continues the lens's upward/downward bend;
+  // the other two occupy the two forward hex neighbours.
+  return lensIndex === 0
+    ? [
+        idFor(questionColumn, questionRow - 1),
+        idFor(forwardColumn, questionRow),
+        idFor(forwardColumn, questionRow + 1),
+      ] as const
+    : [
+        idFor(forwardColumn, questionRow),
+        idFor(forwardColumn, questionRow + 1),
+        idFor(questionColumn, questionRow + 1),
+      ] as const;
 }
 
 export function getHistoryCellId(

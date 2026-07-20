@@ -35,6 +35,21 @@ describe("cell-field packed discovery world", () => {
       .not.toBe(getQuestionCellId(2, [{ lensIndex: 1, choiceIndex: 2 }], 0));
   });
 
+  it("fans all three answers through cells touching the opened lens", () => {
+    for (const lensIndex of [0, 1] as const) {
+      const question = getCellSlot(getQuestionCellId(1, [], lensIndex));
+      const answers = getSuggestionCellIds(1, [], lensIndex).map(getCellSlot);
+
+      expect(new Set(answers.map((answer) => answer.id)).size).toBe(3);
+      answers.forEach((answer) => {
+        expect(cellDistance(question, answer)).toBeCloseTo(CELL_PITCH, 5);
+      });
+
+      const sameColumnAnswer = answers.find((answer) => answer.column === question.column);
+      expect(sameColumnAnswer?.row).toBe(question.row + (lensIndex === 0 ? -1 : 1));
+    }
+  });
+
   it("maps committed history to its selected answer cell", () => {
     const history = [{ round: 1, lensIndex: 0 as const, choiceIndex: 0 as const }, { round: 2, lensIndex: 1 as const, choiceIndex: 2 as const }];
     expect(getHistoryAnswerCellId(history, 0)).toBe(getSuggestionCellIds(1, [], 0)[0]);

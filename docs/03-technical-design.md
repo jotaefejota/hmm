@@ -276,7 +276,7 @@ type CanvasProjection = {
 
 `cell-field.ts` owns a finite deterministic **hex-offset packed** lattice of stable slot IDs and world coordinates. Packing is computed once as module constants—no runtime physics. Odd columns are vertically offset by half a row pitch so each empty cell has six near-neighbours. Empty-cell diameter is set to approximately the pitch (with a small membrane gap of about 2–4% of pitch) so neighbours appear to kiss. `projectOccupancy.ts` (or the equivalent projection inside `projectCanvas.ts`) maps semantic IDs such as `question-2` and `suggestion-2-1` into those slots by replaying the selected option indices. React keys the outer cell elements by `cellId`, never by `semanticId` or an array index.
 
-Question cells occupy alternating lattice columns after the origin. Their three suggestions occupy the next column at `row - 1`, `row`, and `row + 1`; the chosen suggestion row becomes the next question row two columns forward. Starting from the middle row leaves enough vertical capacity for any five-round sequence. Occupied or active cells may scale slightly above the pack for emphasis; empty substrate cells stay packed and quiet. A development assertion must reject duplicate active occupancy, an unknown slot, or a route outside the authored lattice.
+Question cells occupy alternating lattice columns after the origin. Their three suggestions use three immediate hex neighbours as a directional fan rather than one detached column. For the upper lens, one suggestion sits directly above and two use the forward diagonal neighbours; for the lower lens, one sits directly below and two use the forward diagonal neighbours. The semantic option index still supplies the next route delta independently of its rendered slot. Starting from the middle row leaves enough vertical capacity for any five-round sequence. Occupied or active cells may scale slightly above the pack for emphasis; empty substrate cells stay packed and quiet. A development assertion must reject duplicate active occupancy, an unknown slot, a suggestion that does not touch its question, or a route outside the authored lattice.
 
 Edges are derived in one selector from occupied/marked cell IDs:
 
@@ -305,7 +305,7 @@ For windows at least 900 px wide:
 - reserve a 280–320 px upper-left rectangle for the progress card and keep semantic nodes outside it;
 - render the full packed soup of empty cells so neighbours appear to touch; only occupied cells carry readable meaning;
 - place the active question near the desktop focal area while its world position advances along the packed route;
-- place the three suggestions in the next forward column’s upper, middle, and lower packed neighbours;
+- place the three suggestions in a touching upper or lower fan selected by the opened lens position;
 - preset enough columns and rows for every five-round combination;
 - derive the current row from the prior `choiceIndex` sequence (`0 = up`, `1 = straight`, `2 = down`) rather than from randomness;
 - reduce older occupied-cell emphasis to a minimum of `0.58`, while the underlying cell geometry remains present;

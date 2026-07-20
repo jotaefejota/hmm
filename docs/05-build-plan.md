@@ -286,7 +286,7 @@ The canvas reads as one organic cellular world larger than the viewport. The fir
 - One finite preset lattice large enough for every five-round path is rendered for the session.
 - Outer cell elements use stable slot IDs and keep the same count and relative geometry across round changes.
 - Semantic question/answer IDs map into cells as occupancy; they are not React identities for the outer cells.
-- The active question and exactly three suggestions occupy the next forward column at upper, middle, and lower rows with visible, uncrossed relationships.
+- The active question and exactly three suggestions occupy a compact directional fan of touching neighbour cells, with visible, uncrossed relationships and no detached vertical menu.
 - Choosing upper, middle, or lower changes the row of the next question and therefore the visible route.
 - The camera advances toward the active question rather than fitting the full route into the viewport.
 - Selected cells can retain text and a semantic mark; unchosen content can clear while its neutral cell remains.

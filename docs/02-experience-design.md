@@ -53,7 +53,7 @@ The recommended direction is therefore a warm off-white cellular field with ink 
 - A selected cell keeps its amber mark and selected text as part of the trail. A rejected cell loses its suggestion text and returns to its quiet neutral state.
 - The active neighbourhood comes forward through scale, contrast, sharpness, halo, and a controlled camera pan. Recent cells remain near the viewport edge before slipping away; the progress card preserves the complete textual route.
 - Choosing an item under **What you’ve chosen so far** is a review affordance: the camera (or narrow scroll) briefly focuses that committed amber answer cell. It does not edit history or enable free pan/zoom. The next selection, phase change, or **Back to now** returns focus to the active neighbourhood.
-- The three suggestions occupy forward cells above, level with, and below the current direction. The selected position determines the row of the next question, so repeated choices create a distinct rising, level, falling, or mixed path.
+- The three suggestions form a compact fan in cells that physically touch the opened question; they must never read as a detached vertical menu. The fan follows the lens placement: an upper lens uses one cell directly above and two forward neighbours, while a lower lens uses one cell directly below and two forward neighbours. The selected position still determines the next route bend, so repeated choices create a distinct rising, level, falling, or mixed path.
 - Semantic connectors join only selected relationships. Empty substrate cells never receive decorative cross-links.
 
 ## 2. Journey from arrival to ending
