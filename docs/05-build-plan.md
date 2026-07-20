@@ -1,6 +1,6 @@
 # Hmm… — Two-Day Build Plan
 
-**Status:** Ready for implementation
+**Status:** Implementation in progress — P0 tasks in Blocks 1–3 completed on 2026-07-20
 
 **Purpose:** Build the smallest complete, visually memorable session through demonstrable vertical slices.
 
@@ -35,7 +35,9 @@ P1 work may use only remaining buffer after the entire P0 journey passes. P2 wor
 
 ## 1. Project scaffolding and tooling
 
-### Task 1.1 — P0: Runnable, checked project shell
+### Task 1.1 — P0: Runnable, checked project shell ✅
+
+**Implementation status:** Complete — 2026-07-20
 
 **Observable outcome**
 
@@ -73,7 +75,9 @@ Opening the development URL shows a warm pearl canvas with the **Hmm…** wordma
 - `npm run check`
 - Start `npm run dev` and inspect the page and browser console.
 
-### Task 1.2 — P0: Shared contracts and validated mock source
+### Task 1.2 — P0: Shared contracts and validated mock source ✅
+
+**Implementation status:** Complete — 2026-07-20
 
 **Observable outcome**
 
@@ -112,7 +116,9 @@ The app can load the curated `team-lead-demo` round and summary data through a `
 
 ## 2. Initial screen
 
-### Task 2.1 — P0: Welcome, dilemma entry, and first mock round
+### Task 2.1 — P0: Welcome, dilemma entry, and first mock round ✅
+
+**Implementation status:** Complete — 2026-07-20
 
 **Observable outcome**
 
@@ -177,7 +183,9 @@ The welcome seed expands into the input surface rather than swapping abruptly.
 
 ## 3. Static graph with one question and three answers
 
-### Task 3.1 — P0: Legible first molecule
+### Task 3.1 — P0: Legible first molecule ✅
+
+**Implementation status:** Complete — 2026-07-20
 
 **Observable outcome**
 

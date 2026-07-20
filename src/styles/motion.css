@@ -1,0 +1,11 @@
+@keyframes breathe {
+  0%, 100% { transform: scale(0.985); opacity: 0.78; }
+  50% { transform: scale(1.015); opacity: 1; }
+}
+
+.generation-question, .question-node::after { animation: breathe 1.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
