@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { CanvasOccupancy, CanvasProjection } from "../../layout/projectCanvas";
 import { CELL_SIZE_RATIO, FIELD_HEIGHT, FIELD_WIDTH, getCellSlot } from "../../layout/cell-field";
+import { getSelectionConsolidation, type SelectionConsolidation } from "../../layout/selection-consolidation";
 import { ConnectionLayer } from "./ConnectionLayer";
 
 type CellFieldProps = {
@@ -17,6 +18,55 @@ type CellFieldProps = {
   ending?: boolean;
   reviewCellId?: string | null;
 };
+
+type SelectionSnapshot = {
+  key: string;
+  questionCellId: string;
+  answerCellId: string;
+  consolidation: SelectionConsolidation;
+};
+
+function selectionSnapshot(projection: CanvasProjection): SelectionSnapshot | null {
+  const selection = projection.selectionConsolidation;
+  if (!selection) return null;
+  return {
+    key: selection.key,
+    questionCellId: selection.questionCellId,
+    answerCellId: selection.answerCellId,
+    consolidation: getSelectionConsolidation(getCellSlot(selection.questionCellId), getCellSlot(selection.answerCellId)),
+  };
+}
+
+function SelectionMembrane({
+  snapshot,
+  phase,
+  onSettled,
+}: {
+  snapshot: SelectionSnapshot;
+  phase: CellFieldProps["phase"];
+  onSettled?: () => void;
+}) {
+  const reducedMotion = useReducedMotion();
+  const isSelecting = phase === "answer-selected";
+  return (
+    <motion.svg
+      className="selection-membrane"
+      viewBox={`0 0 ${FIELD_WIDTH} ${FIELD_HEIGHT}`}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isSelecting ? [0, 0.3, 0.82] : [0.82, 0.22], scale: isSelecting ? [0.94, 1.015, 1] : [1, 0.98] }}
+      transition={{ duration: reducedMotion ? 0.12 : isSelecting ? 0.72 : 0.44, times: isSelecting ? [0, 0.46, 1] : [0, 1], ease: [0.22, 1, 0.36, 1] }}
+      onAnimationComplete={() => { if (isSelecting) onSettled?.(); }}
+    >
+      <motion.path
+        initial={{ d: snapshot.consolidation.startPath }}
+        animate={{ d: isSelecting ? snapshot.consolidation.consolidatedPath : snapshot.consolidation.startPath }}
+        transition={{ duration: reducedMotion ? 0.12 : isSelecting ? 0.72 : 0.44, ease: [0.22, 1, 0.36, 1] }}
+      />
+    </motion.svg>
+  );
+}
 
 function CellContent({
   item,
@@ -192,12 +242,12 @@ export function CellField({
     ? { x: (visibleLensSlots[0].x + visibleLensSlots[1].x) / 2, y: (visibleLensSlots[0].y + visibleLensSlots[1].y) / 2 }
     : focusedSlot;
   const [openedCookies, setOpenedCookies] = useState<Set<string>>(() => new Set());
+  const consolidationSnapshot = selectionSnapshot(projection);
 
-  useEffect(() => {
-    if (phase !== "answer-selected" || !onCommit) return;
-    const safetyCommit = window.setTimeout(onCommit, 900);
-    return () => window.clearTimeout(safetyCommit);
-  }, [onCommit, phase]);
+  const commitConsolidation = () => {
+    if (phase !== "answer-selected" || !consolidationSnapshot) return;
+    onCommit?.();
+  };
 
   useEffect(() => {
     if (!reviewCellId || typeof window === "undefined") return;
@@ -221,11 +271,17 @@ export function CellField({
       data-cell-count={projection.cells.length}
     >
       <ConnectionLayer edges={projection.edges} />
+      {consolidationSnapshot ? (
+        <SelectionMembrane snapshot={consolidationSnapshot} phase={phase} onSettled={commitConsolidation} />
+      ) : null}
       {projection.cells.map((slot) => {
         const item = projection.occupancy.find((candidate) => candidate.cellId === slot.id);
         const isReviewTarget = reviewCellId === slot.id;
+        const isSelectionQuestion = phase === "answer-selected" && consolidationSnapshot?.questionCellId === slot.id;
+        const isSelectionAnswer = phase === "answer-selected" && consolidationSnapshot?.answerCellId === slot.id;
+        const isTransitionSource = phase === "transitioning" && (consolidationSnapshot?.questionCellId === slot.id || consolidationSnapshot?.answerCellId === slot.id);
         const cellClass = item
-          ? `is-occupied is-${item.kind} is-${item.status}${isReviewTarget ? " is-review-focus" : ""}`
+          ? `is-occupied is-${item.kind} is-${item.status}${isReviewTarget ? " is-review-focus" : ""}${isSelectionQuestion ? " is-consolidating-question" : ""}${isSelectionAnswer ? " is-selection-pulling" : ""}${isTransitionSource ? " is-consolidating-source" : ""}`
           : "is-empty";
         return (
           <div
@@ -235,6 +291,8 @@ export function CellField({
             style={{
               "--cell-x": `${(slot.x / FIELD_WIDTH) * 100}%`,
               "--cell-y": `${(slot.y / FIELD_HEIGHT) * 100}%`,
+              "--selection-pull-x": `${isSelectionAnswer ? consolidationSnapshot!.consolidation.answerPull.x : 0}vw`,
+              "--selection-pull-y": `${isSelectionAnswer ? consolidationSnapshot!.consolidation.answerPull.y : 0}vw`,
             } as React.CSSProperties}
           >
             <AnimatePresence mode="wait" initial={false}>

@@ -38,6 +38,24 @@
 .connection-origin { stroke: rgba(165, 103, 34, 0.46); stroke-dasharray: none; }
 .connection-previous { stroke: rgba(103, 79, 135, 0.5); stroke-width: 0.3; stroke-dasharray: none; }
 .connection-active { stroke: rgba(82, 65, 123, 0.38); }
+.selection-membrane {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  overflow: visible;
+  pointer-events: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  filter: drop-shadow(0 1.15rem 1.35rem rgba(92, 69, 160, 0.16));
+}
+.selection-membrane path {
+  fill: rgba(198, 184, 255, 0.34);
+  stroke: rgba(118, 87, 220, 0.56);
+  stroke-width: 0.32;
+  vector-effect: non-scaling-stroke;
+}
 
 .field-cell {
   --cell-x: 50%;
@@ -63,7 +81,7 @@
 .field-cell.is-empty {
   opacity: 0.42;
   background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(67, 60, 72, 0.12);
+  border-color: rgba(67, 60, 72, 0.2);
 }
 .field-cell.is-occupied { z-index: 3; opacity: 1; }
 .field-cell.is-question { border-color: rgba(118, 87, 220, 0.38); background: rgba(238, 232, 255, 0.7); }
@@ -90,6 +108,20 @@
 .field-cell.is-selected { z-index: 4; box-shadow: 0 0 0 0.28rem rgba(215, 143, 54, 0.08), 0 12px 32px rgba(139, 87, 29, 0.12); }
 .field-cell.is-dilemma {
   z-index: 3;
+}
+.field-cell.is-consolidating-question {
+  z-index: 6;
+  transform: scale(1.1);
+  transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1), border-color 420ms ease, background 420ms ease, box-shadow 420ms ease, opacity 420ms ease;
+}
+.field-cell.is-selection-pulling {
+  z-index: 6;
+  transform: translate(var(--selection-pull-x), var(--selection-pull-y)) scale(1.055);
+  transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1), border-color 420ms ease, background 420ms ease, box-shadow 420ms ease, opacity 420ms ease;
+}
+.field-cell.is-consolidating-source {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .cell-content {
@@ -369,9 +401,11 @@
   .progress-card.is-open .progress-details { display: block; }
   .progress-details[hidden] { display: none !important; }
   .cell-field { width: 100%; height: auto; min-height: 32rem; position: relative; inset: auto; display: flex; flex-direction: column; gap: 0.8rem; transform: none; }
-  .cell-field::before, .cell-field .connection-layer { display: none; }
+  .cell-field::before, .cell-field .connection-layer, .cell-field .selection-membrane { display: none; }
   .field-cell { display: none; }
   .field-cell.is-occupied { width: 100%; min-height: 5.5rem; aspect-ratio: auto; position: relative; left: auto; top: auto; translate: none; display: grid; }
+  .field-cell.is-consolidating-question, .field-cell.is-selection-pulling { transform: none; }
+  .field-cell.is-consolidating-source { opacity: 1; }
   .field-cell.is-question.is-active { min-height: 12rem; order: 90; }
   .field-cell.is-lens { display: grid; min-height: 8rem; order: 89; }
   .field-cell.is-finish { display: grid; width: 100%; min-height: 14rem; aspect-ratio: auto; translate: none; order: 92; }

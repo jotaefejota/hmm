@@ -49,6 +49,24 @@ describe("ThoughtCanvas discovery", () => {
     expect(props.onReturnToLenses).toHaveBeenCalledOnce();
   });
 
+  it("creates a temporary membrane for a committed suggestion without changing session semantics", () => {
+    const lens = scenario.discoveries[0].lenses[0];
+    const selectedAnswer = { text: lens.answers[1], source: "suggested" as const, choiceIndex: 1 as const };
+    const state = {
+      ...createInitialSessionState(1),
+      phase: "answer-selected" as const,
+      dilemma: TEAM_LEAD_DILEMMA,
+      currentDiscovery: scenario.discoveries[0],
+      selectedLensIndex: 0 as const,
+      selectedAnswer,
+      dataSource: "mock" as const,
+    };
+    const { container } = render(<ThoughtCanvas state={state} {...callbacks()} />);
+
+    expect(container.querySelector(".selection-membrane")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: `Your answer: ${selectedAnswer.text}` })).toBeDisabled();
+  });
+
   it("opens read-only detail by activating a historical bubble", async () => {
     const props = callbacks();
     const step = historyStep();

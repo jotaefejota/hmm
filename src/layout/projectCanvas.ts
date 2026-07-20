@@ -30,7 +30,19 @@ export type CanvasOccupancy = {
 };
 
 export type CanvasEdge = { id: string; from: CellSlot; to: CellSlot; status: "origin" | "active" | "previous" };
-export type CanvasProjection = { cells: readonly CellSlot[]; occupancy: CanvasOccupancy[]; edges: CanvasEdge[]; focusCellId: string };
+export type CanvasSelectionConsolidation = {
+  key: string;
+  questionCellId: string;
+  answerCellId: string;
+};
+
+export type CanvasProjection = {
+  cells: readonly CellSlot[];
+  occupancy: CanvasOccupancy[];
+  edges: CanvasEdge[];
+  focusCellId: string;
+  selectionConsolidation: CanvasSelectionConsolidation | null;
+};
 
 type ProjectCanvasInput = {
   dilemma: string;
@@ -131,8 +143,19 @@ export function projectCanvas({
   const finishCellId = phase === "finish-offered" && history.length > 0 ? getFinishCellId(history) : null;
   const settlesOnTrailEnd = phase === "generating-summary" || phase === "ending";
   const derivedFocusCellId = finishCellId ?? (settlesOnTrailEnd ? previousCellId : selectedLensIndex === null ? lensCells[0] : lensCells[selectedLensIndex]);
+  const selectionHistory = phase === "transitioning" ? history.slice(0, -1) : history;
+  const selectionSteps = selectionHistory.map(({ lensIndex, choiceIndex }) => ({ lensIndex, choiceIndex }));
+  const selectionRound = selectionHistory.length + 1;
+  const selectionConsolidation = currentDiscovery && selectedLensIndex !== null && selectedAnswer && (phase === "answer-selected" || phase === "transitioning")
+    ? (() => {
+        const questionCellId = getQuestionCellId(selectionRound, selectionSteps, selectedLensIndex);
+        const answerCellId = getSuggestionCellIds(selectionRound, selectionSteps, selectedLensIndex)[selectedAnswer.choiceIndex];
+        return { key: `${questionCellId}:${answerCellId}`, questionCellId, answerCellId };
+      })()
+    : null;
   return {
     cells: CELL_SLOTS, occupancy, edges,
     focusCellId: focusOverrideCellId && CELL_SLOTS.some((slot) => slot.id === focusOverrideCellId) ? focusOverrideCellId : derivedFocusCellId,
+    selectionConsolidation,
   };
 }
