@@ -2,6 +2,14 @@
 
 ## 11. Discovery-led canvas revision
 
+## 12. Organic-node dynamics investigation
+
+**Status:** Planned. The first directed DOM/SVG prototype was evaluated and intentionally reverted because its selected node visibly returned to its authored slot after commitment, rather than creating the desired sense of material continuity.
+
+**Next decision:** Use the staged experiments in `docs/06-organic-node-dynamics.md`: begin with a snapshot-plus-SVG-membrane prototype, then compare bounded local-force and Canvas/Pixi overlay spikes only if the first experiment does not meet the visual bar.
+
+**Guardrails:** Keep semantic state, accessible HTML interactions, mock mode, history review, and reduced-motion behaviour independent from whichever visual engine is tested.
+
 ### Task 11.1 — P0: Two-lens discovery rhythm
 
 **Implementation status:** Complete on `dev` — 2026-07-20.

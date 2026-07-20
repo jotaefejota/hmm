@@ -6,7 +6,7 @@ The validated discovery payload includes one contextual `fortune` string. Projec
 
 **Status:** Implemented architecture; production deployment verified 2026-07-20
 
-**Depends on:** `docs/01-product-and-mvp.md`, `docs/02-experience-design.md`, and `docs/04-ai-contract.md`
+**Depends on:** `docs/01-product-and-mvp.md`, `docs/02-experience-design.md`, and `docs/04-ai-contract.md`. The proposed, separately evaluated route toward more fluid node motion is recorded in `docs/06-organic-node-dynamics.md`.
 
 **Goal:** Deliver the complete hackathon experience with strong visual quality in two days, without building a general graph editor, a physics simulation, or a persistent backend.
 
