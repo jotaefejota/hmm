@@ -11,6 +11,7 @@ type PressureNode = SimulationNodeDatum & {
   homeX: number;
   homeY: number;
   radius: number;
+  anchorStrength: number;
 };
 
 const LOCAL_PRESSURE_RADIUS = CELL_PITCH * 4.6;
@@ -20,10 +21,18 @@ function authoredPosition(slot: CellSlot): CellPosition {
   return { x: slot.x + slot.offsetX, y: slot.y + slot.offsetY };
 }
 
-function radiusFor(slot: CellSlot, projection: CanvasProjection) {
+function physicsFor(slot: CellSlot, projection: CanvasProjection) {
   const item = projection.occupancy.find((candidate) => candidate.cellId === slot.id);
   const geometry = geometryForCell(slot, item);
-  return (CELL_DIAMETER * geometry.scale * Math.max(geometry.aspectRatio, 1 / geometry.aspectRatio)) / 2;
+  const radius = (CELL_DIAMETER * geometry.scale * Math.max(geometry.aspectRatio, 1 / geometry.aspectRatio)) / 2;
+  const anchorStrength = item?.kind === "question" && item.status === "active"
+    ? 0.2
+    : item?.status === "selected"
+      ? 0.16
+      : item
+        ? 0.12
+        : 0.055;
+  return { radius, anchorStrength };
 }
 
 /**
@@ -41,19 +50,21 @@ export function settleLocalPressure(projection: CanvasProjection): CellPositionM
   });
   const nodes: PressureNode[] = localSlots.map((slot) => {
     const position = authoredPosition(slot);
+    const physics = physicsFor(slot, projection);
     return {
       id: slot.id,
       homeX: position.x,
       homeY: position.y,
       x: position.x,
       y: position.y,
-      radius: radiusFor(slot, projection),
+      radius: physics.radius,
+      anchorStrength: physics.anchorStrength,
     };
   });
 
   const simulation = forceSimulation(nodes)
-    .force("home-x", forceX<PressureNode>((node) => node.homeX).strength(0.1))
-    .force("home-y", forceY<PressureNode>((node) => node.homeY).strength(0.1))
+    .force("home-x", forceX<PressureNode>((node) => node.homeX).strength((node) => node.anchorStrength))
+    .force("home-y", forceY<PressureNode>((node) => node.homeY).strength((node) => node.anchorStrength))
     .force("collide", forceCollide<PressureNode>((node) => node.radius + 0.18).strength(0.82).iterations(3))
     .alpha(0.9)
     .alphaDecay(0.045)

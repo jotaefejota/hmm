@@ -31,4 +31,19 @@ describe("settleLocalPressure", () => {
     const second = [...settleLocalPressure(pressureProjection()).entries()];
     expect(second).toEqual(first);
   });
+
+  it("keeps the active question closer to home than the quiet cell it presses", () => {
+    const projection = pressureProjection();
+    projection.cells = [slot("active", 0, 0), slot("quiet", 10.5, 0), slot("outer", 21, 0)];
+    projection.occupancy = [{
+      cellId: "active", semanticId: "question-1", kind: "question", status: "active",
+      text: "What matters?", label: "What matters", age: 0, interactive: false,
+    }];
+    projection.focusCellId = "active";
+
+    const positions = settleLocalPressure(projection);
+    const activeDistance = Math.abs((positions.get("active")?.x ?? 0) - 0);
+    const quietDistance = Math.abs((positions.get("quiet")?.x ?? 10.5) - 10.5);
+    expect(quietDistance).toBeGreaterThan(activeDistance);
+  });
 });

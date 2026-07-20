@@ -1,6 +1,6 @@
 # Hmm… — Authored Organic Canvas Reset
 
-**Status:** In progress — Slices A, B, and D complete; authored route-region and transition refinement remain. Replaces the uniform-cell visual foundation and supersedes the selection-membrane experiment.
+**Status:** In progress — Slices A, B, and D complete; transition refinement has begun; authored route-region work remains. Replaces the uniform-cell visual foundation and supersedes the selection-membrane experiment.
 
 ## 1. Core decision
 
@@ -10,7 +10,7 @@ The field may still use deterministic coordinates underneath, but those coordina
 
 ## 2. The cell vocabulary
 
-Every stable canvas slot has an authored footprint. A footprint defines its size, aspect ratio, silhouette, and small deterministic positional offset.
+Every stable canvas slot has an authored footprint. A footprint defines its size, aspect ratio, silhouette, and bounded deterministic positional offset.
 
 | Footprint | Role in the field | Visual character |
 | --- | --- | --- |
@@ -102,12 +102,13 @@ Only after this static heterogeneous field and its semantic transitions are sati
 
 - Use `d3-force` only as a short, deterministic collision pass over the active cell and a bounded local neighbourhood.
 - Keep each cell's authored position as a `forceX`/`forceY` home anchor; the active cell's semantic size supplies its collision radius.
+- Give meaningful cells stronger home anchors than quiet cells, so pressure travels outward through the substrate instead of relocating the active question itself.
 - Stop after a fixed number of ticks, then animate accessible HTML cells and SVG connection endpoints to the settled coordinates.
 - The simulation may displace several rings of neighbours, but it must not run continuously, reorder semantic content, or enable user drag/pan/zoom.
 
 **Proof:** growing an active question creates visible, calm pressure through nearby cells and settles reproducibly.
 
-**Implementation note (2026-07-21):** Complete initial pass. `pressure-layout.ts` runs 72 fixed D3 collision ticks over a 4.6-pitch neighbourhood, with every node drawn back to its authored home. Rendered HTML cells and SVG connectors share the settled coordinate map; the reducer and provider contract do not participate.
+**Implementation note (2026-07-21):** Complete initial pass. `pressure-layout.ts` runs 72 fixed D3 collision ticks over a 4.6-pitch neighbourhood. Active questions and selected answers have stronger home anchors than quiet cells, so nearby substrate yields first. Rendered HTML cells and SVG connectors share the settled coordinate map; the reducer and provider contract do not participate.
 
 ### Slice E — controlled transitions
 
@@ -115,6 +116,8 @@ Only after this static heterogeneous field and its semantic transitions are sati
 - Test rapid selection, restart, stale requests, reduced motion, keyboard operation, and narrow layout.
 
 **Proof:** the complete mock journey feels coherent without any liquid effect.
+
+**Implementation note (2026-07-21):** Started. Opening a lens now enlarges the active question footprint, and an answer gains a short, visible semantic lift while its neighbours settle under local pressure. SVG connectors interpolate to the same settled endpoints, so the path moves with the cells. Remaining work is route-specific transition timing and full mock/reduced-motion rehearsal.
 
 ### Slice F — optional material experiment
 

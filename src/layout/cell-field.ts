@@ -50,7 +50,7 @@ const idFor = (column: number, row: number) => `cell-c${column}-r${row}`;
 const footprintCycle: readonly CellFootprint[] = ["seed", "pebble", "orb", "seed", "capsule", "pebble", "orb", "shell"];
 const scaleCycle = [0.76, 0.86, 0.96, 0.82, 1.04, 0.9, 1, 1.1] as const;
 const aspectCycle = [1, 0.9, 1.08, 0.96, 1.22, 0.88, 1.04, 1.14] as const;
-const offsetCycle = [-0.32, 0.18, 0.28, -0.16, 0.1, -0.26, 0.22, -0.08] as const;
+const offsetCycle = [-1.04, 0.62, 0.86, -0.68, 0.38, -0.9, 0.76, -0.3] as const;
 
 export const CELL_SLOTS: readonly CellSlot[] = Array.from(
   { length: FIELD_COLUMN_COUNT * FIELD_ROW_COUNT },
