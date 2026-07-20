@@ -501,7 +501,7 @@ After the curated fourth answer, **A direction is taking shape** appears. The us
 
 ### Task 7.1 — P0: Protected, validated live endpoint
 
-**Implementation status:** Complete — 2026-07-20. `POST /api/reflect` validates input, calls OpenAI Structured Outputs server-side, re-validates output, and returns contract payloads or public errors with `no-store`.
+**Implementation status:** Complete and locally exercised — 2026-07-20. `POST /api/reflect` validates input, calls OpenAI Structured Outputs server-side, re-validates output, and returns contract payloads or public errors with `no-store`. `npm run dev:full` now mounts that production handler in Vite; endpoint tests cover valid round/summary responses and the required public error mappings.
 
 **Observable outcome**
 
@@ -540,7 +540,7 @@ With server credentials configured, `POST /api/reflect` returns one validated li
 
 ### Task 7.2 — P0: Resilient live/mock provider
 
-**Implementation status:** Complete — 2026-07-20. `VITE_CONTENT_MODE` selects mock/live/auto; auto falls back to mock with a recovery notice; refusals bypass generic fallback.
+**Implementation status:** Complete and recovery-verified — 2026-07-20. `VITE_CONTENT_MODE` selects mock/live/auto; auto falls back to mock with a recovery notice; refusals bypass generic fallback. Live/refusal failures become request-scoped reducer events, so a stale failure cannot overwrite a restarted session and an active failure renders a recoverable in-session boundary instead of escaping as an asynchronous exception.
 
 **Observable outcome**
 
@@ -714,7 +714,7 @@ The narrow history strip smoothly keeps the active end visible and allows old no
 
 ### Task 10.1 — P0: Rehearsed, stable 90-second demo
 
-**Implementation status:** Ready for rehearsal — 2026-07-20. Forced mock mode, README demo steps, and `npm run check` are green; complete three timed rehearsals before the event.
+**Implementation status:** Reliability rehearsal complete — 2026-07-20. Three consecutive forced-mock sessions completed all four rounds, summary, ChatGPT handoff fallback, and confirmed restart. An automatic-mode run with no API key returned the public `AI_UNAVAILABLE` response, displayed the recovery notice, preserved the path, and reached the curated ending. A credentialed live-model smoke run generated two consecutive validated rounds through the local serverless handler.
 
 **Observable outcome**
 

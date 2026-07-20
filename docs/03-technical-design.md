@@ -35,7 +35,7 @@ The semantic session—not the canvas—is the source of truth. The cell field i
 | Cells | A persistent set of absolutely positioned HTML containers holding native buttons/articles | Preserves stable spatial memory, native text wrapping, focus, keyboard behavior, and screen-reader semantics while allowing art-directed placement. |
 | Connections | One non-interactive SVG layer behind the HTML cells | SVG paths are easy to draw, fade, and animate while occupied-cell content remains accessible HTML. |
 | Animation | Motion for React (`motion`) for focus and content transitions; CSS for simple halos | Motion provides controlled transforms, occupancy fades, and reduced-motion support without introducing a full scene or physics engine. Stable cell elements avoid remount-heavy transition choreography. |
-| Validation | Zod in a root `shared/` module | One schema can validate browser requests, server input, model output, and mock fixtures. Tuple schemas enforce exactly three answers. |
+| Validation | Zod in a root `shared/` module | One schema can validate browser requests, server input, model output, and mock fixtures. An exact-length array enforces three answers while producing JSON Schema accepted by Structured Outputs. |
 | AI server | One TypeScript Vercel Function in `api/reflect.ts` | Vercel supports Vite projects with functions in an `api` directory, so the frontend and secret-bearing endpoint can deploy together without a separate server. |
 | Model API | Official OpenAI JavaScript SDK, Responses API, and Structured Outputs | The SDK can parse a response directly against a Zod schema. Structured Outputs provides schema adherence rather than merely valid JSON. |
 | Default model | `gpt-5.6-terra`, configurable with `OPENAI_MODEL` | Current official guidance describes Terra as the balance of intelligence and cost. Use low reasoning effort for this short, latency-sensitive task; keep the model configurable so the contract is not coupled to one release. |
@@ -396,8 +396,11 @@ Provider responsibilities:
 - In `auto`, try live once; on timeout, network failure, rate limit, or invalid output, return the appropriate mock payload with a recovery notice.
 - In `mock`, make no network request.
 - In `live`, expose a recoverable error instead of silently switching; reserve this mode for development diagnostics.
+- Provider failures are converted into a request-scoped `REQUEST_FAILED` session event. The reducer owns the resulting `error` phase and public error payload; asynchronous callbacks must not throw into React or maintain a parallel component-level error state.
 
 The presenter can force the curated journey with `VITE_CONTENT_MODE=mock` or a documented demo query parameter that selects the same provider. No visible provider selector is required.
+
+For local development, `npm run dev:full` enables a small Vite middleware adapter that invokes the production `api/reflect.ts` handler at the same-origin route. Plain `npm run dev` remains client-only. The adapter loads only `OPENAI_API_KEY` and `OPENAI_MODEL` from `.env.local`; it must never copy the full environment into client-visible Vite variables.
 
 Because the entire short history is sent on every live request, the app can switch from live to mock at any turn without provider-side conversation state.
 

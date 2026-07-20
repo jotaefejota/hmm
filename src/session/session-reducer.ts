@@ -113,6 +113,10 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
       return state.phase === "generating-summary" && event.requestId === state.activeRequestId
         ? { ...state, phase: "ending", summary: event.summary, dataSource: "mock" }
         : state;
+    case "REQUEST_FAILED":
+      return event.requestId === state.activeRequestId
+        ? { ...state, phase: "error", requestError: event.error }
+        : state;
     case "RESTART":
       return createInitialSessionState(event.requestId);
   }

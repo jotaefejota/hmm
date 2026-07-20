@@ -23,7 +23,6 @@ const toContractHistory = (history: ReflectionStep[]) => history.map((step) => (
 export function App() {
   const [state, dispatch] = useReducer(sessionReducer, initialSessionState);
   const [notice, setNotice] = useState<ContentNotice | null>(null);
-  const [boundaryMessage, setBoundaryMessage] = useState<string | null>(null);
   const requestCounter = useRef(0);
   const abortController = useRef<AbortController | null>(null);
   const selectionLocked = useRef(false);
@@ -44,10 +43,23 @@ export function App() {
     return source;
   };
 
+  const reportRequestFailure = (error: unknown, requestId: number) => {
+    if (wasAborted(error)) return;
+    const publicError = error instanceof ReflectionProviderError
+      ? error.publicError
+      : {
+          kind: "error" as const,
+          code: "AI_UNAVAILABLE" as const,
+          message: "Reflection is unavailable right now.",
+          retryable: true,
+          fallbackAvailable: true,
+        };
+    dispatch({ type: "REQUEST_FAILED", error: publicError, requestId });
+  };
+
   const submitDilemma = async (dilemma: string) => {
     if (state.phase !== "entering") return;
     const { requestId, signal } = beginRequest();
-    setBoundaryMessage(null);
     dispatch({ type: "SUBMIT_DILEMMA", dilemma, requestId });
     const request = roundRequestSchema.parse({
       contractVersion: "1",
@@ -68,13 +80,7 @@ export function App() {
       rememberResult(result.source, result.notice);
       dispatch({ type: "ROUND_LOADED", round: result.data, requestId });
     } catch (error) {
-      if (wasAborted(error)) return;
-      if (error instanceof ReflectionProviderError && !error.publicError.fallbackAvailable) {
-        setBoundaryMessage(error.publicError.message);
-        dispatch({ type: "RESTART", requestId: beginRequest().requestId });
-        return;
-      }
-      throw error;
+      reportRequestFailure(error, requestId);
     }
   };
 
@@ -99,7 +105,7 @@ export function App() {
       rememberResult(result.source, result.notice);
       dispatch({ type: "ROUND_LOADED", round: result.data, requestId });
     } catch (error) {
-      if (!wasAborted(error)) throw error;
+      reportRequestFailure(error, requestId);
     }
   };
 
@@ -140,7 +146,7 @@ export function App() {
       rememberResult(result.source, result.notice);
       dispatch({ type: "NEXT_ROUND_LOADED", round: result.data, requestId });
     } catch (error) {
-      if (!wasAborted(error)) throw error;
+      reportRequestFailure(error, requestId);
     }
   };
 
@@ -166,7 +172,7 @@ export function App() {
       rememberResult(result.source, result.notice);
       dispatch({ type: "SUMMARY_LOADED", summary: result.data, requestId });
     } catch (error) {
-      if (!wasAborted(error)) throw error;
+      reportRequestFailure(error, requestId);
     }
   };
 
@@ -211,7 +217,6 @@ export function App() {
     requestCounter.current += 1;
     selectionLocked.current = false;
     setNotice(null);
-    setBoundaryMessage(null);
     dispatch({ type: "RESTART", requestId: requestCounter.current });
   };
 
@@ -219,7 +224,6 @@ export function App() {
     <AppShell
       state={state}
       notice={notice}
-      boundaryMessage={boundaryMessage}
       onOpenEntry={() => dispatch({ type: "OPEN_ENTRY" })}
       onCancelEntry={() => dispatch({ type: "CANCEL_ENTRY" })}
       onSubmitDilemma={submitDilemma}

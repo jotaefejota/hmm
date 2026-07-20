@@ -63,7 +63,7 @@ const answerSchema = trimmedString(SUGGESTED_ANSWER_MAX_LENGTH);
 export const roundPayloadSchema = z.object({
   kind: z.literal("round"),
   question: trimmedString(QUESTION_MAX_LENGTH),
-  answers: z.tuple([answerSchema, answerSchema, answerSchema]).superRefine((answers, context) => {
+  answers: z.array(answerSchema).length(3).superRefine((answers, context) => {
     if (new Set(answers.map((answer) => answer.toLocaleLowerCase())).size !== 3) {
       context.addIssue({ code: "custom", message: "Answers must be distinct." });
     }

@@ -9,7 +9,6 @@ import { RecoveryNotice } from "../components/session/RecoveryNotice";
 type AppShellProps = {
   state: SessionState;
   notice: ContentNotice | null;
-  boundaryMessage: string | null;
   onOpenEntry: () => void;
   onCancelEntry: () => void;
   onSubmitDilemma: (dilemma: string) => Promise<void>;
@@ -46,9 +45,9 @@ export function AppShell(props: AppShellProps) {
       </header>
 
       {props.notice ? <RecoveryNotice message={props.notice.message} /> : null}
-      {props.boundaryMessage ? (
+      {state.phase === "error" && state.requestError ? (
         <div className="boundary-notice" role="alert">
-          <p>{props.boundaryMessage}</p>
+          <p>{state.requestError.message}</p>
           <button className="primary-action" type="button" onClick={props.onRestart}>
             Start over
           </button>

@@ -106,6 +106,27 @@ describe("sessionReducer", () => {
     expect(restarted).toMatchObject({ phase: "welcome", history: [], activeRequestId: 3 });
   });
 
+  it("owns request failures and ignores stale errors", () => {
+    const generating = sessionReducer(
+      sessionReducer(initialSessionState, { type: "OPEN_ENTRY" }),
+      { type: "SUBMIT_DILEMMA", dilemma: "A real question?", requestId: 4 },
+    );
+    const error = {
+      kind: "error" as const,
+      code: "AI_REFUSAL" as const,
+      message: "This topic needs a different kind of support.",
+      retryable: false,
+      fallbackAvailable: false,
+    };
+
+    expect(sessionReducer(generating, { type: "REQUEST_FAILED", error, requestId: 3 })).toBe(generating);
+    expect(sessionReducer(generating, { type: "REQUEST_FAILED", error, requestId: 4 })).toMatchObject({
+      phase: "error",
+      dilemma: "A real question?",
+      requestError: error,
+    });
+  });
+
   it("allows exactly one post-ending extension then regenerates the summary", () => {
     let state = readyAtFirstRound();
     state = completeRound(state, 0, 2, 1);

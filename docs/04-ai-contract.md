@@ -90,7 +90,7 @@ The persistent progress card does not change this request. It is a local project
 
 ## 2. Exact structured response formats
 
-The server selects one schema based on the request kind and uses Structured Outputs. It then validates the parsed result again with the corresponding Zod schema and the semantic checks below.
+The server selects one schema based on the request kind and uses Structured Outputs. It then validates the parsed result again with the corresponding Zod schema and the semantic checks below. The three answers are represented as a string array constrained to exactly three items, rather than a Zod tuple, so the generated JSON Schema remains compatible with the OpenAI response-format validator.
 
 ### Round response schema
 

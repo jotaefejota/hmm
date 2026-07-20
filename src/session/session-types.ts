@@ -1,4 +1,5 @@
 import type { RoundPayload, SummaryPayload } from "../../shared/ai-contract";
+import type { PublicError } from "../../shared/ai-contract";
 
 export type ReflectionStep = {
   round: number;
@@ -18,7 +19,8 @@ export type SessionPhase =
   | "transitioning"
   | "clarity-offered"
   | "generating-summary"
-  | "ending";
+  | "ending"
+  | "error";
 
 export type SelectedAnswer = {
   text: string;
@@ -41,6 +43,7 @@ export type SessionState = {
   extensionUsed: boolean;
   extensionFocus: string | null;
   dataSource: "mock" | null;
+  requestError: PublicError | null;
   activeRequestId: number;
 };
 
@@ -59,6 +62,7 @@ export type SessionEvent =
   | { type: "REQUEST_FINISH"; reason: Exclude<FinishReason, "max_rounds" | "extension">; requestId: number }
   | { type: "REQUEST_EXTENSION"; focus: string; requestId: number }
   | { type: "SUMMARY_LOADED"; summary: SummaryPayload; requestId: number }
+  | { type: "REQUEST_FAILED"; error: PublicError; requestId: number }
   | { type: "RESTART"; requestId: number };
 
 export const createInitialSessionState = (activeRequestId = 0): SessionState => ({
@@ -74,6 +78,7 @@ export const createInitialSessionState = (activeRequestId = 0): SessionState => 
   extensionUsed: false,
   extensionFocus: null,
   dataSource: null,
+  requestError: null,
   activeRequestId,
 });
 
