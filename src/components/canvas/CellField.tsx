@@ -125,9 +125,6 @@ function CellContent({
         animate={{ opacity: 1, scale: 1 }}
         transition={transition}
       >
-        <svg className="finish-membrane" viewBox="0 0 274 200" aria-hidden="true" preserveAspectRatio="none">
-          <path d="M50 50C72 6 115 1 137 22C160 1 204 6 224 50C268 69 269 130 224 150C204 194 160 199 137 178C115 199 72 194 50 150C6 130 6 69 50 50Z" />
-        </svg>
         <span className="finish-mark" aria-hidden="true">✦</span>
         {body}
       </motion.button>

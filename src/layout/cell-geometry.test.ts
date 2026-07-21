@@ -3,7 +3,7 @@ import { CELL_SLOTS } from "./cell-field";
 import { geometryForCell } from "./cell-geometry";
 
 describe("geometryForCell", () => {
-  it("keeps the reflection lens pressure footprint aligned with its rendered scale", () => {
+  it("uses one five-cell-sized reflection bubble in the shared pressure layout", () => {
     const geometry = geometryForCell(CELL_SLOTS[0], {
       cellId: CELL_SLOTS[0].id,
       semanticId: "finish-4",
@@ -15,8 +15,8 @@ describe("geometryForCell", () => {
       interactive: true,
     });
 
-    expect(geometry.scale).toBe(2.73);
-    expect(geometry.aspectRatio).toBe(1.365);
+    expect(geometry.scale).toBe(2.17);
+    expect(geometry.aspectRatio).toBe(1.06);
   });
 
   it("gives a settled decision more room than a normal answer", () => {

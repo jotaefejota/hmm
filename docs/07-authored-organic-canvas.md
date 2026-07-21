@@ -19,7 +19,7 @@ Every stable canvas slot has an authored footprint. A footprint defines its size
 | `orb` | Available lens or compact answer | Medium near-circle with a soft inner halo. |
 | `shell` | Full Hmm… question | Large, rounded semi-circle / inflated capsule; clear internal room for text. |
 | `capsule` | Longer answer or contextual angle | Horizontal or vertical rounded lobe, never a sharp card. |
-| `pool` | Reflection / ending state | Large, shallow merged shape spanning a small authored cluster. |
+| `pool` | Reflection / ending state | One large sea-glass shell, roughly five normal-cell areas, using the same authored geometry as the rest of the field. |
 
 No footprint is perfectly geometric. Each uses one of a small set of stable border-radius profiles, chosen from its slot ID. The variation is deterministic: the same session position always looks like the same cell.
 
@@ -54,7 +54,7 @@ Semantic role may temporarily raise a slot within its authored allowance. A ques
 | Selected answer | Amber version of its footprint during commitment. |
 | Settled decision | Larger amber shell carrying the selected answer in the trail’s largest amber type; it displaces nearby quiet cells and unfolds back into its question/answer pair on activation. Its copy fades and rises independently after the membrane’s size transition, rather than scaling with it. |
 | Previous question | Quieter violet footprint; directly reviewable. |
-| Reflection / ending | Teal `pool` spanning a deliberate nearby cluster; its pressure radius matches its rendered footprint. |
+| Reflection / ending | Teal `pool` as one large shell; its pressure radius matches its roughly five-cell rendered footprint. |
 
 Colour reinforces semantic state; label, icon, border, size, and focus treatment must still communicate it without colour.
 

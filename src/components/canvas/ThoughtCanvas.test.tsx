@@ -124,8 +124,10 @@ describe("ThoughtCanvas discovery", () => {
     const props = callbacks();
     const history = Array.from({ length: 4 }, (_, index) => historyStep(index + 1));
     const state = { ...createInitialSessionState(5), phase: "finish-offered" as const, dilemma: TEAM_LEAD_DILEMMA, history, currentDiscovery: scenario.discoveries[4], dataSource: "mock" as const };
-    render(<ThoughtCanvas state={state} {...props} />);
+    const { container } = render(<ThoughtCanvas state={state} {...props} />);
     const finish = screen.getByRole("button", { name: "Open reflection lens" });
+    expect(container.querySelector(".field-cell.is-finish")).toBeTruthy();
+    expect(container.querySelector(".finish-membrane")).toBeNull();
     await userEvent.click(finish);
     expect(props.onFinish).toHaveBeenCalledWith("suggested");
     expect(screen.queryByText("A direction is taking shape.")).not.toBeInTheDocument();

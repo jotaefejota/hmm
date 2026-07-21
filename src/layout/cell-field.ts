@@ -221,27 +221,17 @@ export function getFinishCellId(
   return idFor(column, row);
 }
 
-/** The exact quiet-cell diamond covered by the four-cell reflection membrane. */
-export function getFinishFootprintCellIds(
-  history: readonly { round: number; lensIndex: 0 | 1; choiceIndex: 0 | 1 | 2 }[],
-) {
-  const left = getCellSlot(getFinishCellId(history));
-  return [
-    left.id,
-    idFor(left.column + 1, left.row),
-    idFor(left.column + 1, left.row + 1),
-    idFor(left.column + 2, left.row),
-  ] as const;
-}
-
-/** The bypass bubble sits below the centre of the four-cell reflection lens. */
+/**
+ * The bypass bubble begins in the immediate neighbouring slot. The pressure
+ * pass resolves its final resting point against the enlarged reflection shell,
+ * producing a touching pair instead of an authored visual gap.
+ */
 export function getContinueCellId(
   history: readonly { round: number; lensIndex: 0 | 1; choiceIndex: 0 | 1 | 2 }[],
 ) {
   if (history.length === 0) throw new Error("A continue bubble needs a committed answer.");
   const finish = getCellSlot(getFinishCellId(history));
-  const rowOffset = finish.row <= FIELD_START_ROW ? 3 : -2;
-  return idFor(finish.column + 1, finish.row + rowOffset);
+  return idFor(finish.column + 1, finish.column % 2 === 0 ? finish.row : finish.row + 1);
 }
 
 export function getCellSlot(id: string) {

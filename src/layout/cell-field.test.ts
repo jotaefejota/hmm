@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   CELL_PITCH, CELL_SLOTS, FIELD_COLUMN_COUNT, FIELD_ROW_COUNT, FIELD_START_ROW,
   cellDistance, getCellSlot, getHistoryAnswerCellId, getLensCellIds, getQuestionCellId, regionForRow,
-  getSuggestionCellIds, getFinishCellId, getFinishFootprintCellIds, getContinueCellId, rowAfterSteps, type RouteStep,
+  getSuggestionCellIds, getFinishCellId, getContinueCellId, rowAfterSteps, type RouteStep,
 } from "./cell-field";
 
 describe("cell-field packed discovery world", () => {
@@ -94,26 +94,14 @@ describe("cell-field packed discovery world", () => {
     expect(cellDistance(answer, finish)).toBeCloseTo(CELL_PITCH, 5);
   });
 
-  it("keeps the continuation bubble inside the authored lattice on extreme routes", () => {
+  it("starts the continuation bubble in the immediate neighbour of the reflection lens", () => {
     const upper = Array.from({ length: 5 }, (_, index) => ({ round: index + 1, lensIndex: 0 as const, choiceIndex: 0 as const }));
     const lower = Array.from({ length: 5 }, (_, index) => ({ round: index + 1, lensIndex: 1 as const, choiceIndex: 2 as const }));
-    [upper, lower].forEach((history) => expect(() => getCellSlot(getContinueCellId(history))).not.toThrow());
+    [upper, lower].forEach((history) => {
+      const finish = getCellSlot(getFinishCellId(history));
+      const continueCell = getCellSlot(getContinueCellId(history));
+      expect(cellDistance(finish, continueCell)).toBeCloseTo(CELL_PITCH, 5);
+    });
   });
 
-  it("uses the exact left-middle-middle-right quiet-cell diamond for the reflection membrane", () => {
-    const history = [{ round: 1, lensIndex: 0 as const, choiceIndex: 1 as const }];
-    const [leftId, middleUpperId, middleLowerId, rightId] = getFinishFootprintCellIds(history);
-    const left = getCellSlot(leftId);
-    const middleUpper = getCellSlot(middleUpperId);
-    const middleLower = getCellSlot(middleLowerId);
-    const right = getCellSlot(rightId);
-    expect(left.column).toBe(right.column - 2);
-    expect(middleUpper.column).toBe(left.column + 1);
-    expect(middleLower.column).toBe(middleUpper.column);
-    expect(middleLower.row).toBe(middleUpper.row + 1);
-    expect(cellDistance(left, middleUpper)).toBeCloseTo(CELL_PITCH, 5);
-    expect(cellDistance(left, middleLower)).toBeCloseTo(CELL_PITCH, 5);
-    expect(cellDistance(right, middleUpper)).toBeCloseTo(CELL_PITCH, 5);
-    expect(cellDistance(right, middleLower)).toBeCloseTo(CELL_PITCH, 5);
-  });
 });

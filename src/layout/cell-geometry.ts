@@ -29,7 +29,9 @@ export function geometryForCell(slot: CellSlot, item: CanvasOccupancy | undefine
   if (item.kind === "answer") return { footprint: "capsule", scale: 1.04, aspectRatio: 1.1 };
   if (item.kind === "decision") return { footprint: "shell", scale: 1.72, aspectRatio: 1.08 };
   if (item.kind === "fortune") return { footprint: "capsule", scale: 0.9, aspectRatio: 1.24 };
-  if (item.kind === "finish") return { footprint: "shell", scale: 2.73, aspectRatio: 1.365 };
+  // Approximately five standard-cell areas: visually distinct, but still a
+  // single participant in the same pressure and membrane system as every node.
+  if (item.kind === "finish") return { footprint: "shell", scale: 2.17, aspectRatio: 1.06 };
   if (item.kind === "continue") return { footprint: "orb", scale: 1.1, aspectRatio: 1 };
   return { footprint: slot.footprint, scale: slot.scale, aspectRatio: slot.aspectRatio };
 }

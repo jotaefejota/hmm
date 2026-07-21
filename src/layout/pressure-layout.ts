@@ -27,7 +27,7 @@ function physicsFor(slot: CellSlot, projection: CanvasProjection) {
   const radius = (CELL_DIAMETER * geometry.scale * Math.max(geometry.aspectRatio, 1 / geometry.aspectRatio)) / 2;
   const anchorStrength = item?.kind === "question" && item.status === "active"
     ? 0.2
-    : item?.kind === "decision"
+    : item?.kind === "decision" || item?.kind === "finish"
       ? 0.24
     : item?.status === "selected"
       ? 0.16
