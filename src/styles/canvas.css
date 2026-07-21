@@ -346,7 +346,7 @@
   top: auto;
 }
 .progress-brand { margin: 0 0 1rem; color: var(--ink); font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; letter-spacing: -0.06em; line-height: 1; }
-.progress-brand span { color: var(--cobalt); }
+.progress-brand-logo { width: min(7rem, 100%); height: auto; display: block; }
 .progress-restart-action { text-align: left; }
 button.progress-brand, button.progress-dilemma { width: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; }
 button.progress-restart-action:hover, button.progress-restart-action:focus-visible { color: var(--cobalt-deep); outline: none; }

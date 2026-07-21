@@ -17,5 +17,6 @@ describe("ProgressCard", () => {
     await user.click(screen.getByRole("button", { name: "Start again with this thought" }));
     await user.click(screen.getByRole("button", { name: "Should I move closer to my friends?" }));
     expect(onReturnToLanding).toHaveBeenCalledTimes(2);
+    expect(screen.getByRole("button", { name: "Start again with this thought" }).querySelector("img")).toHaveAttribute("src", expect.stringContaining("hmm-logo-transparent"));
   });
 });

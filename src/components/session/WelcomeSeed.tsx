@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { DILEMMA_MAX_LENGTH } from "../../../shared/limits";
+import hmmLogo from "../../assets/hmm-logo-transparent.png";
 import { pickLandingPrompts } from "../../content/landing-prompts";
 import type { SessionPhase } from "../../session/session-types";
 import { projectCanvas } from "../../layout/projectCanvas";
@@ -133,7 +134,7 @@ export function WelcomeSeed({ phase, onSubmit, initialDilemma }: WelcomeSeedProp
             </div>
             <div className="form-actions">
               <button className="primary-action" type="submit" disabled={!dilemma.trim() || isDeparting}>
-                Hmm… <span aria-hidden="true">↗</span>
+                <img className="landing-button-logo" src={hmmLogo} alt="Hmm…" />
               </button>
             </div>
             <div className="landing-prompts" role="group" aria-label="Try a question">

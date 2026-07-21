@@ -32,6 +32,11 @@ describe("WelcomeSeed", () => {
     expect(screen.getByRole("button", { name: "Hmm…" })).toBeDisabled();
   });
 
+  it("uses the Hmm logo in the submit action", () => {
+    render(<WelcomeSeed phase="entering" onSubmit={vi.fn().mockResolvedValue(undefined)} />);
+    expect(screen.getByRole("button", { name: "Hmm…" }).querySelector("img")).toHaveAttribute("src", expect.stringContaining("hmm-logo-transparent"));
+  });
+
   it("uses a supplied thought and can clear it in place", async () => {
     const user = userEvent.setup();
     render(<WelcomeSeed phase="entering" initialDilemma="Should I move closer to my friends?" onSubmit={vi.fn().mockResolvedValue(undefined)} />);

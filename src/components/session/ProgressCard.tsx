@@ -1,4 +1,5 @@
 import { useId, useState } from "react";
+import hmmLogo from "../../assets/hmm-logo-transparent.png";
 import type { ProgressView } from "../../session/session-selectors";
 
 export function ProgressCard({
@@ -23,7 +24,7 @@ export function ProgressCard({
   return (
     <aside className={`progress-card ${open ? "is-open" : ""}`} aria-label="Reflection progress">
       <button className="progress-brand progress-restart-action" type="button" onClick={onReturnToLanding} disabled={!onReturnToLanding} aria-label="Start again with this thought">
-        Hmm<span aria-hidden="true">…</span>
+        <img className="progress-brand-logo" src={hmmLogo} alt="" />
       </button>
       <div id={panelId} className="progress-details" hidden={!open}>
         {onReturnToLanding ? (
