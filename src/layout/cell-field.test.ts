@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  CELL_PITCH, CELL_SLOTS, FIELD_COLUMN_COUNT, FIELD_ROW_COUNT, FIELD_START_ROW,
+  CELL_PITCH, CELL_SLOTS, FIELD_COLUMN_COUNT, FIELD_ROW_COUNT, FIELD_START_ROW, MICRO_CELL_SLOTS,
   cellDistance, getCellSlot, getHistoryAnswerCellId, getLensCellIds, getQuestionCellId, regionForRow,
   getSuggestionCellIds, getFinishCellId, getFinishFootprintCellIds, getContinueCellId, rowAfterSteps, type RouteStep,
 } from "./cell-field";
@@ -20,6 +20,13 @@ describe("cell-field packed discovery world", () => {
     expect(footprints.size).toBeGreaterThan(3);
     expect(scales.size).toBeGreaterThan(3);
     expect(getCellSlot("cell-c3-r7")).toEqual(CELL_SLOTS.find((slot) => slot.id === "cell-c3-r7"));
+  });
+
+  it("adds stable micro cells only as a subordinate pore layer", () => {
+    expect(MICRO_CELL_SLOTS.length).toBeGreaterThan(80);
+    expect(new Set(MICRO_CELL_SLOTS.map((slot) => slot.id)).size).toBe(MICRO_CELL_SLOTS.length);
+    expect(Math.max(...MICRO_CELL_SLOTS.map((slot) => slot.scale))).toBeLessThanOrEqual(0.2);
+    expect(MICRO_CELL_SLOTS.every((slot) => slot.x > 0 && slot.y > 0)).toBe(true);
   });
 
   it("authors distinct upper, centre, and lower route regions", () => {

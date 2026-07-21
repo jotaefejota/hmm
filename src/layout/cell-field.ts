@@ -20,6 +20,22 @@ export type CellSlot = {
 };
 
 /**
+ * Decorative pores occupy selected triangular gaps in the authored pack.
+ * They deliberately have no semantic ID and never participate in routing or
+ * pressure: they make the quiet substrate feel denser without competing with
+ * an answer or changing the stable lattice used by the session.
+ */
+export type MicroCellSlot = {
+  id: string;
+  x: number;
+  y: number;
+  scale: number;
+  aspectRatio: number;
+  footprint: Extract<CellFootprint, "seed" | "pebble" | "orb">;
+  shape: CellShape;
+};
+
+/**
  * Centre-to-centre distance for kissing neighbours.
  * All world coordinates are expressed in viewport-width units so packing is isotropic.
  */
@@ -113,6 +129,54 @@ export const CELL_SLOTS: readonly CellSlot[] = Array.from(
     };
   },
 );
+
+const cellCentre = (column: number, row: number) => ({
+  x: xForColumn(column),
+  y: yForCell(column, row),
+});
+
+const triangleCentre = (
+  first: { x: number; y: number },
+  second: { x: number; y: number },
+  third: { x: number; y: number },
+) => ({
+  x: (first.x + second.x + third.x) / 3,
+  y: (first.y + second.y + third.y) / 3,
+});
+
+/**
+ * A restrained subset of the gaps between three kissing cells. Their diameter
+ * is roughly one fifth of the normal membrane, so they read as small pores
+ * rather than another routeable layer of bubbles.
+ */
+export const MICRO_CELL_SLOTS: readonly MicroCellSlot[] = Array.from(
+  { length: (FIELD_COLUMN_COUNT - 1) * (FIELD_ROW_COUNT - 1) },
+  (_, index) => {
+    const column = Math.floor(index / (FIELD_ROW_COUNT - 1));
+    const row = index % (FIELD_ROW_COUNT - 1);
+    return { column, row };
+  },
+).flatMap(({ column, row }) => {
+  const parity = (column * 11 + row * 7) % 5;
+  if (parity !== 0 && parity !== 2) return [];
+
+  const leftUpper = cellCentre(column, row);
+  const leftLower = cellCentre(column, row + 1);
+  const right = cellCentre(column + 1, column % 2 === 0 ? row : row + 1);
+  const centre = triangleCentre(leftUpper, leftLower, right);
+  const variants = [
+    { footprint: "seed" as const, scale: 0.18, aspectRatio: 0.92 },
+    { footprint: "pebble" as const, scale: 0.15, aspectRatio: 1.1 },
+    { footprint: "orb" as const, scale: 0.2, aspectRatio: 0.98 },
+  ];
+  const variant = variants[(column * 3 + row) % variants.length];
+  return [{
+    id: `pore-c${column}-r${row}`,
+    ...centre,
+    ...variant,
+    shape: ((column + row * 2) % 4) as CellShape,
+  }];
+});
 
 export const DILEMMA_CELL_ID = idFor(0, FIELD_START_ROW);
 

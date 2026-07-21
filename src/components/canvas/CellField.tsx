@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { CanvasOccupancy, CanvasProjection } from "../../layout/projectCanvas";
-import { CELL_SIZE_RATIO, FIELD_HEIGHT, FIELD_WIDTH, getCellSlot } from "../../layout/cell-field";
+import { CELL_SIZE_RATIO, FIELD_HEIGHT, FIELD_WIDTH, getCellSlot, MICRO_CELL_SLOTS } from "../../layout/cell-field";
 import { geometryForCell } from "../../layout/cell-geometry";
 import { settleLocalPressure } from "../../layout/pressure-layout";
 import { ConnectionLayer } from "./ConnectionLayer";
@@ -271,6 +271,20 @@ export function CellField({
       } as React.CSSProperties}
       data-cell-count={projection.cells.length}
     >
+      <div className="micro-cell-layer" aria-hidden="true">
+        {MICRO_CELL_SLOTS.map((pore) => (
+          <span
+            key={pore.id}
+            className={`micro-cell field-footprint-${pore.footprint} shape-${pore.shape}`}
+            style={{
+              "--cell-x": `${(pore.x / FIELD_WIDTH) * 100}%`,
+              "--cell-y": `${(pore.y / FIELD_HEIGHT) * 100}%`,
+              "--micro-scale": String(pore.scale),
+              "--micro-aspect": String(pore.aspectRatio),
+            } as React.CSSProperties}
+          />
+        ))}
+      </div>
       <ConnectionLayer edges={projection.edges} positions={pressurePositions} />
       {projection.cells.map((slot) => {
         const item = projection.occupancy.find((candidate) => candidate.cellId === slot.id);
