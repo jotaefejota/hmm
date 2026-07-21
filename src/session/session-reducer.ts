@@ -40,7 +40,9 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
     case "SUBMIT_DILEMMA": {
       if (state.phase !== "entering") return state;
       const dilemma = event.dilemma.trim();
-      return dilemma ? { ...state, phase: "generating-round", dilemma, activeRequestId: event.requestId } : state;
+      return dilemma
+        ? { ...state, phase: "generating-round", dilemma, activeRequestId: event.requestId, fortuneSeed: event.fortuneSeed ?? state.fortuneSeed }
+        : state;
     }
     case "DISCOVERY_LOADED":
       return state.phase === "generating-round" && event.requestId === state.activeRequestId
@@ -49,6 +51,10 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
     case "OPEN_LENS":
       return (state.phase === "lens-ready" || state.phase === "round-ready") && state.currentDiscovery
         ? { ...state, phase: "round-ready", selectedLensIndex: event.lensIndex }
+        : state;
+    case "OPEN_FORTUNE":
+      return (state.phase === "lens-ready" || state.phase === "round-ready") && state.currentDiscovery && !state.openedFortunes.some((fortune) => fortune.round === event.fortune.round)
+        ? { ...state, openedFortunes: [...state.openedFortunes, event.fortune] }
         : state;
     case "RETURN_TO_LENSES":
       return (state.phase === "round-ready" || state.phase === "writing-custom-answer") && state.currentDiscovery
@@ -85,6 +91,7 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
         summary: null,
         finishReason: reachedCoreLimit ? "max_rounds" : null,
         extensionUsed: false,
+        openedFortunes: state.openedFortunes.filter((fortune) => fortune.round <= history.length),
         transitionFinished: false,
         // A revised fourth answer is a fresh route, not an immediate re-offer
         // of the stale finish lens that led into this edit.
@@ -155,6 +162,8 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
       return state.phase === "error" && state.errorPhase
         ? { ...state, phase: state.errorPhase, requestError: null, errorPhase: null, activeRequestId: event.requestId }
         : state;
+    case "RETURN_TO_LANDING":
+      return { ...createInitialSessionState(event.requestId), dilemma: state.dilemma };
     case "RESTART":
       return createInitialSessionState(event.requestId);
   }

@@ -32,6 +32,11 @@ export type SelectedAnswer = {
   choiceIndex: 0 | 1 | 2;
 };
 
+export type OpenedFortune = {
+  round: number;
+  text: string;
+};
+
 export type FinishReason = "user" | "suggested" | "max_rounds" | "extension";
 export type RecoverablePhase = Extract<
   SessionPhase,
@@ -56,12 +61,17 @@ export type SessionState = {
   requestError: PublicError | null;
   errorPhase: RecoverablePhase | null;
   activeRequestId: number;
+  /** A per-session seed keeps surprise-cookie timing random but stable on rerender. */
+  fortuneSeed: number;
+  /** Contextual angles the user explicitly opened; shown in the final reflection only. */
+  openedFortunes: OpenedFortune[];
 };
 
 export type SessionEvent =
-  | { type: "SUBMIT_DILEMMA"; dilemma: string; requestId: number }
+  | { type: "SUBMIT_DILEMMA"; dilemma: string; requestId: number; fortuneSeed?: number }
   | { type: "DISCOVERY_LOADED"; discovery: DiscoveryPayload; requestId: number }
   | { type: "OPEN_LENS"; lensIndex: 0 | 1 }
+  | { type: "OPEN_FORTUNE"; fortune: OpenedFortune }
   | { type: "RETURN_TO_LENSES" }
   | { type: "OPEN_CUSTOM_ANSWER" }
   | { type: "CLOSE_CUSTOM_ANSWER" }
@@ -77,6 +87,7 @@ export type SessionEvent =
   | { type: "SUMMARY_LOADED"; summary: SummaryPayload; requestId: number }
   | { type: "REQUEST_FAILED"; error: PublicError; requestId: number }
   | { type: "RECOVER_REQUEST"; requestId: number }
+  | { type: "RETURN_TO_LANDING"; requestId: number }
   | { type: "RESTART"; requestId: number };
 
 export const createInitialSessionState = (activeRequestId = 0): SessionState => ({
@@ -96,6 +107,8 @@ export const createInitialSessionState = (activeRequestId = 0): SessionState => 
   requestError: null,
   errorPhase: null,
   activeRequestId,
+  fortuneSeed: 0,
+  openedFortunes: [],
 });
 
 export const initialSessionState = createInitialSessionState();

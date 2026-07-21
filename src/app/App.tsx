@@ -136,7 +136,7 @@ export function App() {
   const submitDilemma = async (dilemma: string) => {
     if (state.phase !== "entering") return;
     const { requestId, signal } = beginRequest();
-    dispatch({ type: "SUBMIT_DILEMMA", dilemma, requestId });
+    dispatch({ type: "SUBMIT_DILEMMA", dilemma, requestId, fortuneSeed: Math.floor(Math.random() * 2 ** 31) });
     const request = roundRequestSchema.parse({
       contractVersion: "2",
       kind: "round",
@@ -347,12 +347,22 @@ export function App() {
     dispatch({ type: "RESTART", requestId: requestCounter.current });
   };
 
+  const returnToLanding = () => {
+    abortController.current?.abort();
+    requestCounter.current += 1;
+    selectionLocked.current = false;
+    failedOperation.current = null;
+    setNotice(null);
+    dispatch({ type: "RETURN_TO_LANDING", requestId: requestCounter.current });
+  };
+
   return (
     <AppShell
       state={state}
       notice={notice}
       onSubmitDilemma={submitDilemma}
       onOpenLens={(lensIndex) => dispatch({ type: "OPEN_LENS", lensIndex })}
+      onOpenFortune={(round, text) => dispatch({ type: "OPEN_FORTUNE", fortune: { round, text } })}
       onReturnToLenses={() => dispatch({ type: "RETURN_TO_LENSES" })}
           onSelectAnswer={(text) => {
         const answers = state.selectedLensIndex === null ? [] : state.currentDiscovery?.lenses[state.selectedLensIndex].answers ?? [];
@@ -371,6 +381,7 @@ export function App() {
       onExploreDoubt={exploreDoubt}
       onRetry={recoverRequest}
       onRestart={restart}
+      onReturnToLanding={returnToLanding}
       onDismissSummary={() => dispatch({ type: "DISMISS_SUMMARY" })}
     />
   );

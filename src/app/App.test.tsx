@@ -24,7 +24,7 @@ describe("App interaction guards", () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
     fireEvent.click(screen.getByRole("button", { name: "Explore What is missing?" }));
-    const possibility = screen.getByRole("button", { name: "Possibility 1: Having a camera ready" });
+    const possibility = screen.getByRole("button", { name: "Possibility: Having a camera ready" });
     fireEvent.click(possibility);
     fireEvent.click(possibility);
 

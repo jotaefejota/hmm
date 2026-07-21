@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mockDataset } from "../content/mock-dataset";
 import type { ReflectionStep } from "../session/session-types";
-import { projectCanvas } from "./projectCanvas";
+import { projectCanvas, shouldShowFortune } from "./projectCanvas";
 
 const discovery = mockDataset.scenarios[0].discoveries[0];
 const step = (lensIndex: 0 | 1, choiceIndex: 0 | 1 | 2): ReflectionStep => ({
@@ -16,6 +16,16 @@ const step = (lensIndex: 0 | 1, choiceIndex: 0 | 1 | 2): ReflectionStep => ({
 });
 
 describe("projectCanvas discovery", () => {
+  it("shows fortunes sparsely in stable, randomized round windows", () => {
+    const seed = 5;
+    expect(shouldShowFortune(1, seed)).toBe(false);
+    expect([2, 3, 4].filter((round) => shouldShowFortune(round, seed))).toHaveLength(1);
+    expect([5, 6, 7].filter((round) => shouldShowFortune(round, seed))).toHaveLength(1);
+    expect([8, 9].filter((round) => shouldShowFortune(round, seed))).toHaveLength(1);
+    expect([10, 11].filter((round) => shouldShowFortune(round, seed))).toHaveLength(1);
+    expect(shouldShowFortune(4, seed)).toBe(shouldShowFortune(4, seed));
+  });
+
   it("shows exactly two interactive lenses before a question opens", () => {
     const projection = projectCanvas({ dilemma: "A dilemma", history: [], currentDiscovery: discovery, selectedLensIndex: null, phase: "lens-ready", selectedAnswer: null });
     expect(projection.occupancy.filter((item) => item.kind === "lens")).toHaveLength(2);
@@ -81,6 +91,17 @@ describe("projectCanvas discovery", () => {
     });
     expect(projection.occupancy.some((item) => item.semanticId === "question-2")).toBe(false);
     expect(projection.occupancy.filter((item) => item.kind === "suggestion" && item.stepIndex === undefined)).toHaveLength(0);
+    expect(projection.occupancy.filter((item) => item.stepIndex === 0).map((item) => item.kind))
+      .toEqual(["question", "suggestion", "suggestion", "suggestion"]);
+  });
+
+  it("suppresses the next lens pair while a historical decision unfolds", () => {
+    const projection = projectCanvas({
+      dilemma: "A dilemma", history: [step(0, 2)], currentDiscovery: mockDataset.scenarios[0].discoveries[1],
+      selectedLensIndex: null, phase: "lens-ready", selectedAnswer: null, expandedDecisionStepIndex: 0, suppressCurrentDiscovery: true,
+    });
+
+    expect(projection.occupancy.filter((item) => item.kind === "lens")).toHaveLength(0);
     expect(projection.occupancy.filter((item) => item.stepIndex === 0).map((item) => item.kind))
       .toEqual(["question", "suggestion", "suggestion", "suggestion"]);
   });

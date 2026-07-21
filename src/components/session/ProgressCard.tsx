@@ -6,12 +6,14 @@ export function ProgressCard({
   openByDefault = false,
   onFocusAnswer,
   onReturnToNow,
+  onReturnToLanding,
   reviewing = false,
 }: {
   progress: ProgressView;
   openByDefault?: boolean;
   onFocusAnswer?: (stepIndex: number) => void;
   onReturnToNow?: () => void;
+  onReturnToLanding?: () => void;
   reviewing?: boolean;
 }) {
   const panelId = useId();
@@ -20,33 +22,39 @@ export function ProgressCard({
 
   return (
     <aside className={`progress-card ${open ? "is-open" : ""}`} aria-label="Reflection progress">
-      <p className="progress-brand" aria-label="Hmm">
+      <button className="progress-brand progress-restart-action" type="button" onClick={onReturnToLanding} disabled={!onReturnToLanding} aria-label="Start again with this thought">
         Hmm<span aria-hidden="true">…</span>
-      </p>
+      </button>
       <div id={panelId} className="progress-details" hidden={!open}>
-        <p className="progress-dilemma">{progress.dilemma}</p>
-        <p className="progress-label">Your thoughts</p>
-        {progress.answers.length ? (
-          <ol className="progress-answers">
-            {progress.answers.map((answer, index) => (
-              <li key={`${index}-${answer}`}>
-                {onFocusAnswer ? (
-                  <button
-                    className="progress-answer-action"
-                    type="button"
-                    onClick={() => onFocusAnswer(index)}
-                  >
-                    {answer}
-                  </button>
-                ) : (
-                  answer
-                )}
-              </li>
-            ))}
-          </ol>
+        {onReturnToLanding ? (
+          <button className="progress-dilemma progress-restart-action" type="button" onClick={onReturnToLanding}>
+            {progress.dilemma}
+          </button>
         ) : (
-          <p className="progress-empty">Your choices will gather here.</p>
+          <p className="progress-dilemma">{progress.dilemma}</p>
         )}
+        {progress.answers.length ? (
+          <>
+            <p className="progress-label">Your thoughts</p>
+            <ol className="progress-answers">
+              {progress.answers.map((answer, index) => (
+                <li key={`${index}-${answer}`}>
+                  {onFocusAnswer ? (
+                    <button
+                      className="progress-answer-action"
+                      type="button"
+                      onClick={() => onFocusAnswer(index)}
+                    >
+                      {answer}
+                    </button>
+                  ) : (
+                    answer
+                  )}
+                </li>
+              ))}
+            </ol>
+          </>
+        ) : null}
         {reviewing && onReturnToNow ? (
           <button className="progress-return" type="button" onClick={onReturnToNow}>
             Back to now

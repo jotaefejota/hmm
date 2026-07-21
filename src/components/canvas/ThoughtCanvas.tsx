@@ -15,6 +15,7 @@ type ThoughtCanvasProps = {
   onSelectAnswer: (answer: string) => void;
   onReviseHistorySelection: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
   onOpenLens: (lensIndex: 0 | 1) => void;
+  onOpenFortune: (round: number, text: string) => void;
   onReturnToLenses: () => void;
   onSelectCustomAnswer: (answer: string) => void;
   onOpenCustomAnswer: () => void;
@@ -25,6 +26,7 @@ type ThoughtCanvasProps = {
   onContinueFromFinish: () => void;
   onRetry: () => void;
   onRestart: () => void;
+  onReturnToLanding: () => void;
 };
 
 export function ThoughtCanvas(props: ThoughtCanvasProps) {
@@ -37,7 +39,9 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
   const expandedDecisionStepIndex = expandedDecision?.historyLength === state.history.length
     ? expandedDecision.stepIndex
     : null;
-  const suppressCurrentDiscovery = expandedDecisionStepIndex !== null && state.phase === "round-ready";
+  const suppressCurrentDiscovery = expandedDecisionStepIndex !== null && (
+    state.phase === "lens-ready" || state.phase === "round-ready" || state.phase === "writing-custom-answer"
+  );
   const focusedDecisionStepIndex = decisionFocus?.historyLength === state.history.length
     ? decisionFocus.stepIndex
     : null;
@@ -52,6 +56,7 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
     selectedLensIndex: state.selectedLensIndex,
     phase: state.phase,
     selectedAnswer: state.selectedAnswer,
+    fortuneSeed: state.fortuneSeed,
     focusOverrideCellId: canvasFocusCellId,
     expandedDecisionStepIndex,
     suppressCurrentDiscovery,
@@ -85,6 +90,7 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
           onFocusAnswer={focusHistoryAnswer}
           onReturnToNow={clearReviewFocus}
           reviewing={isReviewing}
+          onReturnToLanding={props.onReturnToLanding}
         />
         {review ? <TrailReviewCard step={state.history[review.stepIndex]} onClose={clearReviewFocus} /> : null}
       </div>
@@ -109,6 +115,14 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
           setDecisionFocus(null);
           props.onOpenLens(lensIndex);
         }}
+        onOpenFortune={props.onOpenFortune}
+        onExitExpandedDecision={() => {
+          clearReviewFocus();
+          setExpandedDecision(null);
+          setDecisionFocus(null);
+          props.onReturnToLenses();
+        }}
+        onReturnToLenses={props.onReturnToLenses}
         onReviewNode={(stepIndex, focusKind) => {
           setExpandedDecision({ historyLength: state.history.length, stepIndex });
           focusHistoryNode(stepIndex, focusKind);

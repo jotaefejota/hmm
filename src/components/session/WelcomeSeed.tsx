@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { DILEMMA_MAX_LENGTH } from "../../../shared/limits";
 import { CAMERA_DILEMMA } from "../../content/mock-dataset";
+import { pickLandingPrompts } from "../../content/landing-prompts";
 import type { SessionPhase } from "../../session/session-types";
 import { projectCanvas } from "../../layout/projectCanvas";
 import { settleLocalPressure } from "../../layout/pressure-layout";
@@ -10,6 +11,7 @@ import { CELL_SIZE_RATIO, DILEMMA_CELL_ID, FIELD_WIDTH, getCellSlot } from "../.
 type WelcomeSeedProps = {
   phase: SessionPhase;
   onSubmit: (dilemma: string) => Promise<void>;
+  initialDilemma?: string;
 };
 
 type SeedHandoff = {
@@ -42,8 +44,9 @@ const firstSeedTarget = (dilemma: string) => {
   return { left: centreX - width / 2, top: centreY - height / 2, width, height };
 };
 
-export function WelcomeSeed({ phase, onSubmit }: WelcomeSeedProps) {
-  const [dilemma, setDilemma] = useState(CAMERA_DILEMMA);
+export function WelcomeSeed({ phase, onSubmit, initialDilemma = CAMERA_DILEMMA }: WelcomeSeedProps) {
+  const [dilemma, setDilemma] = useState(initialDilemma || CAMERA_DILEMMA);
+  const [promptSuggestions] = useState(() => pickLandingPrompts());
   const [isDeparting, setIsDeparting] = useState(false);
   const [handoff, setHandoff] = useState<SeedHandoff | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -104,26 +107,50 @@ export function WelcomeSeed({ phase, onSubmit }: WelcomeSeedProps) {
               submit();
             }}
           >
-            <textarea
-              ref={inputRef}
-              id="dilemma"
-              aria-label="Your thought"
-              value={dilemma}
-              maxLength={DILEMMA_MAX_LENGTH}
-              rows={3}
-              disabled={isDeparting}
-              onChange={(event) => setDilemma(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                  event.preventDefault();
-                  submit();
-                }
-              }}
-            />
+            <div className="dilemma-input">
+              <textarea
+                ref={inputRef}
+                id="dilemma"
+                aria-label="Your thought"
+                value={dilemma}
+                maxLength={DILEMMA_MAX_LENGTH}
+                rows={3}
+                disabled={isDeparting}
+                onChange={(event) => setDilemma(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    submit();
+                  }
+                }}
+              />
+              {dilemma && !isDeparting ? (
+                <button className="clear-dilemma" type="button" aria-label="Clear thought" onClick={() => {
+                  setDilemma("");
+                  inputRef.current?.focus();
+                }}>×</button>
+              ) : null}
+            </div>
             <div className="form-actions">
               <button className="primary-action" type="submit" disabled={!dilemma.trim() || isDeparting}>
                 Hmm… <span aria-hidden="true">↗</span>
               </button>
+            </div>
+            <div className="landing-prompts" role="group" aria-label="Try a question">
+              <p>Need a spark?</p>
+              <div>
+                {promptSuggestions.map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    disabled={isDeparting}
+                    onClick={() => {
+                      setDilemma(prompt);
+                      inputRef.current?.focus();
+                    }}
+                  >{prompt}</button>
+                ))}
+              </div>
             </div>
           </form>
         ) : null}

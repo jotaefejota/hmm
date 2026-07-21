@@ -31,7 +31,7 @@ Each history item contains:
 }
 ```
 
-Unopened lenses, fortune-cookie openings, canvas coordinates, progress labels, and provider conversation state are never sent as history.
+Unopened lenses, fortune-cookie openings, canvas coordinates, progress labels, and provider conversation state are never sent as history. Opened cookies are retained locally only so the final UI can list them as **Angles you opened**; they are not sent to the summary model.
 
 ## Discovery response
 

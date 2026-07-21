@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   CELL_PITCH, CELL_SLOTS, FIELD_COLUMN_COUNT, FIELD_ROW_COUNT, FIELD_START_ROW,
   cellDistance, getCellSlot, getHistoryAnswerCellId, getLensCellIds, getQuestionCellId, regionForRow,
-  getSuggestionCellIds, getFinishCellId, getContinueCellId, rowAfterSteps, type RouteStep,
+  getSuggestionCellIds, getFinishCellId, getContinueCellId, getFortuneCellId, rowAfterSteps, type RouteStep,
 } from "./cell-field";
 
 describe("cell-field packed discovery world", () => {
@@ -90,6 +90,20 @@ describe("cell-field packed discovery world", () => {
       const sameColumnAnswer = answers.find((answer) => answer.column === question.column);
       expect(sameColumnAnswer?.row).toBe(question.row + (lensIndex === 0 ? -1 : 1));
     }
+  });
+
+  it("keeps each fortune cookie in the live discovery neighbourhood", () => {
+    const routes = [
+      [] as RouteStep[],
+      [{ lensIndex: 0, choiceIndex: 0 }] as RouteStep[],
+      [{ lensIndex: 1, choiceIndex: 2 }] as RouteStep[],
+      [{ lensIndex: 0, choiceIndex: 2 }, { lensIndex: 1, choiceIndex: 0 }] as RouteStep[],
+    ];
+    routes.forEach((prior) => {
+      const fortune = getCellSlot(getFortuneCellId(prior.length + 1, prior));
+      const lenses = getLensCellIds(prior.length + 1, prior).map(getCellSlot);
+      expect(Math.min(...lenses.map((lens) => cellDistance(fortune, lens)))).toBeLessThanOrEqual(CELL_PITCH * 1.8);
+    });
   });
 
   it("maps committed history to its selected answer cell", () => {

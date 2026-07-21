@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import type { SummaryPayload } from "../../../shared/ai-contract";
-import type { ReflectionStep } from "../../session/session-types";
+import type { OpenedFortune, ReflectionStep } from "../../session/session-types";
 import { handoffToChatGpt } from "../../utils/chatgpt-handoff";
 
 type ResultLensProps = {
   summary: SummaryPayload;
   dilemma: string;
   history: ReflectionStep[];
+  fortunes?: readonly OpenedFortune[];
   canExtend?: boolean;
   canContinue?: boolean;
   onContinueExploring?: () => void;
@@ -19,6 +20,7 @@ export function ResultLens({
   summary,
   dilemma,
   history,
+  fortunes = [],
   canExtend = false,
   canContinue = false,
   onContinueExploring,
@@ -66,6 +68,13 @@ export function ResultLens({
         <h2>One next step</h2>
         <p>{summary.nextStep}</p>
       </section>
+
+      {fortunes.length > 0 ? (
+        <section className="opened-fortunes" aria-label="Angles you opened">
+          <h2>Angles you opened</h2>
+          <ul>{fortunes.map((fortune) => <li key={`${fortune.round}-${fortune.text}`}>✦ {fortune.text}</li>)}</ul>
+        </section>
+      ) : null}
 
       {handoffMessage ? <p className="handoff-feedback" role="status">{handoffMessage}</p> : null}
       {manualPrompt ? (

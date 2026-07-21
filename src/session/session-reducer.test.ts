@@ -22,6 +22,13 @@ describe("session reducer discovery flow", () => {
     expect(state.history).toHaveLength(0);
   });
 
+  it("remembers an opened fortune once for the final reflection", () => {
+    const state = sessionReducer(ready(), { type: "OPEN_FORTUNE", fortune: { round: 2, text: "Try a smaller test." } });
+    const repeated = sessionReducer(state, { type: "OPEN_FORTUNE", fortune: { round: 2, text: "Try a smaller test." } });
+    expect(state.openedFortunes).toEqual([{ round: 2, text: "Try a smaller test." }]);
+    expect(repeated).toBe(state);
+  });
+
   it("commits only the chosen lens after an answer", () => {
     let state = sessionReducer(ready(), { type: "OPEN_LENS", lensIndex: 1 });
     state = sessionReducer(state, { type: "SELECT_ANSWER", answer: { text: discoveries[0].lenses[1].answers[2], source: "suggested", choiceIndex: 2 }, requestId: 2 });
@@ -83,6 +90,11 @@ describe("session reducer discovery flow", () => {
   it("restart clears lens selection and invalidates the request", () => {
     const restarted = sessionReducer(sessionReducer(ready(), { type: "OPEN_LENS", lensIndex: 0 }), { type: "RESTART", requestId: 9 });
     expect(restarted).toMatchObject({ phase: "entering", history: [], currentDiscovery: null, selectedLensIndex: null, activeRequestId: 9 });
+  });
+
+  it("returns to landing while retaining the original dilemma", () => {
+    const returned = sessionReducer(ready(), { type: "RETURN_TO_LANDING", requestId: 9 });
+    expect(returned).toMatchObject({ phase: "entering", dilemma: "A dilemma", history: [], currentDiscovery: null, activeRequestId: 9 });
   });
 
   it("offers a finish lens after four answers and preserves the prepared next discovery", () => {

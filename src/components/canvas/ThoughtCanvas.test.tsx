@@ -8,11 +8,11 @@ import { ThoughtCanvas } from "./ThoughtCanvas";
 
 const scenario = mockDataset.scenarios[0];
 const callbacks = () => ({
-  onSelectAnswer: vi.fn(), onOpenLens: vi.fn(), onReturnToLenses: vi.fn(), onSelectCustomAnswer: vi.fn(),
+  onSelectAnswer: vi.fn(), onOpenLens: vi.fn(), onOpenFortune: vi.fn(), onReturnToLenses: vi.fn(), onSelectCustomAnswer: vi.fn(),
   onReviseHistorySelection: vi.fn(),
   onOpenCustomAnswer: vi.fn(), onCloseCustomAnswer: vi.fn(), onCommitSelection: vi.fn(),
   onTransitionComplete: vi.fn(), onFinish: vi.fn(), onContinueFromFinish: vi.fn(),
-  onRetry: vi.fn(), onRestart: vi.fn(),
+  onRetry: vi.fn(), onRestart: vi.fn(), onReturnToLanding: vi.fn(),
 });
 const historyStep = (round = 1): ReflectionStep => {
   const lens = scenario.discoveries[round - 1].lenses[0];
@@ -32,11 +32,16 @@ describe("ThoughtCanvas discovery", () => {
   });
 
   it("opens the contextual fortune without changing the reflection", async () => {
-    const state = { ...createInitialSessionState(1), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, currentDiscovery: scenario.discoveries[0], dataSource: "mock" as const };
-    render(<ThoughtCanvas state={state} {...callbacks()} />);
+    const state = {
+      ...createInitialSessionState(1), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA,
+      history: [historyStep()], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const, fortuneSeed: 0,
+    };
+    const props = callbacks();
+    render(<ThoughtCanvas state={state} {...props} />);
     const fortune = screen.getByRole("button", { name: "Open a refreshing angle" });
     await userEvent.click(fortune);
-    expect(screen.getByRole("button", { name: scenario.discoveries[0].fortune })).toBeVisible();
+    expect(screen.getByRole("button", { name: scenario.discoveries[1].fortune })).toBeVisible();
+    expect(props.onOpenFortune).toHaveBeenCalledWith(2, scenario.discoveries[1].fortune);
     expect(screen.getAllByRole("button", { name: /Explore/ })).toHaveLength(2);
   });
 
@@ -51,25 +56,41 @@ describe("ThoughtCanvas discovery", () => {
     expect(props.onReturnToLenses).toHaveBeenCalledOnce();
   });
 
+  it("returns to both lenses when the opened question is tapped again", async () => {
+    const props = callbacks();
+    const lens = scenario.discoveries[0].lenses[1];
+    const state = { ...createInitialSessionState(1), phase: "round-ready" as const, dilemma: TEAM_LEAD_DILEMMA, currentDiscovery: scenario.discoveries[0], selectedLensIndex: 1 as const, dataSource: "mock" as const };
+    render(<ThoughtCanvas state={state} {...props} />);
+
+    await userEvent.click(screen.getByRole("button", { name: `Close ${lens.theme} and show both question paths` }));
+
+    expect(props.onReturnToLenses).toHaveBeenCalledOnce();
+  });
+
   it("unfolds a settled decision and settles it again from either member", async () => {
     const props = callbacks();
     const step = historyStep();
     const state = { ...createInitialSessionState(2), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, history: [step], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const };
     render(<ThoughtCanvas state={state} {...props} />);
+    expect(screen.getAllByRole("button", { name: /Explore/ })).toHaveLength(2);
+
     await userEvent.click(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` }));
+
     await userEvent.click(screen.getByRole("button", { name: `Settle decision from round 1: ${step.answer}` }));
     expect(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` })).toBeVisible();
   });
 
-  it("settles an unfolded decision when its question is activated", async () => {
+  it("returns to the live lens choices when an unfolded question is activated", async () => {
     const step = historyStep();
+    const props = callbacks();
     const state = { ...createInitialSessionState(2), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, history: [step], currentDiscovery: scenario.discoveries[1], dataSource: "mock" as const };
-    render(<ThoughtCanvas state={state} {...callbacks()} />);
+    render(<ThoughtCanvas state={state} {...props} />);
 
     await userEvent.click(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` }));
     await userEvent.click(screen.getByRole("button", { name: `Settle decision from round 1: ${step.question}` }));
 
-    expect(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` })).toBeVisible();
+    expect(props.onReturnToLenses).toHaveBeenCalledOnce();
+    expect(props.onOpenLens).not.toHaveBeenCalled();
   });
 
   it("collapses the live question and answers while a historical decision is unfolded", async () => {
@@ -102,7 +123,7 @@ describe("ThoughtCanvas discovery", () => {
     render(<ThoughtCanvas state={state} {...props} />);
 
     await userEvent.click(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` }));
-    await userEvent.click(screen.getByRole("button", { name: `Possibility 2: ${step.options![1]}` }));
+    await userEvent.click(screen.getByRole("button", { name: `Possibility: ${step.options![1]}` }));
 
     expect(props.onReviseHistorySelection).toHaveBeenCalledWith(0, 1);
   });

@@ -13,6 +13,9 @@ type CellFieldProps = {
   onSelect?: (answer: string) => void;
   onReviseSelection?: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
   onOpenLens?: (lensIndex: 0 | 1) => void;
+  onOpenFortune?: (round: number, text: string) => void;
+  onReturnToLenses?: () => void;
+  onExitExpandedDecision?: () => void;
   onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
   onToggleDecision?: (stepIndex: number) => void;
   expandedDecisionStepIndex?: number | null;
@@ -30,6 +33,8 @@ function CellContent({
   onSelect,
   onReviseSelection,
   onOpenLens,
+  onReturnToLenses,
+  onExitExpandedDecision,
   onReviewNode,
   onToggleDecision,
   expandedDecisionStepIndex,
@@ -43,6 +48,8 @@ function CellContent({
   onSelect?: (answer: string) => void;
   onReviseSelection?: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
   onOpenLens?: (lensIndex: 0 | 1) => void;
+  onReturnToLenses?: () => void;
+  onExitExpandedDecision?: () => void;
   onReviewNode?: (stepIndex: number, focusKind: "question" | "answer") => void;
   onToggleDecision?: (stepIndex: number) => void;
   expandedDecisionStepIndex?: number | null;
@@ -114,6 +121,24 @@ function CellContent({
         initial={{ opacity: 0, scale: 0.86 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.92 }}
+        transition={transition}
+      >
+        {body}
+      </motion.button>
+    );
+  }
+
+  if (item.kind === "question" && item.stepIndex === undefined && item.lensIndex !== undefined) {
+    return (
+      <motion.button
+        key={item.semanticId}
+        className={`${className} active-question-toggle`}
+        type="button"
+        aria-label={`Close ${item.label} and show both question paths`}
+        onClick={onReturnToLenses}
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: targetOpacity, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
         transition={transition}
       >
         {body}
@@ -203,7 +228,9 @@ function CellContent({
           ? `Settle decision from round ${item.stepIndex + 1}: ${item.text}`
           : `Review round ${item.stepIndex + 1}: ${item.text}`}
         onClick={() => isExpandedDecisionMember
-          ? onToggleDecision?.(item.stepIndex!)
+          ? item.reviewKind === "question"
+            ? onExitExpandedDecision?.()
+            : onToggleDecision?.(item.stepIndex!)
           : onReviewNode?.(item.stepIndex!, item.reviewKind!)}
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: targetOpacity, scale: 1 }}
@@ -240,6 +267,9 @@ export function CellField({
   onSelect,
   onReviseSelection,
   onOpenLens,
+  onOpenFortune,
+  onReturnToLenses,
+  onExitExpandedDecision,
   onReviewNode,
   onToggleDecision,
   expandedDecisionStepIndex = null,
@@ -283,6 +313,7 @@ export function CellField({
     })()
     : focusedPosition;
   const [openedCookies, setOpenedCookies] = useState<Set<string>>(() => new Set());
+  const [revealingCookies, setRevealingCookies] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     if (phase !== "answer-selected" || !onCommit) return;
@@ -317,8 +348,11 @@ export function CellField({
         const geometry = geometryForCell(slot, item);
         const position = pressurePositions.get(slot.id) ?? slot;
         const isReviewTarget = reviewCellId === slot.id;
+        const liveClass = item?.stepIndex === undefined ? " is-live" : "";
+        const lensClass = item?.lensIndex !== undefined ? ` lens-index-${item.lensIndex}` : "";
+        const optionClass = item?.optionIndex !== undefined ? ` option-index-${item.optionIndex}` : "";
         const cellClass = item
-          ? `is-occupied is-${item.kind} is-${item.status}${isReviewTarget ? " is-review-focus" : ""}`
+          ? `is-occupied is-${item.kind} is-${item.status}${liveClass}${lensClass}${optionClass}${isReviewTarget ? " is-review-focus" : ""}`
           : "is-empty";
         return (
           <div
@@ -336,12 +370,39 @@ export function CellField({
               {item?.kind === "fortune" ? (
                 <button
                   type="button"
-                  className={`fortune-cookie ${openedCookies.has(item.semanticId) ? "is-open" : ""}`}
+                  className={`fortune-cookie ${openedCookies.has(item.semanticId) ? "is-open" : ""}${revealingCookies.has(item.semanticId) ? " is-revealing" : ""}`}
                   aria-label={openedCookies.has(item.semanticId) ? item.text : "Open a refreshing angle"}
-                  onClick={() => setOpenedCookies((current) => new Set(current).add(item.semanticId))}
+                  onClick={() => {
+                    setOpenedCookies((current) => new Set(current).add(item.semanticId));
+                    setRevealingCookies((current) => new Set(current).add(item.semanticId));
+                    if (item.round !== undefined) onOpenFortune?.(item.round, item.text);
+                  }}
+                  onAnimationEnd={() => setRevealingCookies((current) => {
+                    if (!current.has(item.semanticId)) return current;
+                    const next = new Set(current);
+                    next.delete(item.semanticId);
+                    return next;
+                  })}
                 >
-                  <span aria-hidden="true">{openedCookies.has(item.semanticId) ? "✦" : "◒"}</span>
-                  <span>{openedCookies.has(item.semanticId) ? item.text : item.label}</span>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={openedCookies.has(item.semanticId) ? "open" : "closed"}
+                      aria-hidden="true"
+                      initial={{ opacity: 0, scale: 0.45, rotate: -18 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      exit={{ opacity: 0, scale: 0.55, rotate: 18 }}
+                      transition={{ type: "spring", stiffness: 460, damping: 22 }}
+                    >{openedCookies.has(item.semanticId) ? "✦" : "◒"}</motion.span>
+                  </AnimatePresence>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={openedCookies.has(item.semanticId) ? item.text : item.label}
+                      initial={{ opacity: 0, y: 5, scale: 0.92 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -3, scale: 0.95 }}
+                      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                    >{openedCookies.has(item.semanticId) ? item.text : item.label}</motion.span>
+                  </AnimatePresence>
                 </button>
               ) : item ? (
                 <CellContent
@@ -351,6 +412,8 @@ export function CellField({
                   onSelect={onSelect}
                   onReviseSelection={onReviseSelection}
                   onOpenLens={onOpenLens}
+                  onReturnToLenses={onReturnToLenses}
+                  onExitExpandedDecision={onExitExpandedDecision}
                   onReviewNode={onReviewNode}
                   onToggleDecision={onToggleDecision}
                   expandedDecisionStepIndex={expandedDecisionStepIndex}

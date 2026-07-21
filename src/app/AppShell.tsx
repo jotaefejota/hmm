@@ -10,6 +10,7 @@ type AppShellProps = {
   notice: ContentNotice | null;
   onSubmitDilemma: (dilemma: string) => Promise<void>;
   onOpenLens: (lensIndex: 0 | 1) => void;
+  onOpenFortune: (round: number, text: string) => void;
   onReturnToLenses: () => void;
   onSelectAnswer: (answer: string) => void;
   onReviseHistorySelection: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
@@ -23,6 +24,7 @@ type AppShellProps = {
   onExploreDoubt: () => void;
   onRetry: () => void;
   onRestart: () => void;
+  onReturnToLanding: () => void;
   onDismissSummary: () => void;
 };
 
@@ -49,6 +51,7 @@ export function AppShell(props: AppShellProps) {
         <WelcomeSeed
           phase={state.phase}
           onSubmit={props.onSubmitDilemma}
+          initialDilemma={state.dilemma}
         />
       ) : null}
 
@@ -58,6 +61,7 @@ export function AppShell(props: AppShellProps) {
           onSelectAnswer={props.onSelectAnswer}
           onReviseHistorySelection={props.onReviseHistorySelection}
           onOpenLens={props.onOpenLens}
+          onOpenFortune={props.onOpenFortune}
           onReturnToLenses={props.onReturnToLenses}
           onSelectCustomAnswer={props.onSelectCustomAnswer}
           onOpenCustomAnswer={props.onOpenCustomAnswer}
@@ -68,6 +72,7 @@ export function AppShell(props: AppShellProps) {
           onContinueFromFinish={props.onContinueFromFinish}
           onRetry={props.onRetry}
           onRestart={props.onRestart}
+          onReturnToLanding={props.onReturnToLanding}
         />
       ) : null}
 
@@ -78,6 +83,7 @@ export function AppShell(props: AppShellProps) {
           onExploreDoubt={props.onExploreDoubt}
           onRetry={props.onRetry}
           onDismiss={props.onDismissSummary}
+          onReturnToLanding={props.onReturnToLanding}
         />
       ) : null}
     </main>

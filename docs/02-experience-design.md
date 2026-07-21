@@ -4,9 +4,9 @@
 
 The active neighbourhood begins with two violet question-lens cells carrying short theme labels, not a fully revealed question. Choosing a lens transforms that same cell into the active Hmm… question and reveals exactly three neighbouring answer cells. Until an answer is committed, **Try the other angle** restores both lenses without another content request. Once an answer is chosen, the unused lens clears back to the substrate and only the chosen question and answer remain marked.
 
-Once an answer commits, its violet question and amber answer settle into one larger amber **decision cell**. It carries the user’s chosen answer, while the full question and all three original options remain preserved in semantic history. Its larger footprint makes nearby quiet cells yield through the controlled local-pressure layout. Activating a settled decision expands it into its original question plus three answers using their pre-merge treatments: the question regains its violet pin, full-question type, and active shell; the chosen answer regains its amber selected-suggestion treatment; the two discarded answers return as white possibilities. Activating the question or selected answer settles the same decision again. Choosing a discarded answer replaces that historical decision, removes every later decision from the path, updates the progress card, and resumes generation from the revised route. Only one trail step may be expanded at a time. Review never edits history except through this explicit replacement action, and never enables free pan or zoom.
+Once an answer commits, its violet question and amber answer settle into one larger amber **decision cell**. It carries the user’s chosen answer, while the full question and all three original options remain preserved in semantic history. Its larger footprint makes nearby quiet cells yield through the controlled local-pressure layout. Activating a settled decision expands it into its original question plus three answers using their pre-merge treatments: the question regains its violet pin, full-question type, and active shell; the chosen answer regains its amber selected-suggestion treatment; the two discarded answers return as white possibilities. Tapping the selected answer settles the pair again. Tapping the historical question instead closes that review and returns camera focus to the current two live lenses, matching the active-question toggle rather than trapping the user at the merged cell. Choosing a discarded answer replaces that historical decision, removes every later decision from the path, updates the progress card, and resumes generation from the revised route. Only one trail step may be expanded at a time. Review never edits history except through this explicit replacement action, and never enables free pan or zoom.
 
-Each active discovery places one small amber fortune-cookie cell near its two lenses. Opening it once reveals a short, surprising reframing grounded in the original dilemma and committed path. Cookies remain subordinate to lenses, never create connectors, and do not enter the progress card or committed AI history.
+Fortune cookies are deliberately sparse. Round 1 never receives one, so the core interaction can establish itself cleanly. The session randomly reserves one discovery among rounds 2–4, one among rounds 5–7, and then one in every subsequent two-round window; those positions remain stable for that session. When present, a small sea-glass cookie occupies the nearest unoccupied cell of the live lens neighbourhood, so it remains in the camera frame rather than becoming distant decoration. Its rippled membrane and cool colour distinguish it from amber user choices; opening it reveals a short, surprising reframing grounded in the original dilemma and committed path through a slower manga-like bloom, shine sweep, and a lingering field of spark particles. Opened cookies are remembered as **Angles you opened** in the final summary; they remain out of the progress card, committed AI history, and summary-model request.
 
 **Status:** Experience definition before implementation
 
@@ -55,9 +55,10 @@ The recommended direction is therefore a warm off-white cellular field with ink 
 - After a commitment, the next two question lenses occupy the two forward hex-neighbours that physically touch the settled decision. They are the immediate next possibilities in the same cellular field, not a detached cluster.
 - Choosing an item under **Your thoughts** is a review affordance: the camera (or narrow scroll) focuses that settled amber decision and opens its read-only context directly beneath the progress card, but does **not** unfold it. Only tapping the settled decision itself restores its original question-and-answer pair, retaining that answer-slot focus while the pair separates. Neither action edits history or enables free pan/zoom. The next committed selection, a changed canonical trail, or **Back to now** returns focus to the active neighbourhood; harmless generation and transition phase changes do not cancel a requested review focus.
 - While two new lenses are visible, their midpoint is the default camera target only. A chosen progress-card link always takes priority and moves the view to its exact historical cell.
-- If a live Hmm… question is open with its three answers when a historical decision is unfolded, that live neighbourhood and its two associated text actions collapse from the canvas. The session retains it unchanged; settling the historical pair restores the same question, answers, and controls. This keeps exactly one expanded decision neighbourhood readable at a time.
+- If a live Hmm… question with its three answers, or the next lens pair, is visible when a historical decision is unfolded, that live neighbourhood and its associated actions collapse from the canvas. The session retains it unchanged; settling the selected answer restores the same live question, lenses, answers, and controls, while tapping the expanded historical question restores the two live lenses and returns the camera there. This keeps exactly one expanded decision neighbourhood readable at a time.
 - If the green reflection lens is currently offered, choosing a discarded historical answer removes that lens and truncates every later decision before the revised route resumes. At the fourth-round pause, the app reveals the next lenses for the revised route instead of immediately re-offering the stale reflection lens.
 - The three suggestions form a compact fan in cells that physically touch the opened question; they must never read as a detached vertical menu. The fan follows the lens placement: an upper lens uses one cell directly above and two forward neighbours, while a lower lens uses one cell directly below and two forward neighbours. The selected position still determines the next route bend, so repeated choices create a distinct rising, level, falling, or mixed path.
+- An opened question is also the return control: tapping it again closes its three suggestions and restores both available lenses. This is local exploration only—no history changes and no new model request.
 - Semantic connectors join only selected relationships. Empty substrate cells never receive decorative cross-links.
 
 ## 2. Journey from arrival to ending
@@ -72,11 +73,15 @@ The user types a question or short description immediately. The cell grows withi
 
 The primary action is **Hmm…**. It stays disabled until the input contains meaningful non-whitespace text. `Enter` submits when the field is a single line; `Shift+Enter` creates a new line. The user can also click the action.
 
+For someone arriving without a question, the landing surface also shows three compact prompt buttons beneath the action. They are sampled without repetition from a curated bank of 30 short, everyday dilemmas on each landing visit (for example, “Should I learn Korean?” or “Would yoga help me?”). Tapping one fills the text field for review; it never submits automatically.
+
 After submission, the user’s wording becomes the permanent seed node for the session. It is never silently rewritten.
 
 On normal-motion devices, the search surface becomes that seed rather than cutting to a new screen: its rectangular input rounds into an amber bubble, contracts, and travels slightly toward the first canvas position before the persistent grid takes over. The landing title and button fade out first. Reduced motion skips the travel and moves directly to the grid.
 
 At the same moment, a compact progress card appears in a stable side area. Its prominent status bar starts with **Starting out**, while its details show the original dilemma. This card remains throughout exploration and the ending.
+
+The **Hmm…** mark and original dilemma in the progress card are restart affordances during exploration and the ending. Either returns to the landing surface with the same dilemma prefilled, so the user can clear, edit, or begin again without retyping. The landing input includes an in-field × control whenever it contains text; clearing never submits.
 
 ### 2.3 Generate the first turn
 
@@ -130,7 +135,7 @@ Its normal-sized sea-glass **Keep going** neighbour begins in the immediately ad
 
 When the user finishes, the trail gently contracts toward one side while the summary is prepared. The transition copy is:
 
-> Let me gather the thread…
+> Gathering your thoughts…
 
 The result arrives as one large, translucent “lens” that is visually distinct from every node. It contains four concise sections:
 
@@ -178,12 +183,13 @@ When Hmm… is gathering the first turn, following a committed choice, or prepar
 
 During a route transition only, the two deterministic cells that will receive the next question lenses may quietly warm with a textless violet inner pulse. This is a spatial preview, not a second loading message: the progress-card banner remains the single source of loading copy, and the same two cells transform into the generated lenses once content arrives.
 
+When two lenses are available, they make a restrained reciprocal lean toward each other. Once one opens, its three live answers use a small staggered swell, making their neighbouring relationship legible without turning the canvas into a bouncing menu. Historical cells remain still.
+
 Content, in order:
 
 - the **Hmm…** title;
 - the original dilemma, unchanged and set larger than the detail labels;
-- label: **Your thoughts**;
-- an ordered list of committed answer text, using a small check marker; each item focuses its trail cell for review when activated;
+- label: **Your thoughts** and an ordered list of committed answer text, shown only after the first commitment; each item uses a small check marker and focuses its trail cell for review when activated;
 - a prominent, live qualitative status bar;
 - while reviewing a past cell, a quiet **Back to now** action restores the active neighbourhood focus.
 
@@ -197,7 +203,7 @@ Status rules:
 | Four answers and `suggestEnding` is true | **A direction is forming** |
 | A new round is loading | **Hmm… where’s the useful edge?** |
 | A committed route is loading | The generated transition whisper, or **Following that thread…** |
-| Summary generation is visible | **Let me gather the thread…** |
+| Summary generation is visible | **Gathering your thoughts…** |
 | Ending is visible | **A reflection is ready** |
 | One user-requested extension is active | **Looking once more** |
 
@@ -436,7 +442,7 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 ### Ending generation
 
-**Status:** Let me gather the thread…
+**Status:** Gathering your thoughts…
 
 ### Ending
 

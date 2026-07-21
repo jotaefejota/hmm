@@ -18,7 +18,7 @@ export const selectProgress = (state: SessionState): ProgressView => {
   if (state.extensionUsed && state.phase !== "ending" && state.phase !== "generating-summary") {
     status = "Looking once more";
   }
-  if (state.phase === "generating-summary") status = "Let me gather the thread…";
+  if (state.phase === "generating-summary") status = "Gathering your thoughts…";
   if (state.phase === "ending") status = "A reflection is ready";
 
   return {

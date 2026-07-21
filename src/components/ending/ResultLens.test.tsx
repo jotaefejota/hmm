@@ -49,6 +49,20 @@ describe("ResultLens", () => {
     expect(screen.getByRole("button", { name: "Continue exploring" })).toBeDisabled();
   });
 
+  it("includes only the fortune angles the user opened", () => {
+    render(
+      <ResultLens
+        summary={mockDataset.scenarios[0].summary}
+        dilemma={mockDataset.scenarios[0].dilemma}
+        history={[]}
+        fortunes={[{ round: 2, text: "What would be easier to test than to decide?" }]}
+        onRestart={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole("heading", { name: "Angles you opened" })).toBeInTheDocument();
+    expect(screen.getByText("✦ What would be easier to test than to decide?")).toBeInTheDocument();
+  });
+
   it("uses the same action to return to a prepared core round", () => {
     const onDismiss = vi.fn();
     render(

@@ -156,12 +156,32 @@ export function getLensCellIds(roundNumber: number, priorSteps: readonly RouteSt
 }
 
 export function getFortuneCellId(roundNumber: number, priorSteps: readonly RouteStep[]) {
-  const [upperLensId, lowerLensId] = getLensCellIds(roundNumber, priorSteps);
-  const upperLens = getCellSlot(upperLensId);
-  const lowerLens = getCellSlot(lowerLensId);
-  const centreRow = (upperLens.row + lowerLens.row) / 2;
-  const row = centreRow <= FIELD_START_ROW ? centreRow + 3 : centreRow - 3;
-  return idFor(upperLens.column, row);
+  const lensIds = getLensCellIds(roundNumber, priorSteps);
+  const lenses = lensIds.map(getCellSlot);
+  const reserved = new Set<string>(lensIds);
+
+  // The cookie must remain a nearby quiet cell in either possible open-lens
+  // state. Reserve the two lens cells, both answer fans, and the settled trail.
+  // This keeps it in the camera's active frame instead of leaving it at an
+  // authored row that can drift outside the viewport on a bent route.
+  for (const lensIndex of [0, 1] as const) {
+    getSuggestionCellIds(roundNumber, priorSteps, lensIndex).forEach((id) => reserved.add(id));
+  }
+  priorSteps.forEach((step, index) => {
+    const answerCellId = getSuggestionCellIds(index + 1, priorSteps.slice(0, index), step.lensIndex)[step.choiceIndex];
+    reserved.add(answerCellId);
+  });
+
+  const centre = {
+    x: (lenses[0].x + lenses[1].x) / 2,
+    y: (lenses[0].y + lenses[1].y) / 2,
+  };
+  const nearestQuietSlot = CELL_SLOTS
+    .filter((slot) => !reserved.has(slot.id))
+    .sort((left, right) => Math.hypot(left.x - centre.x, left.y - centre.y) - Math.hypot(right.x - centre.x, right.y - centre.y))[0];
+
+  if (!nearestQuietSlot) throw new Error("A fortune cookie needs one available field cell.");
+  return nearestQuietSlot.id;
 }
 
 export function getQuestionCellId(roundNumber: number, priorSteps: readonly RouteStep[], lensIndex: 0 | 1) {

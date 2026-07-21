@@ -28,6 +28,7 @@ export type CanvasOccupancy = {
   stepIndex?: number;
   reviewKind?: "question" | "answer";
   revisionStepIndex?: number;
+  round?: number;
 };
 
 export type CanvasEdge = { id: string; from: CellSlot; to: CellSlot; status: "origin" | "active" | "previous" };
@@ -48,6 +49,7 @@ type ProjectCanvasInput = {
   selectedLensIndex: 0 | 1 | null;
   phase: SessionPhase;
   selectedAnswer: SelectedAnswer | null;
+  fortuneSeed?: number;
   focusOverrideCellId?: string | null;
   expandedDecisionStepIndex?: number | null;
   suppressCurrentDiscovery?: boolean;
@@ -56,8 +58,22 @@ type ProjectCanvasInput = {
 const edge = (id: string, fromCellId: string, toCellId: string, status: CanvasEdge["status"]): CanvasEdge =>
   ({ id, from: getCellSlot(fromCellId), to: getCellSlot(toCellId), status });
 
+/**
+ * Makes one fortune available in progressively smaller round windows without
+ * changing its answer data. A seed is chosen once when the user starts a
+ * session, so a rerender, review, or return-to-lenses action cannot reshuffle it.
+ */
+export function shouldShowFortune(round: number, seed: number) {
+  // The first discovery establishes the core interaction without a side path.
+  if (round <= 4) return round >= 2 && round === 2 + (seed % 3);
+  if (round <= 7) return round === 5 + (Math.floor(seed / 4) % 3);
+  const windowStart = 8 + Math.floor((round - 8) / 2) * 2;
+  const windowOffset = Math.floor(seed / (12 + Math.floor((round - 8) / 2))) % 2;
+  return round === windowStart + windowOffset;
+}
+
 export function projectCanvas({
-  dilemma, history, currentDiscovery, selectedLensIndex, phase, selectedAnswer, focusOverrideCellId = null, expandedDecisionStepIndex = null, suppressCurrentDiscovery = false,
+  dilemma, history, currentDiscovery, selectedLensIndex, phase, selectedAnswer, fortuneSeed = 0, focusOverrideCellId = null, expandedDecisionStepIndex = null, suppressCurrentDiscovery = false,
 }: ProjectCanvasInput): CanvasProjection {
   const occupancy: CanvasOccupancy[] = [{
     cellId: DILEMMA_CELL_ID, semanticId: "dilemma", kind: "dilemma", status: "previous",
@@ -88,7 +104,7 @@ export function projectCanvas({
           kind: "suggestion",
           status: isChosen ? "selected" : "active",
           text: isChosen ? step.answer : options[indexAsChoice],
-          label: isChosen ? "Your answer" : `Possibility ${optionIndex + 1}`,
+          label: isChosen ? "Your answer" : "Possibility",
           age: age - 1,
           interactive: isChosen || Boolean(options[indexAsChoice]),
           optionIndex: indexAsChoice,
@@ -110,7 +126,7 @@ export function projectCanvas({
         kind: "decision",
         status: "selected",
         text: step.answer,
-        label: `Settled choice · ${step.round}`,
+        label: "Settled choice",
         age: age - 1,
         interactive: true,
         optionIndex: step.choiceIndex,
@@ -126,11 +142,13 @@ export function projectCanvas({
   if (showsDiscovery && currentDiscovery) {
     const round = history.length + 1;
     const lensCells = getLensCellIds(round, completed);
-    occupancy.push({ cellId: getFortuneCellId(round, completed), semanticId: `fortune-${round}`, kind: "fortune", status: "active", text: currentDiscovery.fortune, label: "A fresh angle", age: 0, interactive: true });
+    if (shouldShowFortune(round, fortuneSeed)) {
+      occupancy.push({ cellId: getFortuneCellId(round, completed), semanticId: `fortune-${round}`, kind: "fortune", status: "active", text: currentDiscovery.fortune, label: "A fresh angle", age: 0, interactive: true, round });
+    }
     if (phase === "lens-ready" || selectedLensIndex === null) {
       currentDiscovery.lenses.forEach((lens, index) => {
         const lensIndex = index as 0 | 1;
-        occupancy.push({ cellId: lensCells[lensIndex], semanticId: `lens-${round}-${index}`, kind: "lens", status: "active", text: lens.theme, label: `Question path ${index + 1}`, age: 0, interactive: true, lensIndex });
+        occupancy.push({ cellId: lensCells[lensIndex], semanticId: `lens-${round}-${index}`, kind: "lens", status: "active", text: lens.theme, label: "Question path", age: 0, interactive: true, lensIndex });
         edges.push(edge(`edge-${previousCellId}-${lensCells[lensIndex]}`, previousCellId, lensCells[lensIndex], "active"));
       });
     } else {
@@ -143,7 +161,7 @@ export function projectCanvas({
         const isSelected = phase === "answer-selected" && selectedAnswer?.choiceIndex === optionIndex;
         const isClearing = phase === "answer-selected" && !isSelected;
         const cellId = getSuggestionCellIds(round, completed, selectedLensIndex)[optionIndex];
-        occupancy.push({ cellId, semanticId: `suggestion-${round}-${index + 1}`, kind: "suggestion", status: isSelected ? "selected" : isClearing ? "clearing" : "active", text: isSelected ? selectedAnswer.text : answerText, label: isSelected ? "Your answer" : `Possibility ${index + 1}`, age: 0, interactive: phase !== "answer-selected", optionIndex });
+        occupancy.push({ cellId, semanticId: `suggestion-${round}-${index + 1}`, kind: "suggestion", status: isSelected ? "selected" : isClearing ? "clearing" : "active", text: isSelected ? selectedAnswer.text : answerText, label: isSelected ? "Your answer" : "Possibility", age: 0, interactive: phase !== "answer-selected", optionIndex });
         if (!isClearing) edges.push(edge(`edge-${questionCellId}-${cellId}`, questionCellId, cellId, isSelected ? "previous" : "active"));
       });
     }

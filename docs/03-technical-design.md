@@ -4,7 +4,7 @@
 
 > **Revisable settled decisions:** Canonical history retains the question, selected answer, and original three options. The canvas derives either a single enlarged decision occupancy at the answer slot or the original violet active-question treatment plus three suggestion-style options for one review step. Choosing an unselected historical option is an explicit branch replacement: it truncates later history, replaces the selected answer at that step, then requests the next discovery with only the revised canonical path.
 
-The validated discovery payload includes one contextual `fortune` string. Projection maps it to a deterministic nearby cell-slot ID; opened state remains component-local and deliberately absent from canonical session history. Mock and live providers return the same field.
+The validated discovery payload includes one contextual `fortune` string. A random seed is captured once on dilemma submission and selects one fortune appearance in rounds 2–4 (never the opening round), one in rounds 5–7, then one in each subsequent two-round window; it remains stable throughout the session. When scheduled, projection maps the cookie to the nearest quiet cell around the two live lenses, while reserving both possible answer fans and settled trail cells. Opening a cookie records its round and text in canonical session state so the final summary can render **Angles you opened**; it is not included in committed AI history or sent to the summary model. Mock and live providers return the same field.
 
 **Status:** Implemented architecture; production deployment verified 2026-07-20
 
@@ -238,7 +238,7 @@ Trail review is local presentation state only: activating a committed answer in 
 
 When `lens-ready` exposes two lenses, their midpoint is the default camera position. `focusOverrideCellId` takes precedence over that midpoint so a progress-card anchor always moves to the requested historical node rather than appearing to do nothing.
 
-When an unfolded historical decision overlaps an open live round, `ThoughtCanvas` passes a presentation-only `suppressCurrentDiscovery` flag to projection. The current full question, its three suggestions, contextual fortune, and round actions are omitted from the canvas while the unfolded pair is active; no reducer phase, discovery payload, or selected lens changes. Re-settling the pair removes that flag and restores the exact live round.
+When an unfolded historical decision overlaps an open live round, `ThoughtCanvas` passes a presentation-only `suppressCurrentDiscovery` flag to projection. The current full question, its three suggestions, contextual fortune, and round actions are omitted from the canvas while the unfolded pair is active; no reducer phase, discovery payload, or selected lens changes. Tapping the expanded selected answer re-settles the pair and restores the exact live round; tapping the expanded question clears the presentation review and invokes the normal return-to-lenses transition so the active lens pair becomes the camera target instead of the merged historical cell.
 
 `REVISE_HISTORY_SELECTION` is valid in `finish-offered` as well as the normal live phases. It truncates history, clears the prepared discovery and finish offer, then requests the next discovery from the revised path. A one-shot reducer flag suppresses the automatic fourth-round finish offer when that replacement route first becomes ready, so the green lens does not reappear before the user can continue.
 

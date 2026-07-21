@@ -12,7 +12,7 @@ describe("selectProgress", () => {
     expect(selectProgress({ ...base, dilemma: "A question", phase: "transitioning", history: [step], pendingDiscovery: mockDataset.scenarios[0].discoveries[1] }))
       .toMatchObject({ status: mockDataset.scenarios[0].discoveries[1].transition, isThinking: true });
     expect(selectProgress({ ...base, dilemma: "A question", phase: "generating-summary", history: [step] }))
-      .toMatchObject({ status: "Let me gather the thread…", isThinking: true });
+      .toMatchObject({ status: "Gathering your thoughts…", isThinking: true });
     expect(selectProgress({ ...base, dilemma: "A question", phase: "ending", history: [step] }).status).toBe("A reflection is ready");
     expect(selectProgress({
       ...base,
