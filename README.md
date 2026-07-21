@@ -52,7 +52,7 @@ npm run dev:full
 
 ## Demo path
 
-1. Start with the prefilled camera dilemma and select **Think it through**.
+1. Start with the prefilled camera dilemma and select **Hmm…**.
 3. Choose one of the three bubbles in each of four rounds; different positions create different routes.
 4. Select **What is taking shape?**.
 5. Show the direction, reasons, remaining doubts, and next step.

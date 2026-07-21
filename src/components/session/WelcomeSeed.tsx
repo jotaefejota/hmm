@@ -2,48 +2,116 @@ import { useEffect, useRef, useState } from "react";
 import { DILEMMA_MAX_LENGTH } from "../../../shared/limits";
 import { CAMERA_DILEMMA } from "../../content/mock-dataset";
 import type { SessionPhase } from "../../session/session-types";
+import { projectCanvas } from "../../layout/projectCanvas";
+import { settleLocalPressure } from "../../layout/pressure-layout";
+import { geometryForCell } from "../../layout/cell-geometry";
+import { CELL_SIZE_RATIO, DILEMMA_CELL_ID, FIELD_WIDTH, getCellSlot } from "../../layout/cell-field";
 
 type WelcomeSeedProps = {
   phase: SessionPhase;
   onSubmit: (dilemma: string) => Promise<void>;
 };
 
+type SeedHandoff = {
+  from: DOMRect;
+  to: { left: number; top: number; width: number; height: number };
+};
+
+const LANDING_HANDOFF_MS = 720;
+
+const firstSeedTarget = (dilemma: string) => {
+  const projection = projectCanvas({
+    dilemma,
+    history: [],
+    currentDiscovery: null,
+    selectedLensIndex: null,
+    phase: "generating-round",
+    selectedAnswer: null,
+  });
+  const positions = settleLocalPressure(projection);
+  const seedSlot = getCellSlot(DILEMMA_CELL_ID);
+  const seedPosition = positions.get(DILEMMA_CELL_ID) ?? seedSlot;
+  const focusSlot = getCellSlot(projection.focusCellId);
+  const focusPosition = positions.get(projection.focusCellId) ?? focusSlot;
+  const seedItem = projection.occupancy.find((item) => item.cellId === DILEMMA_CELL_ID);
+  const geometry = geometryForCell(seedSlot, seedItem);
+  const width = window.innerWidth * (FIELD_WIDTH * CELL_SIZE_RATIO * geometry.scale) / 100;
+  const height = width / geometry.aspectRatio;
+  const centreX = window.innerWidth * (54 + seedPosition.x - focusPosition.x) / 100;
+  const centreY = window.innerHeight / 2 + window.innerWidth * (seedPosition.y - focusPosition.y) / 100;
+  return { left: centreX - width / 2, top: centreY - height / 2, width, height };
+};
+
 export function WelcomeSeed({ phase, onSubmit }: WelcomeSeedProps) {
   const [dilemma, setDilemma] = useState(CAMERA_DILEMMA);
+  const [isDeparting, setIsDeparting] = useState(false);
+  const [handoff, setHandoff] = useState<SeedHandoff | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const departureTimer = useRef<number | null>(null);
   const isEntering = phase === "entering";
 
   useEffect(() => {
     if (isEntering) inputRef.current?.focus();
   }, [isEntering]);
 
+  useEffect(() => () => {
+    if (departureTimer.current !== null) window.clearTimeout(departureTimer.current);
+  }, []);
+
   const submit = () => {
-    if (dilemma.trim()) void onSubmit(dilemma);
+    if (!dilemma.trim() || isDeparting) return;
+    const inputBounds = inputRef.current?.getBoundingClientRect();
+    setIsDeparting(true);
+    const useReducedMotion = typeof window.matchMedia !== "function" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (useReducedMotion) {
+      void onSubmit(dilemma);
+      return;
+    }
+    if (inputBounds) setHandoff({ from: inputBounds, to: firstSeedTarget(dilemma) });
+    departureTimer.current = window.setTimeout(() => void onSubmit(dilemma), LANDING_HANDOFF_MS);
   };
 
   return (
-    <section className="welcome" aria-labelledby="welcome-title">
+    <section className={`welcome ${isDeparting ? "is-departing" : ""}`} aria-labelledby="welcome-title" aria-busy={isDeparting}>
       <div className="welcome-orbit welcome-orbit-one" aria-hidden="true" />
       <div className="welcome-orbit welcome-orbit-two" aria-hidden="true" />
-      <div className={`welcome-seed ${isEntering ? "is-open" : ""}`}>
-        <p className="welcome-brand" aria-label="Hmm">Hmm<span aria-hidden="true">…</span></p>
+      {handoff ? (
+        <div
+          className="landing-handoff-seed"
+          aria-hidden="true"
+          style={{
+            "--handoff-from-left": `${handoff.from.left}px`,
+            "--handoff-from-top": `${handoff.from.top}px`,
+            "--handoff-from-width": `${handoff.from.width}px`,
+            "--handoff-from-height": `${handoff.from.height}px`,
+            "--handoff-to-left": `${handoff.to.left}px`,
+            "--handoff-to-top": `${handoff.to.top}px`,
+            "--handoff-to-width": `${handoff.to.width}px`,
+            "--handoff-to-height": `${handoff.to.height}px`,
+          } as React.CSSProperties}
+        >
+          <span>{dilemma}</span>
+        </div>
+      ) : null}
+      <div className={`welcome-seed ${isEntering ? "is-open" : ""} ${isDeparting ? "is-departing" : ""}`}>
         <h1 id="welcome-title">Clarify your next move</h1>
 
         {isEntering ? (
           <form
-            className="dilemma-form"
+            className={`dilemma-form ${isDeparting ? "is-departing" : ""}`}
             onSubmit={(event) => {
               event.preventDefault();
               submit();
             }}
           >
-            <label htmlFor="dilemma">Your question or dilemma</label>
             <textarea
               ref={inputRef}
               id="dilemma"
+              aria-label="Your thought"
               value={dilemma}
               maxLength={DILEMMA_MAX_LENGTH}
               rows={3}
+              disabled={isDeparting}
               onChange={(event) => setDilemma(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey) {
@@ -53,8 +121,8 @@ export function WelcomeSeed({ phase, onSubmit }: WelcomeSeedProps) {
               }}
             />
             <div className="form-actions">
-              <button className="primary-action" type="submit" disabled={!dilemma.trim()}>
-                Think it through <span aria-hidden="true">↗</span>
+              <button className="primary-action" type="submit" disabled={!dilemma.trim() || isDeparting}>
+                Hmm… <span aria-hidden="true">↗</span>
               </button>
             </div>
           </form>

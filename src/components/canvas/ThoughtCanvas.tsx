@@ -75,7 +75,7 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
 
   return (
     <section
-      className={`reflection-stage ${(state.phase === "generating-round" || state.phase === "transitioning") ? "transition-stage" : ""} ${state.phase === "finish-offered" ? "finish-stage" : ""}`}
+      className={`reflection-stage ${(state.phase === "generating-round" || state.phase === "transitioning") ? "transition-stage" : ""} ${state.phase === "generating-round" && state.history.length === 0 ? "initial-grid-enter" : ""} ${state.phase === "finish-offered" ? "finish-stage" : ""}`}
       aria-labelledby={state.phase === "round-ready" ? "active-question" : undefined}
       aria-label={state.phase === "generating-round" ? "Preparing the first paths" : state.phase === "transitioning" ? "Following the selected path" : undefined}
     >

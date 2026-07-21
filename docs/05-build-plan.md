@@ -166,7 +166,7 @@ The app can load the curated `camera-demo` round and summary data through a `Moc
 
 **Observable outcome**
 
-A user lands directly in the seed’s text area, enters the recommended dilemma, presses **Think it through**, and moves straight into the persistent grid. The original thought becomes the amber seed, the progress card carries the brief generation state, and two textless lens cells warm before the first mock lenses arrive.
+A user lands directly in the seed’s text area, enters the recommended dilemma, presses **Hmm…**, and moves straight into the persistent grid. The original thought becomes the amber seed, the progress card carries the brief generation state, and two textless lens cells warm before the first mock lenses arrive.
 
 **Files likely to be affected**
 

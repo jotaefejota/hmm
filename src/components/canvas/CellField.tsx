@@ -53,6 +53,7 @@ function CellContent({
   const reducedMotion = useReducedMotion();
   const isFocusedQuestion = item.kind === "question" && item.status === "active";
   const isLiveActiveQuestion = isFocusedQuestion && item.stepIndex === undefined;
+  const isInitialDilemma = item.kind === "dilemma" && phase === "generating-round";
   const isSelected = item.status === "selected";
   const targetOpacity = item.status === "clearing" ? 0 : item.age > 0 ? Math.max(0.6, 1 - item.age * 0.055) : 1;
   const className = `cell-content content-${item.kind} status-${item.status}`;
@@ -219,7 +220,7 @@ function CellContent({
       key={item.semanticId}
       data-history-node={item.status !== "active" ? item.semanticId : undefined}
       className={className}
-      initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.92 }}
+      initial={{ opacity: isInitialDilemma ? 1 : 0, scale: isInitialDilemma || reducedMotion ? 1 : 0.92 }}
       animate={{ opacity: targetOpacity, scale: 1 }}
       exit={{ opacity: 0, scale: reducedMotion ? 1 : 0.9 }}
       transition={transition}

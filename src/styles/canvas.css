@@ -5,6 +5,22 @@
   overflow: hidden;
   isolation: isolate;
 }
+.reflection-stage.initial-grid-enter .cell-field::before,
+.reflection-stage.initial-grid-enter .cell-field .connection-layer,
+.reflection-stage.initial-grid-enter .field-cell:not(.is-dilemma) {
+  animation: initial-grid-fade 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.reflection-stage.initial-grid-enter .progress-stack {
+  animation: initial-panel-fade 420ms 110ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes initial-grid-fade {
+  from { opacity: 0; filter: blur(4px); }
+  to { opacity: 1; filter: blur(0); }
+}
+@keyframes initial-panel-fade {
+  from { opacity: 0; translate: -0.5rem 0; }
+  to { opacity: 1; translate: 0 0; }
+}
 
 .cell-field {
   position: absolute;
@@ -178,6 +194,7 @@
 .cell-content .node-copy { font-size: clamp(0.52rem, 0.68vw, 0.72rem); line-height: 1.22; }
 .cell-content.content-suggestion .node-copy { font-size: clamp(0.58rem, 0.74vw, 0.78rem); font-weight: 650; }
 .cell-content.content-answer, .cell-content.content-decision, .cell-content.content-dilemma, .cell-content.status-selected { color: var(--amber-deep); }
+.cell-content.content-dilemma .node-copy { font-family: var(--font-sans); font-weight: 500; }
 .cell-content.content-decision {
   padding: 1rem 1.25rem;
   cursor: pointer;
@@ -461,7 +478,8 @@
 @media (prefers-reduced-motion: reduce) {
   .cell-field,
   .field-cell,
-  .cell-content {
+  .cell-content,
+  .progress-stack {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }

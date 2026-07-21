@@ -15,7 +15,7 @@ describe("WelcomeSeed", () => {
     expect(screen.getByRole("heading", { name: "Clarify your next move" })).toBeVisible();
     expect(screen.queryByText("A small place to think")).not.toBeInTheDocument();
     expect(screen.queryByText("Bring one question. We’ll follow it for a few turns.")).not.toBeInTheDocument();
-    const input = screen.getByLabelText(/your question or dilemma/i);
+    const input = screen.getByRole("textbox", { name: "Your thought" });
     expect(input).toHaveValue(CAMERA_DILEMMA);
     await user.type(input, "{Enter}");
     expect(onSubmit).toHaveBeenCalledWith(CAMERA_DILEMMA);
@@ -25,10 +25,10 @@ describe("WelcomeSeed", () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<WelcomeSeed phase="entering" onSubmit={onSubmit} />);
-    const input = screen.getByLabelText(/your question or dilemma/i);
+    const input = screen.getByRole("textbox", { name: "Your thought" });
     await user.clear(input);
     await user.type(input, "   {Enter}");
     expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole("button", { name: /think it through/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Hmm…" })).toBeDisabled();
   });
 });

@@ -64,15 +64,17 @@ The recommended direction is therefore a warm off-white cellular field with ink 
 
 ### 2.1 Landing and dilemma entry
 
-The first screen opens directly on a compact, centred search-style writing surface, without a separate page header. It uses a small Hmm… wordmark, a clear prompt, and one generous but lightweight input rather than a giant cellular card. Once the session begins, the **Hmm…** wordmark lives inside the progress card rather than in a fixed top-left header:
+The first screen opens directly on a compact, centred search-style writing surface, without a separate page header or wordmark. It uses a clear prompt and one generous but lightweight input rather than a giant cellular card. Once the session begins, the **Hmm…** wordmark lives inside the progress card rather than in a fixed top-left header:
 
 > Clarify your next move
 
 The user types a question or short description immediately. The cell grows within limits as text wraps. A character counter appears only near the limit.
 
-The primary action is **Think it through**. It stays disabled until the input contains meaningful non-whitespace text. `Enter` submits when the field is a single line; `Shift+Enter` creates a new line. The user can also click the action.
+The primary action is **Hmm…**. It stays disabled until the input contains meaningful non-whitespace text. `Enter` submits when the field is a single line; `Shift+Enter` creates a new line. The user can also click the action.
 
 After submission, the user’s wording becomes the permanent seed node for the session. It is never silently rewritten.
+
+On normal-motion devices, the search surface becomes that seed rather than cutting to a new screen: its rectangular input rounds into an amber bubble, contracts, and travels slightly toward the first canvas position before the persistent grid takes over. The landing title and button fade out first. Reduced motion skips the travel and moves directly to the grid.
 
 At the same moment, a compact progress card appears in a stable side area. Its prominent status bar starts with **Starting out**, while its details show the original dilemma. This card remains throughout exploration and the ending.
 
@@ -340,11 +342,11 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 **Example:** For example: “Should I take a role that changes the kind of work I do?”
 
-**Input label:** Your question or dilemma
+**Accessible input label:** Your thought (no visible field label)
 
 **Entered text:** Would a new camera help me get back into photography?
 
-**Primary action:** Think it through
+**Primary action:** Hmm…
 
 **Progress status:** Starting out
 

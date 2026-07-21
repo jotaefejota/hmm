@@ -20,7 +20,7 @@ describe("App interaction guards", () => {
     );
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Think it through/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Hmm…" }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
     fireEvent.click(screen.getByRole("button", { name: "Explore What is missing?" }));
@@ -43,7 +43,7 @@ describe("App interaction guards", () => {
     }));
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Think it through/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Hmm…" }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
     expect(screen.getByRole("alert")).toHaveTextContent("This topic needs a different kind of support.");
@@ -67,7 +67,7 @@ describe("App interaction guards", () => {
       .mockImplementation(mockProvider.getRound.bind(mockProvider));
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Think it through/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Hmm…" }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
     expect(screen.getByRole("alert")).toHaveTextContent("Your path is still here.");
