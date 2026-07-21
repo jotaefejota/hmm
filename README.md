@@ -1,107 +1,60 @@
 # Hmm…
 
-Hmm… is a curious companion for thinking through a bounded decision. It offers two question lenses, opens the chosen one into exactly three possible responses, and leaves the selected path visible without deciding for the user.
+> A small, visual place to untangle one decision.
 
-**Live 0.1 demo:** [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). The current `feat-liquid` branch contains the discovery-lens experience and latest visual refinements described below; it requires a new deployment before those changes appear at that URL.
+Hmm… turns a dilemma into two useful angles, three possible responses, and a living trail of what matters. It never decides for you. It just helps your thinking take shape.
 
-## What is implemented
+**Live demo:** [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/)
 
-- a complete four-to-five-round reflection session;
-- one persistent cellular field whose camera follows choice-dependent routes;
-- a stable **Progress** card containing the original dilemma and committed answers;
-- two question lenses per round, direct trail-bubble review, and contextual fortune-cookie reframes;
-- early finishing, a structured summary, direct continuation into more Hmm… lenses, and restart;
-- deterministic mock content, live OpenAI generation, and automatic fallback;
-- a local, deterministic **Continue in ChatGPT** handoff;
-- recoverable timeout and refusal states that preserve session context.
+## What you can do
 
-Sessions live only in browser memory. There is no login, database, analytics layer, or saved history.
+- open a question lens, choose a response, and watch a thought-path grow;
+- review or revise a settled choice without becoming lost in a graph;
+- crack open the occasional fortune-cookie angle;
+- pause at **Something is taking shape** for a tentative recap and next step;
+- continue in ChatGPT, restart, or keep exploring;
+- demo the whole thing with no API key or network.
 
-## Run locally
+## OpenAI inside
 
-Requirements: a current Node.js release and npm.
+Hmm… uses the **Responses API**, **Structured Outputs**, and **GPT-5.6 Terra** (`gpt-5.6-terra`) for concise, schema-validated reflection rounds. Codex helped shape and build the prototype. The API key stays server-side; mock mode is always available.
+
+## Run it
 
 ```bash
 npm install
 VITE_CONTENT_MODE=mock npm run dev
 ```
 
-Open [http://127.0.0.1:5173/](http://127.0.0.1:5173/). Forced mock mode completes the curated camera journey without a network request or API key.
+Open [http://127.0.0.1:5173](http://127.0.0.1:5173). Mock mode is the reliable, camera-demo path.
 
-### Run with live generation
-
-Copy `.env.example` to `.env.local`, then add the server-only values:
+For live generation, copy `.env.example` to `.env.local`:
 
 ```dotenv
 VITE_CONTENT_MODE=auto
 OPENAI_API_KEY=your_key_here
-OPENAI_MODEL=gpt-4.1-mini
+OPENAI_MODEL=gpt-5.6-terra
 ```
 
-Do not put the key in `.env.example`, a `VITE_` variable, or any file under `src/`.
+Then run `npm run dev:full`. Never put the API key in a `VITE_` variable or commit it.
+
+## Demo beat
+
+1. Start with: *Would a new camera help me get back into photography?*
+2. Open a lens and follow four choices.
+3. Tap **Something is taking shape** → **Discover**.
+4. Show the recap, then **Continue in ChatGPT**.
+
+## Submission kit
+
+- [x] Source code — this repository
+- [x] Hosted demo — [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/)
+- [ ] Demo video — add the final link before submitting
+
+## Checks
 
 ```bash
-npm run dev:full
+npm run check
 ```
 
-`dev:full` starts Vite and mounts the same `/api/reflect` handler used by Vercel. Content modes are:
-
-- `mock`: validated fixtures only; never calls the endpoint;
-- `auto`: tries live generation, then safely falls back to prepared content;
-- `live`: surfaces a recoverable error instead of silently falling back.
-
-## Demo path
-
-1. Start with the prefilled camera dilemma and select **Hmm…**.
-2. Open one question lens, then choose one of the three suggestion bubbles in each of four rounds; different positions create different routes.
-4. Select **Something is taking shape** and then **Discover**.
-5. Show the direction, reasons, remaining doubts, and next step.
-6. Demonstrate **Continue in ChatGPT** or **Start again**.
-
-If clipboard access is blocked, the handoff reveals the complete prepared prompt for manual copying.
-
-## Commands
-
-```bash
-npm run dev         # client only
-npm run dev:full    # client plus local /api/reflect
-npm test
-npm run test:watch
-npm run lint
-npm run typecheck
-npm run build
-npm run preview
-npm run check       # lint + types + tests + production build
-```
-
-## Test recovery states
-
-Development builds support deterministic error checks:
-
-- `http://127.0.0.1:5173/?simulateError=timeout` preserves the current path and offers retry or prepared content;
-- `http://127.0.0.1:5173/?simulateError=refusal` preserves the current path and offers restart only.
-
-These parameters are deliberately ignored by production builds.
-
-## Deployment
-
-The app is deployed as one Vercel project: Vite serves the client and `api/reflect.ts` runs as a serverless function. Configure these environment variables in Vercel:
-
-- `OPENAI_API_KEY` — encrypted, server-side only;
-- `OPENAI_MODEL` — currently `gpt-5.6-terra`;
-- `VITE_CONTENT_MODE` — `auto` for the live demo or `mock` for a deterministic deployment.
-
-Production has been smoke-tested through two consecutive live rounds. The complete API-free journey remains the reliable presentation path.
-
-## Project map
-
-- `api/`: secret-bearing serverless endpoint;
-- `shared/`: Zod request and response contracts shared by client and server;
-- `src/session/`: reducer, events, and selectors;
-- `src/layout/`: deterministic cell field, route, and camera projection;
-- `src/services/`: mock, live, and resilient providers;
-- `src/content/`: validated demo fixtures;
-- `src/components/` and `src/styles/`: experience and visual presentation;
-- `docs/`: product, experience, technical, AI, and build decisions.
-
-Start with [`docs/01-product-and-mvp.md`](docs/01-product-and-mvp.md), then follow the numbered documents. Contributor rules and the definition of done live in [`AGENTS.md`](AGENTS.md).
+That runs linting, TypeScript, tests, and a production build. The project keeps no accounts, database, analytics, or saved decision history—just the thought in front of you.

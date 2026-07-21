@@ -236,6 +236,23 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
 .request-error-actions .primary-action { padding: 0.6rem 0.85rem; }
 .request-error-actions .quiet-action { padding: 0.6rem 0.7rem; color: var(--cobalt-deep); }
 
+/* Keep the companion surfaces comfortably legible against the large canvas.
+   The result lens deliberately opts out: it already owns the ending layout. */
+@media (min-width: 701px) {
+  .welcome-seed,
+  .progress-stack,
+  .request-error-panel,
+  .custom-answer-composer,
+  .recovery-notice,
+  .boundary-notice {
+    zoom: 1.25;
+  }
+
+  .request-error-panel {
+    left: calc(clamp(1.5rem, 4vw, 4rem) + clamp(20rem, 26.25vw, 23.75rem) + 1rem);
+  }
+}
+
 @media (max-width: 700px) {
   .welcome { min-height: calc(100vh - 4.5rem); padding-bottom: 4rem; }
   .welcome-seed, .welcome-seed.is-open { width: min(100%, calc(100vw - 2.5rem)); padding: 0; }

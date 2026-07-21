@@ -16,7 +16,7 @@ import {
   validateSummarySemantics,
 } from "./validate-output.js";
 
-const DEFAULT_MODEL = "gpt-4.1-mini";
+const DEFAULT_MODEL = "gpt-5.6-terra";
 const serverEnvironment = (globalThis as typeof globalThis & {
   process?: { env?: Record<string, string | undefined> };
 }).process?.env;

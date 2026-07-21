@@ -337,7 +337,7 @@ None of these decisions blocks initial design or implementation; the defaults be
 | --- | --- | --- |
 | Public name and punctuation | Use **Hmm…** in the interface and `hmm` in technical identifiers. | Trademark/domain checks and final brand styling have not been done. |
 | Visual palette | Use a warm off-white cellular field, ink text, cobalt for Hmm…, coral for the user, gold for invitations and fresh angles, and neutral suggestions. | Exact colour values and contrast need validation in the first visual prototype. |
-| Live AI provider/model | **Confirmed for the deployed prototype:** use `gpt-4.1-mini`, configurable through the server-only `OPENAI_MODEL` variable. | Revisit only if event latency, access, or cost makes the live path unreliable; mock mode remains the demo-safe default. |
+| Live AI provider/model | **Confirmed for the prototype:** use `gpt-5.6-terra`, configurable through the server-only `OPENAI_MODEL` variable. | Revisit only if event latency, access, or cost makes the live path unreliable; mock mode remains the demo-safe default. |
 | Hosting target | **Confirmed:** one Vercel project hosts the Vite client and `/api/reflect` function at [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). | Custom domain and longer-term ownership are post-hackathon decisions. |
 | Custom-answer length | P0 allows a custom answer of up to 160 characters through an **Enter your own answer…** action bubble. | The limit should be validated with real prompts so it stays expressive without breaking node layouts. |
 | Automatic ending logic | Offer a soft ending after round 4 and a final reflection lens after round 5; the summary opens only on tap. | Live testing may show that 3 or 4 rounds feels better. |

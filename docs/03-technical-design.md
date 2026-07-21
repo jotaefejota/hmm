@@ -45,7 +45,7 @@ The semantic session—not the canvas—is the source of truth. The cell field i
 | Validation | Zod in a root `shared/` module | One schema can validate browser requests, server input, model output, and mock fixtures. An exact-length array enforces three answers while producing JSON Schema accepted by Structured Outputs. |
 | AI server | One TypeScript Vercel Function in `api/reflect.ts` | Vercel supports Vite projects with functions in an `api` directory, so the frontend and secret-bearing endpoint can deploy together without a separate server. |
 | Model API | Official OpenAI JavaScript SDK, Responses API, and Structured Outputs | The SDK can parse a response directly against a Zod schema. Structured Outputs provides schema adherence rather than merely valid JSON. |
-| Deployed model | `gpt-4.1-mini`, configurable with server-only `OPENAI_MODEL` | It is sufficient for the strict, short structured contract and keeps the prototype responsive. The contract remains model-independent. |
+| Deployed model | `gpt-5.6-terra`, configurable with server-only `OPENAI_MODEL` | It balances strong reflection quality with responsive structured output. The contract remains model-independent. |
 | Tests | Vitest for reducer, schema, layout, and mock-provider tests | These are the failure-prone pure functions. A full end-to-end suite is not necessary for the two-day prototype. |
 | Deployment | Vercel | One static frontend plus one same-repository function is the shortest path to a shareable demo. |
 
