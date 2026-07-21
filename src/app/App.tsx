@@ -1,7 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import { AppShell } from "./AppShell";
 import { reflectionProvider } from "../services/resilient-provider";
-import { MockReflectionProvider } from "../services/mock-provider";
 import { ReflectionProviderError } from "../services/reflection-provider";
 import type { ContentNotice, ReflectionProvider } from "../services/reflection-provider";
 import { sessionReducer } from "../session/session-reducer";
@@ -13,7 +12,6 @@ import type { RoundRequest, SummaryRequest } from "../../shared/ai-contract";
 
 const MINIMUM_GENERATION_MS = 420;
 const provider = reflectionProvider;
-const preparedProvider = new MockReflectionProvider();
 const pause = (duration: number) => new Promise((resolve) => window.setTimeout(resolve, duration));
 const wasAborted = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
 const toContractHistory = (history: ReflectionStep[]) => history.map((step) => ({
@@ -62,7 +60,9 @@ export function App() {
   const failedOperation = useRef<FailedOperation | null>(null);
 
   useEffect(() => {
-    if (state.phase === "round-ready" || state.phase === "lens-ready") selectionLocked.current = false;
+    if (state.phase === "round-ready" || state.phase === "lens-ready" || state.phase === "finish-offered") {
+      selectionLocked.current = false;
+    }
   }, [state.phase]);
 
   const beginRequest = () => {
@@ -163,7 +163,7 @@ export function App() {
     }
   };
 
-  const loadExtensionRound = async (focus: string, requestId: number, history: ReflectionStep[]) => {
+  const loadExtensionRound = async (requestId: number, history: ReflectionStep[]) => {
     const signal = abortController.current?.signal;
     const request = roundRequestSchema.parse({
       contractVersion: "2",
@@ -173,7 +173,7 @@ export function App() {
       requestMode: "extension",
       maxCoreRounds: MAX_CORE_ROUNDS,
       history: toContractHistory(history),
-      focus,
+      focus: null,
     });
     const operation = { kind: "round" as const, request, success: "DISCOVERY_LOADED" as const };
 
@@ -240,7 +240,11 @@ export function App() {
   };
 
   const reviseHistorySelection = async (stepIndex: number, choiceIndex: 0 | 1 | 2) => {
-    if (selectionLocked.current || (state.phase !== "lens-ready" && state.phase !== "round-ready")) return;
+    // A historical replacement is its own, explicit route change. Do not let a
+    // stale rapid-click guard from a completed live selection make the discarded
+    // option appear inert; the reducer accepts only the first event once it moves
+    // into `transitioning`, and beginRequest invalidates any held next round.
+    if (state.phase !== "lens-ready" && state.phase !== "round-ready" && state.phase !== "finish-offered") return;
     const step = state.history[stepIndex];
     const options = step?.options;
     const text = options?.[choiceIndex];
@@ -314,28 +318,23 @@ export function App() {
     void loadSummary(state.history, reason, requestId);
   };
 
-  const exploreDoubt = (focus: string) => {
+  const exploreDoubt = () => {
     if (state.phase !== "ending" || state.extensionUsed) return;
     const { requestId } = beginRequest();
-    dispatch({ type: "REQUEST_EXTENSION", focus, requestId });
-    void loadExtensionRound(focus.trim(), requestId, state.history);
+    dispatch({ type: "REQUEST_EXTENSION", requestId });
+    void loadExtensionRound(requestId, state.history);
   };
 
-  const recoverRequest = (usePrepared: boolean) => {
+  const recoverRequest = () => {
     if (state.phase !== "error" || !failedOperation.current) return;
     const operation = failedOperation.current;
     const { requestId, signal } = beginRequest();
-    const source = usePrepared ? preparedProvider : provider;
-    if (usePrepared) {
-      setNotice({ code: "prepared-recovery", message: "Continuing with prepared reflection." });
-    } else {
-      setNotice(null);
-    }
+    setNotice(null);
     dispatch({ type: "RECOVER_REQUEST", requestId });
     if (operation.kind === "round") {
-      void requestRound(operation, source, requestId, signal);
+      void requestRound(operation, provider, requestId, signal);
     } else {
-      void requestSummary(operation, source, requestId, signal);
+      void requestSummary(operation, provider, requestId, signal);
     }
   };
 
@@ -352,8 +351,6 @@ export function App() {
     <AppShell
       state={state}
       notice={notice}
-      onOpenEntry={() => dispatch({ type: "OPEN_ENTRY" })}
-      onCancelEntry={() => dispatch({ type: "CANCEL_ENTRY" })}
       onSubmitDilemma={submitDilemma}
       onOpenLens={(lensIndex) => dispatch({ type: "OPEN_LENS", lensIndex })}
       onReturnToLenses={() => dispatch({ type: "RETURN_TO_LENSES" })}
@@ -372,8 +369,7 @@ export function App() {
       onFinish={finish}
       onContinueFromFinish={() => dispatch({ type: "CONTINUE_FROM_FINISH" })}
       onExploreDoubt={exploreDoubt}
-      onRetry={() => recoverRequest(false)}
-      onUsePrepared={() => recoverRequest(true)}
+      onRetry={recoverRequest}
       onRestart={restart}
       onDismissSummary={() => dispatch({ type: "DISMISS_SUMMARY" })}
     />

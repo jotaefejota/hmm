@@ -25,26 +25,6 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
 
 .app-shell { min-height: 100vh; position: relative; overflow: hidden; }
 
-.app-header {
-  height: 5.25rem;
-  padding: 1.5rem clamp(1.25rem, 4vw, 4rem);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 20;
-}
-
-.wordmark {
-  color: var(--ink);
-  font-size: 1.45rem;
-  font-weight: 750;
-  letter-spacing: -0.06em;
-  text-decoration: none;
-}
-
-.wordmark span { color: var(--violet); }
-
 .primary-action, .quiet-action {
   min-height: 3rem;
   border: 0;
@@ -65,7 +45,7 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
 .quiet-action { padding: 0.75rem 1rem; background: transparent; color: var(--ink-soft); }
 
 .welcome {
-  min-height: calc(100vh - 5.25rem);
+  min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 2rem 1.25rem 6rem;
@@ -73,24 +53,24 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
 }
 
 .welcome-seed {
-  width: min(36rem, calc(100vw - 2.5rem));
-  min-height: 31rem;
-  padding: clamp(3rem, 7vw, 5rem);
+  width: min(44rem, calc(100vw - 2.5rem));
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 1px solid rgba(118, 87, 220, 0.25);
-  border-radius: var(--shape-0);
-  background: rgba(251, 248, 242, 0.78);
-  box-shadow: 0 0 0 0.75rem rgba(118, 87, 220, 0.035), var(--shadow-soft);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   position: relative;
   z-index: 2;
-  backdrop-filter: blur(14px);
 }
 
-.welcome-seed.is-open { width: min(42rem, calc(100vw - 2.5rem)); }
+.welcome-seed.is-open { width: min(44rem, calc(100vw - 2.5rem)); }
+.welcome-brand { margin: 0 0 1.4rem; color: var(--ink); font-size: 1.8rem; font-weight: 750; letter-spacing: -0.07em; }
+.welcome-brand span { color: var(--violet); }
 .eyebrow, .node-label, .progress-label {
   color: var(--violet-deep);
   font-size: 0.7rem;
@@ -99,7 +79,7 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
   text-transform: uppercase;
 }
 
-.welcome h1 { max-width: 25rem; margin: 1.2rem 0 0.75rem; font-size: clamp(2.3rem, 5vw, 4rem); line-height: 0.98; letter-spacing: -0.065em; }
+.welcome h1 { max-width: 34rem; margin: 0 auto 1.5rem; font-size: clamp(2.25rem, 4.6vw, 3.8rem); line-height: 1; letter-spacing: -0.06em; }
 .welcome-support { max-width: 22rem; margin: 0 0 2rem; color: var(--ink-soft); font-size: 1rem; line-height: 1.55; }
 .welcome-action { margin-bottom: 2.2rem; }
 .demo-question { max-width: 25rem; margin: 0; color: var(--ink-soft); font-family: Georgia, serif; font-size: 0.91rem; line-height: 1.45; }
@@ -109,11 +89,12 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
 .welcome-orbit-two { width: 12rem; height: 12rem; right: 9%; bottom: 13%; transform: rotate(-16deg); }
 
 .dilemma-form { width: 100%; text-align: left; }
-.dilemma-form label { display: block; margin-bottom: 0.65rem; color: var(--ink-soft); font-size: 0.78rem; font-weight: 650; }
-.dilemma-form textarea { width: 100%; min-height: 8rem; padding: 1.2rem; resize: none; color: var(--ink); border: 1px solid rgba(139, 87, 29, 0.25); border-radius: 1.5rem; background: rgba(250, 232, 201, 0.42); font-size: 1.1rem; line-height: 1.5; }
-.form-actions { margin-top: 1.2rem; display: flex; justify-content: flex-end; gap: 0.65rem; }
+.dilemma-form label { display: block; margin-bottom: 0.8rem; color: var(--ink-soft); font-size: 0.9rem; font-weight: 650; }
+.dilemma-form textarea { width: 100%; min-height: 7.5rem; padding: 1.2rem 1.35rem; resize: none; color: var(--ink); border: 1px solid rgba(118, 87, 220, 0.24); border-radius: 1.35rem; background: rgba(255, 253, 248, 0.9); box-shadow: 0 12px 34px rgba(72, 54, 112, 0.08); font-size: clamp(1.05rem, 1.6vw, 1.25rem); font-weight: 500; line-height: 1.42; }
+.dilemma-form textarea:focus { border-color: rgba(118, 87, 220, 0.58); box-shadow: 0 0 0 0.28rem rgba(118, 87, 220, 0.09), 0 12px 34px rgba(72, 54, 112, 0.08); outline: none; }
+.form-actions { margin-top: 0.9rem; display: flex; justify-content: center; gap: 0.65rem; }
 
-.generation { min-height: calc(100vh - 5.25rem); display: flex; align-items: center; justify-content: center; gap: 2rem; padding: 2rem; }
+.generation { min-height: 100vh; display: flex; align-items: center; justify-content: center; gap: 2rem; padding: 2rem; }
 .generation-seed, .generation-question { width: 16rem; min-height: 14rem; padding: 2rem; display: grid; place-content: center; text-align: center; border-radius: var(--shape-2); }
 .generation-seed { border: 1px solid rgba(215, 143, 54, 0.35); background: var(--amber-wash); }
 .generation-seed span { color: var(--amber-deep); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
@@ -122,7 +103,7 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
 .generation-mark { margin: auto; width: 2rem; height: 2rem; display: grid; place-items: center; color: white; background: var(--violet); border-radius: 50%; }
 
 .ending-stage {
-  height: calc(100vh - 5.25rem);
+  height: 100vh;
   min-height: 44rem;
   padding: 1rem clamp(1.5rem, 4vw, 4rem) 2.5rem;
   position: relative;
@@ -191,33 +172,33 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
   color: #7a3a34;
 }
 .request-error-panel {
-  width: min(34rem, calc(100vw - 3rem));
-  padding: clamp(2rem, 4vw, 3rem);
+  width: clamp(16rem, 21vw, 19rem);
+  padding: 1.2rem 1.3rem 1.3rem;
   position: absolute;
-  left: 66%;
-  top: 50%;
-  z-index: 12;
-  translate: -50% -50%;
+  left: calc(clamp(1.5rem, 4vw, 4rem) + clamp(16rem, 21vw, 19rem) + 1rem);
+  top: 1rem;
+  z-index: 14;
+  translate: none;
   border: 1px solid rgba(155, 74, 66, 0.3);
-  border-radius: 3.5rem 2.4rem 4.2rem 2.8rem;
+  border-radius: 1.4rem;
   background: rgba(255, 246, 242, 0.94);
-  box-shadow: 0 0 0 0.7rem rgba(155, 74, 66, 0.035), 0 24px 75px rgba(95, 54, 52, 0.14);
-  backdrop-filter: blur(18px);
+  box-shadow: 0 0 0 0.28rem rgba(155, 74, 66, 0.045), 0 14px 34px rgba(95, 54, 52, 0.12);
+  backdrop-filter: blur(12px);
 }
-.request-error-mark { width: 2.3rem; height: 2.3rem; display: grid; place-items: center; color: white; border-radius: 50%; background: #9b4a42; font-weight: 750; }
-.request-error-panel .eyebrow { margin: 1rem 0 0.45rem; color: #7a3a34; }
-.request-error-panel h1 { margin: 0; font-size: clamp(1.8rem, 3.3vw, 3rem); line-height: 1; letter-spacing: -0.05em; }
-.request-error-panel > p:not(.eyebrow) { margin: 1rem 0 0; color: var(--ink-soft); line-height: 1.5; }
-.request-error-actions { margin-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; }
-.prepared-action { border: 1px solid rgba(155, 74, 66, 0.2); background: rgba(255, 255, 255, 0.56); }
-.gathering-lens { width: min(34rem, 55vw); min-height: 24rem; margin: 8vh 8vw 0 auto; position: relative; z-index: 6; display: grid; place-content: center; text-align: center; border: 1px solid rgba(118, 87, 220, 0.2); border-radius: var(--shape-0); background: rgba(255,255,255,0.76); box-shadow: var(--shadow-soft); }
-.gathering-lens span { color: var(--violet); font-size: 1.8rem; }
-.gathering-lens p { font-family: Georgia, serif; font-size: 1.2rem; }
+.request-error-mark { width: 1.85rem; height: 1.85rem; display: grid; place-items: center; color: white; border-radius: 50%; background: #9b4a42; font-weight: 750; }
+.request-error-panel .eyebrow { margin: 0.7rem 0 0.35rem; color: #7a3a34; }
+.request-error-panel h2 { margin: 0; font-size: clamp(1.1rem, 1.35vw, 1.3rem); line-height: 1.16; letter-spacing: -0.025em; }
+.request-error-panel > p:not(.eyebrow) { margin: 0.65rem 0 0; color: var(--ink-soft); font-size: 0.78rem; line-height: 1.45; }
+.request-error-actions { margin-top: 0.9rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+.request-error-actions .primary-action, .request-error-actions .quiet-action { min-height: 2.55rem; font-size: 0.76rem; }
+.request-error-actions .primary-action { padding: 0.6rem 0.85rem; }
+.request-error-actions .quiet-action { padding: 0.6rem 0.7rem; }
 
 @media (max-width: 700px) {
-  .app-header { height: 4.5rem; padding: 1.1rem 1.25rem; }
   .welcome { min-height: calc(100vh - 4.5rem); padding-bottom: 4rem; }
-  .welcome-seed { min-height: 28rem; padding: 2.5rem 2rem; }
+  .welcome-seed, .welcome-seed.is-open { width: min(100%, calc(100vw - 2.5rem)); padding: 0; }
+  .welcome h1 { font-size: clamp(2.1rem, 10vw, 3.2rem); }
+  .dilemma-form textarea { min-height: 7rem; font-size: 1rem; }
   .generation { flex-direction: column; gap: 1rem; }
   .generation-line { width: 1px; height: 3rem; }
   .ending-stage { height: auto; min-height: calc(100vh - 4.5rem); padding: 0 1rem 2rem; overflow: visible; }
@@ -225,7 +206,6 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
   .result-lens { width: 100%; max-height: none; margin: 1rem 0 0; padding: 2rem 1.4rem; border-radius: 2.3rem 1.5rem 2.8rem 1.8rem; }
   .result-grid { grid-template-columns: 1fr; gap: 1.4rem; }
   .restart-confirmation { align-items: stretch; flex-direction: column; width: 100%; }
-  .gathering-lens { width: 100%; min-height: 20rem; margin: 1rem 0 0; }
   .request-error-panel { width: 100%; position: relative; left: auto; top: auto; translate: none; margin: 1rem 0 0; padding: 2rem 1.4rem; border-radius: 2.3rem 1.6rem 2.8rem 1.9rem; }
   .request-error-actions { align-items: stretch; flex-direction: column; }
 }

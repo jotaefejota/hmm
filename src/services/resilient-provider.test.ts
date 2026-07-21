@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { TEAM_LEAD_DILEMMA } from "../content/mock-dataset";
+import { CAMERA_DILEMMA as TEAM_LEAD_DILEMMA } from "../content/mock-dataset";
 import { ResilientReflectionProvider } from "./resilient-provider";
 import { ReflectionProviderError } from "./reflection-provider";
 

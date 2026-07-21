@@ -11,13 +11,12 @@ import { TrailReviewCard } from "../session/TrailReviewCard";
 type EndingExperienceProps = {
   state: SessionState;
   onRestart: () => void;
-  onExploreDoubt: (focus: string) => void;
+  onExploreDoubt: () => void;
   onRetry: () => void;
-  onUsePrepared: () => void;
   onDismiss: () => void;
 };
 
-export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, onUsePrepared, onDismiss }: EndingExperienceProps) {
+export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, onDismiss }: EndingExperienceProps) {
   const { review, reviewCellId, isReviewing, focusHistoryAnswer, focusHistoryNode, clearReviewFocus } = useTrailReviewFocus(state);
   const projection = projectCanvas({
     dilemma: state.dilemma,
@@ -32,13 +31,16 @@ export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, on
 
   return (
     <section className="ending-stage" aria-live="polite" aria-busy={state.phase === "generating-summary"}>
-      <ProgressCard
-        progress={selectProgress(state)}
-        openByDefault={state.phase === "ending"}
-        onFocusAnswer={focusHistoryAnswer}
-        onReturnToNow={clearReviewFocus}
-        reviewing={isReviewing}
-      />
+      <div className="progress-stack">
+        <ProgressCard
+          progress={selectProgress(state)}
+          openByDefault={state.phase === "ending"}
+          onFocusAnswer={focusHistoryAnswer}
+          onReturnToNow={clearReviewFocus}
+          reviewing={isReviewing}
+        />
+        {review ? <TrailReviewCard step={state.history[review.stepIndex]} onClose={clearReviewFocus} /> : null}
+      </div>
       <CellField
         projection={projection}
         phase={state.phase === "ending" ? "ending" : "generating-summary"}
@@ -46,17 +48,10 @@ export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, on
         reviewCellId={reviewCellId}
         onReviewNode={focusHistoryNode}
       />
-      {review ? <TrailReviewCard step={state.history[review.stepIndex]} onClose={clearReviewFocus} /> : null}
-      {state.phase === "generating-summary" ? (
-        <div className="gathering-lens">
-          <span aria-hidden="true">✦</span>
-          <p>Let me gather the thread…</p>
-        </div>
-      ) : state.phase === "error" && state.requestError ? (
+      {state.phase === "error" && state.requestError ? (
         <RequestErrorPanel
           error={state.requestError}
           onRetry={onRetry}
-          onUsePrepared={onUsePrepared}
           onRestart={onRestart}
         />
       ) : state.summary ? (
@@ -66,7 +61,7 @@ export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, on
           history={state.history}
           canExtend={canExtend}
           canContinue={Boolean(state.currentDiscovery)}
-          onExploreDoubt={onExploreDoubt}
+          onContinueExploring={onExploreDoubt}
           onDismiss={onDismiss}
           onRestart={onRestart}
         />

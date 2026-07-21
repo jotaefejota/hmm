@@ -3,7 +3,7 @@ import { mockDataset } from "../content/mock-dataset";
 import { buildChatGptPrompt } from "./chatgpt-handoff";
 
 describe("buildChatGptPrompt", () => {
-  it("includes dilemma, ordered path, summary sections, and non-decision instruction", () => {
+  it("includes the dilemma, ordered path, and summary sections without an extra instruction", () => {
     const scenario = mockDataset.scenarios[0];
     const history = scenario.demoAnswerIndexes.map((answerIndex, index) => ({
       round: index + 1,
@@ -21,7 +21,7 @@ describe("buildChatGptPrompt", () => {
     expect(prompt).toContain(history[0].answer);
     expect(prompt).toContain(scenario.summary.direction);
     expect(prompt).toContain(scenario.summary.nextStep);
-    expect(prompt).toContain("do not decide for me");
+    expect(prompt).not.toContain("Continue as a curious thinking companion");
     expect(prompt.indexOf(history[0].answer)).toBeLessThan(prompt.indexOf(history[1].answer));
   });
 });

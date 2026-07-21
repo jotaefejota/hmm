@@ -20,12 +20,11 @@ describe("App interaction guards", () => {
     );
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Start with a thought" }));
     fireEvent.click(screen.getByRole("button", { name: /Think it through/ }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
-    fireEvent.click(screen.getByRole("button", { name: "Explore What pulls you?" }));
-    const possibility = screen.getByRole("button", { name: "Possibility 1: I want more influence" });
+    fireEvent.click(screen.getByRole("button", { name: "Explore What is missing?" }));
+    const possibility = screen.getByRole("button", { name: "Possibility 1: Having a camera ready" });
     fireEvent.click(possibility);
     fireEvent.click(possibility);
 
@@ -44,38 +43,39 @@ describe("App interaction guards", () => {
     }));
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Start with a thought" }));
     fireEvent.click(screen.getByRole("button", { name: /Think it through/ }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
     expect(screen.getByRole("alert")).toHaveTextContent("This topic needs a different kind of support.");
-    expect(screen.getByRole("complementary", { name: "Your thread" })).toBeVisible();
+    expect(screen.getByRole("complementary", { name: "Reflection progress" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Continue with prepared questions" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Start over" })).toBeVisible();
   });
 
-  it("keeps context visible and can recover a retryable failure with prepared content", async () => {
+  it("keeps context visible and retries a recoverable failure", async () => {
     vi.useFakeTimers();
-    vi.spyOn(reflectionProvider, "getRound").mockRejectedValueOnce(new ReflectionProviderError({
-      kind: "error",
-      code: "AI_TIMEOUT",
-      message: "The live response took too long.",
-      retryable: true,
-      fallbackAvailable: true,
-    }));
+    const mockProvider = new MockReflectionProvider();
+    vi.spyOn(reflectionProvider, "getRound")
+      .mockRejectedValueOnce(new ReflectionProviderError({
+        kind: "error",
+        code: "AI_TIMEOUT",
+        message: "The live response took too long.",
+        retryable: true,
+        fallbackAvailable: true,
+      }))
+      .mockImplementation(mockProvider.getRound.bind(mockProvider));
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Start with a thought" }));
     fireEvent.click(screen.getByRole("button", { name: /Think it through/ }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
     expect(screen.getByRole("alert")).toHaveTextContent("Your path is still here.");
-    expect(screen.getAllByText("Should I accept a team-lead role if it means less hands-on creative work?").length).toBeGreaterThan(0);
-    fireEvent.click(screen.getByRole("button", { name: "Continue with prepared questions" }));
-    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+    expect(screen.getAllByText("Would a new camera help me get back into photography?").length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: "Continue with prepared questions" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
-    expect(screen.getByRole("button", { name: "Explore What pulls you?" })).toBeVisible();
-    expect(screen.getByRole("status")).toHaveTextContent("Continuing with prepared reflection.");
+    expect(screen.getByRole("button", { name: "Explore What is missing?" })).toBeInTheDocument();
   });
 });

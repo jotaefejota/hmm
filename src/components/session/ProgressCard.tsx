@@ -19,25 +19,13 @@ export function ProgressCard({
   const open = openByDefault || (userOpen ?? true);
 
   return (
-    <aside className={`progress-card ${open ? "is-open" : ""}`} aria-label="Your thread">
-      <div className="progress-heading">
-        <h2>Your thread</h2>
-        <span>{progress.completed} of up to 5</span>
-      </div>
-      <span className="status-pill"><i aria-hidden="true" />{progress.status}</span>
-      <button
-        className="progress-toggle"
-        type="button"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setUserOpen((value) => !(value ?? true))}
-      >
-        {open ? "Hide details" : "Show details"}
-      </button>
+    <aside className={`progress-card ${open ? "is-open" : ""}`} aria-label="Reflection progress">
+      <p className="progress-brand" aria-label="Hmm">
+        Hmm<span aria-hidden="true">…</span>
+      </p>
       <div id={panelId} className="progress-details" hidden={!open}>
-        <p className="progress-label">You’re thinking through</p>
         <p className="progress-dilemma">{progress.dilemma}</p>
-        <p className="progress-label">What you’ve chosen so far</p>
+        <p className="progress-label">Your thoughts</p>
         {progress.answers.length ? (
           <ol className="progress-answers">
             {progress.answers.map((answer, index) => (
@@ -65,6 +53,16 @@ export function ProgressCard({
           </button>
         ) : null}
       </div>
+      <p className={`status-pill ${progress.isThinking ? "is-thinking" : ""}`} aria-live="polite"><i aria-hidden="true" />{progress.status}</p>
+      <button
+        className="progress-toggle"
+        type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setUserOpen((value) => !(value ?? true))}
+      >
+        {open ? "Hide details" : "Show details"}
+      </button>
     </aside>
   );
 }

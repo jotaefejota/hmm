@@ -14,7 +14,6 @@ export type ReflectionStep = {
 };
 
 export type SessionPhase =
-  | "welcome"
   | "entering"
   | "generating-round"
   | "lens-ready"
@@ -48,10 +47,11 @@ export type SessionState = {
   selectedAnswer: SelectedAnswer | null;
   pendingDiscovery: DiscoveryPayload | null;
   transitionFinished: boolean;
+  /** A historical revision at the fourth-round pause must resume the new route before offering another pause. */
+  skipNextFinishOffer: boolean;
   summary: SummaryPayload | null;
   finishReason: FinishReason | null;
   extensionUsed: boolean;
-  extensionFocus: string | null;
   dataSource: "mock" | null;
   requestError: PublicError | null;
   errorPhase: RecoverablePhase | null;
@@ -59,8 +59,6 @@ export type SessionState = {
 };
 
 export type SessionEvent =
-  | { type: "OPEN_ENTRY" }
-  | { type: "CANCEL_ENTRY" }
   | { type: "SUBMIT_DILEMMA"; dilemma: string; requestId: number }
   | { type: "DISCOVERY_LOADED"; discovery: DiscoveryPayload; requestId: number }
   | { type: "OPEN_LENS"; lensIndex: 0 | 1 }
@@ -75,14 +73,14 @@ export type SessionEvent =
   | { type: "CONTINUE_FROM_FINISH" }
   | { type: "DISMISS_SUMMARY" }
   | { type: "REQUEST_FINISH"; reason: Exclude<FinishReason, "max_rounds" | "extension">; requestId: number }
-  | { type: "REQUEST_EXTENSION"; focus: string; requestId: number }
+  | { type: "REQUEST_EXTENSION"; requestId: number }
   | { type: "SUMMARY_LOADED"; summary: SummaryPayload; requestId: number }
   | { type: "REQUEST_FAILED"; error: PublicError; requestId: number }
   | { type: "RECOVER_REQUEST"; requestId: number }
   | { type: "RESTART"; requestId: number };
 
 export const createInitialSessionState = (activeRequestId = 0): SessionState => ({
-  phase: "welcome",
+  phase: "entering",
   dilemma: "",
   history: [],
   currentDiscovery: null,
@@ -90,10 +88,10 @@ export const createInitialSessionState = (activeRequestId = 0): SessionState => 
   selectedAnswer: null,
   pendingDiscovery: null,
   transitionFinished: false,
+  skipNextFinishOffer: false,
   summary: null,
   finishReason: null,
   extensionUsed: false,
-  extensionFocus: null,
   dataSource: null,
   requestError: null,
   errorPhase: null,

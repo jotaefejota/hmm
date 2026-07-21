@@ -16,7 +16,7 @@ Every request receives only:
 - the original dilemma, at most 400 characters;
 - the ordered committed history;
 - the next round number and whether it is a core or extension request;
-- an optional extension focus.
+- a nullable focus field; direct continuation sends `null` and relies on committed history alone.
 
 Each history item contains:
 
@@ -68,17 +68,17 @@ The fortune must be a surprising reframing grounded in the dilemma and committed
   "kind": "discovery",
   "lenses": [
     {
-      "theme": "What pulls you?",
-      "question": "What makes the role appealing right now?",
-      "answers": ["I want more influence", "I’m ready to grow", "Recognition matters"]
+      "theme": "What is missing?",
+      "question": "What feels furthest away from photography right now?",
+      "answers": ["Having a camera ready", "Making time to shoot", "Knowing what to photograph"]
     },
     {
-      "theme": "What might shift?",
-      "question": "What could the role change about work you enjoy now?",
-      "answers": ["My creative time", "My independence", "My daily rhythm"]
+      "theme": "What would change?",
+      "question": "What would a new camera make easier?",
+      "answers": ["Carry it everywhere", "Enjoy shooting again", "See in a new way"]
     }
   ],
-  "fortune": "Would you want the title if nobody else knew you had it?",
+  "fortune": "If a camera appeared tomorrow, what would you hope changed first?",
   "transition": "Two angles seem worth opening.",
   "suggestEnding": false
 }
@@ -91,17 +91,17 @@ The fortune must be a surprising reframing grounded in the dilemma and committed
   "kind": "discovery",
   "lenses": [
     {
-      "theme": "What must be protected?",
-      "question": "If flexibility is limited, what would you protect most?",
-      "answers": ["One hands-on day", "A six-month trial", "The option to step back"]
+      "theme": "What would you protect?",
+      "question": "If you bought one, what would keep it from becoming unused?",
+      "answers": ["A weekly photo walk", "One small project", "A place by the door"]
     },
     {
-      "theme": "What would make it fair?",
-      "question": "What condition would make the trade-off worthwhile?",
-      "answers": ["Clear authority", "Protected creative time", "A review point"]
+      "theme": "What can wait?",
+      "question": "What does not need deciding before you begin shooting again?",
+      "answers": ["The perfect model", "A serious commitment", "Other people’s opinions"]
     }
   ],
-  "fortune": "If the role cannot bend, what does declining it protect?",
+  "fortune": "The best next camera may create a ritual, not a bigger expectation.",
   "transition": "One last angle may sharpen the next step.",
   "suggestEnding": true
 }
@@ -126,17 +126,17 @@ The summary request contains the dilemma, committed chosen history, and finish r
 ```json
 {
   "kind": "summary",
-  "direction": "You seem open to the team-lead role—if it preserves meaningful hands-on work.",
+  "direction": "You seem to want a camera that lowers friction and rekindles curiosity—not simply newer gear.",
   "reasons": [
-    "You want broader influence.",
-    "Making things yourself remains important.",
-    "The role feels more appealing when creative time is protected."
+    "Having a camera ready feels like an invitation to begin.",
+    "You want the experience of using it to feel enjoyable again.",
+    "A short real-world test matters more than specifications."
   ],
   "doubts": [
-    "Whether the role is genuinely flexible.",
-    "How much hands-on time can be protected."
+    "Whether a new camera is the real barrier.",
+    "Which size and feel would make you carry it."
   ],
-  "nextStep": "Ask whether one hands-on day each week can be protected before deciding."
+  "nextStep": "Borrow or rent one camera for a weekend, then take an unplanned photo walk."
 }
 ```
 
@@ -162,7 +162,7 @@ Allowed codes are `AI_UNAVAILABLE`, `AI_TIMEOUT`, `AI_RATE_LIMITED`, `AI_INVALID
 
 The API-free dataset contains:
 
-- one five-discovery team-lead scenario;
+- one five-discovery camera scenario;
 - one five-discovery generic fallback;
 - two complete lenses and one path-specific fortune in every discovery;
 - one extension discovery;

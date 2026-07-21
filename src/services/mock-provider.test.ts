@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { MAX_CORE_ROUNDS } from "../../shared/limits";
-import { mockDataset, TEAM_LEAD_DILEMMA } from "../content/mock-dataset";
+import { CAMERA_DILEMMA as TEAM_LEAD_DILEMMA, mockDataset } from "../content/mock-dataset";
 import { MockReflectionProvider } from "./mock-provider";
 
 describe("MockReflectionProvider", () => {
@@ -20,7 +20,7 @@ describe("MockReflectionProvider", () => {
 
     expect(result.source).toBe("mock");
     expect(result.data.lenses).toHaveLength(2);
-    expect(result.data.lenses[0].question).toBe("What makes the role appealing right now?");
+    expect(result.data.lenses[0].question).toBe("What feels furthest away from photography right now?");
     expect(result.data.lenses[0].answers).toHaveLength(3);
     expect(fetchSpy).not.toHaveBeenCalled();
     fetchSpy.mockRestore();

@@ -8,7 +8,7 @@ import { ConnectionLayer } from "./ConnectionLayer";
 
 type CellFieldProps = {
   projection: CanvasProjection;
-  phase: "lens-ready" | "round-ready" | "writing-custom-answer" | "answer-selected" | "transitioning" | "finish-offered" | "generating-summary" | "ending";
+  phase: "generating-round" | "lens-ready" | "round-ready" | "writing-custom-answer" | "answer-selected" | "transitioning" | "finish-offered" | "generating-summary" | "ending";
   questionRef?: React.RefObject<HTMLHeadingElement | null>;
   onSelect?: (answer: string) => void;
   onReviseSelection?: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
@@ -51,20 +51,21 @@ function CellContent({
   onContinueFromFinish?: () => void;
 }) {
   const reducedMotion = useReducedMotion();
-  const isActiveQuestion = item.kind === "question" && item.status === "active";
+  const isFocusedQuestion = item.kind === "question" && item.status === "active";
+  const isLiveActiveQuestion = isFocusedQuestion && item.stepIndex === undefined;
   const isSelected = item.status === "selected";
   const targetOpacity = item.status === "clearing" ? 0 : item.age > 0 ? Math.max(0.6, 1 - item.age * 0.055) : 1;
   const className = `cell-content content-${item.kind} status-${item.status}`;
   const transition = { duration: reducedMotion ? 0.12 : isSelected ? 0.48 : 0.34, ease: [0.22, 1, 0.36, 1] as const };
   const body = (
     <>
-      {isActiveQuestion || item.kind === "lens" ? <span className="question-pin" aria-hidden="true">?</span> : null}
+      {isFocusedQuestion || item.kind === "lens" ? <span className="question-pin" aria-hidden="true">?</span> : null}
       <span className="node-label">{item.label}</span>
       {isSelected ? <span className="selection-check" aria-hidden="true">✓</span> : null}
-      {isActiveQuestion ? (
+      {isLiveActiveQuestion ? (
         <h1 id="active-question" ref={questionRef} tabIndex={-1}>{item.text}</h1>
       ) : (
-        <span className="node-copy">{item.text}</span>
+        <span className={`node-copy${isFocusedQuestion ? " node-copy-question" : ""}`}>{item.text}</span>
       )}
     </>
   );
@@ -75,10 +76,16 @@ function CellContent({
         key={item.semanticId}
         className={className}
         type="button"
-        aria-label={`${item.label}: ${item.text}`}
+        aria-label={item.stepIndex !== undefined && item.status === "selected"
+          ? `Settle decision from round ${item.stepIndex + 1}: ${item.text}`
+          : `${item.label}: ${item.text}`}
         disabled={!item.interactive}
         onClick={() => {
           if (!item.interactive) return;
+          if (item.stepIndex !== undefined && item.status === "selected") {
+            onToggleDecision?.(item.stepIndex);
+            return;
+          }
           if (item.revisionStepIndex !== undefined && item.optionIndex !== undefined) {
             onReviseSelection?.(item.revisionStepIndex, item.optionIndex);
             return;
@@ -110,6 +117,21 @@ function CellContent({
       >
         {body}
       </motion.button>
+    );
+  }
+
+  if (item.kind === "preview") {
+    return (
+      <motion.article
+        key={item.semanticId}
+        className={`${className} lens-preview-content`}
+        aria-label="Preparing the next paths"
+        initial={{ opacity: 0, scale: 0.84 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.92 }}
+        transition={transition}
+      >
+      </motion.article>
     );
   }
 
@@ -228,11 +250,31 @@ export function CellField({
 }: CellFieldProps) {
   const pressurePositions = useMemo(() => settleLocalPressure(projection), [projection]);
   const focusedSlot = getCellSlot(projection.focusCellId);
+  const frameCellIds = projection.frameCellIds ?? [projection.focusCellId];
   const visibleLensSlots = phase === "lens-ready"
     ? projection.occupancy.filter((item) => item.kind === "lens").map((item) => getCellSlot(item.cellId))
     : [];
   const focusedPosition = pressurePositions.get(focusedSlot.id) ?? focusedSlot;
-  const focus = visibleLensSlots.length === 2
+  const framePositions = frameCellIds
+    .map((cellId) => {
+      const slot = getCellSlot(cellId);
+      return pressurePositions.get(cellId) ?? slot;
+    });
+  const framedPosition = framePositions.length > 1
+    ? (() => {
+      const xs = framePositions.map((position) => position.x);
+      const ys = framePositions.map((position) => position.y);
+      return {
+        x: (Math.min(...xs) + Math.max(...xs)) / 2,
+        y: (Math.min(...ys) + Math.max(...ys)) / 2,
+      };
+    })()
+    : focusedPosition;
+  // The lens pair owns the default "now" camera, but an explicit progress-card
+  // review target must always win—even while the next two lenses are visible.
+  const focus = frameCellIds.length > 1
+    ? framedPosition
+    : !reviewCellId && visibleLensSlots.length === 2
     ? (() => {
       const first = pressurePositions.get(visibleLensSlots[0].id) ?? visibleLensSlots[0];
       const second = pressurePositions.get(visibleLensSlots[1].id) ?? visibleLensSlots[1];

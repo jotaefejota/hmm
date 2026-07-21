@@ -1,16 +1,10 @@
 import type { SessionState } from "./session-types";
-import { MAX_CORE_ROUNDS } from "../../shared/limits";
 
 export type ProgressView = {
   dilemma: string;
   completed: number;
-  status:
-    | "Starting out"
-    | "Exploring"
-    | "Connecting the dots"
-    | "A direction is forming"
-    | "Looking once more"
-    | "Ready to reflect";
+  status: string;
+  isThinking: boolean;
   answers: string[];
 };
 
@@ -18,16 +12,20 @@ export const selectProgress = (state: SessionState): ProgressView => {
   let status: ProgressView["status"] = "Starting out";
   if (state.history.length === 1) status = "Exploring";
   if (state.history.length >= 2) status = "Connecting the dots";
+  if (state.phase === "generating-round") status = "Hmm… where’s the useful edge?";
+  if (state.phase === "transitioning") status = state.pendingDiscovery?.transition ?? "Following that thread…";
   if (state.phase === "finish-offered") status = "A direction is forming";
   if (state.extensionUsed && state.phase !== "ending" && state.phase !== "generating-summary") {
     status = "Looking once more";
   }
-  if (state.phase === "generating-summary" || state.phase === "ending") status = "Ready to reflect";
+  if (state.phase === "generating-summary") status = "Let me gather the thread…";
+  if (state.phase === "ending") status = "A reflection is ready";
 
   return {
     dilemma: state.dilemma,
     completed: state.history.length,
     status,
+    isThinking: state.phase === "generating-round" || state.phase === "transitioning" || state.phase === "generating-summary",
     answers: state.history.map((step) => step.answer),
   };
 };
@@ -37,6 +35,5 @@ export const selectCanFinish = (state: SessionState) =>
 
 export const selectCanExtend = (state: SessionState) =>
   state.phase === "ending" &&
-  state.history.length < MAX_CORE_ROUNDS &&
   !state.extensionUsed &&
   Boolean(state.summary?.doubts[0]);

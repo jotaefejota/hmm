@@ -17,6 +17,7 @@ export function geometryForCell(slot: CellSlot, item: CanvasOccupancy | undefine
   if (item.kind === "lens") return item.lensIndex === 0
     ? { footprint: "orb", scale: 1.08, aspectRatio: 1 }
     : { footprint: "capsule", scale: 1.04, aspectRatio: 1.18 };
+  if (item.kind === "preview") return { footprint: "orb", scale: 1.02, aspectRatio: 1 };
   if (item.kind === "question") return item.status === "active"
     ? { footprint: "shell", scale: 1.36, aspectRatio: 1.08 }
     : { footprint: "shell", scale: 1.06, aspectRatio: 1.04 };

@@ -4,7 +4,7 @@
 
 The active neighbourhood begins with two violet question-lens cells carrying short theme labels, not a fully revealed question. Choosing a lens transforms that same cell into the active Hmm… question and reveals exactly three neighbouring answer cells. Until an answer is committed, **Try the other angle** restores both lenses without another content request. Once an answer is chosen, the unused lens clears back to the substrate and only the chosen question and answer remain marked.
 
-Once an answer commits, its violet question and amber answer settle into one larger amber **decision cell**. It carries the user’s chosen answer, while the full question and all three original options remain preserved in semantic history. Its larger footprint makes nearby quiet cells yield through the controlled local-pressure layout. Activating a settled decision expands it into its original question plus three answers: the selected answer remains amber, the two discarded answers return as white possibilities. Activating the question or selected answer settles the same decision again. Choosing a discarded answer replaces that historical decision, removes every later decision from the path, updates the progress card, and resumes generation from the revised route. Only one trail step may be expanded at a time. Review never edits history except through this explicit replacement action, and never enables free pan or zoom.
+Once an answer commits, its violet question and amber answer settle into one larger amber **decision cell**. It carries the user’s chosen answer, while the full question and all three original options remain preserved in semantic history. Its larger footprint makes nearby quiet cells yield through the controlled local-pressure layout. Activating a settled decision expands it into its original question plus three answers using their pre-merge treatments: the question regains its violet pin, full-question type, and active shell; the chosen answer regains its amber selected-suggestion treatment; the two discarded answers return as white possibilities. Activating the question or selected answer settles the same decision again. Choosing a discarded answer replaces that historical decision, removes every later decision from the path, updates the progress card, and resumes generation from the revised route. Only one trail step may be expanded at a time. Review never edits history except through this explicit replacement action, and never enables free pan or zoom.
 
 Each active discovery places one small amber fortune-cookie cell near its two lenses. Opening it once reveals a short, surprising reframing grounded in the original dilemma and committed path. Cookies remain subordinate to lenses, never create connectors, and do not enter the progress card or committed AI history.
 
@@ -53,37 +53,32 @@ The recommended direction is therefore a warm off-white cellular field with ink 
 - A committed question-and-answer pair settles into one larger amber decision cell, carrying the selected text as part of the trail. Tapping it restores the two original cells for read-only review; the next commitment settles it again. A rejected cell loses its suggestion text and returns to its quiet neutral state.
 - The active neighbourhood comes forward through scale, contrast, sharpness, halo, and a controlled camera pan. Recent cells remain near the viewport edge before slipping away; the progress card preserves the complete textual route.
 - After a commitment, the next two question lenses occupy the two forward hex-neighbours that physically touch the settled decision. They are the immediate next possibilities in the same cellular field, not a detached cluster.
-- Choosing an item under **What you’ve chosen so far** is a review affordance: the camera (or narrow scroll) briefly focuses that settled amber decision and opens its read-only context, but does **not** unfold it. Only tapping the settled decision itself restores its original question-and-answer pair, retaining that answer-slot focus while the pair separates. Neither action edits history or enables free pan/zoom. The next selection, phase change, or **Back to now** returns focus to the active neighbourhood.
+- Choosing an item under **Your thoughts** is a review affordance: the camera (or narrow scroll) focuses that settled amber decision and opens its read-only context directly beneath the progress card, but does **not** unfold it. Only tapping the settled decision itself restores its original question-and-answer pair, retaining that answer-slot focus while the pair separates. Neither action edits history or enables free pan/zoom. The next committed selection, a changed canonical trail, or **Back to now** returns focus to the active neighbourhood; harmless generation and transition phase changes do not cancel a requested review focus.
+- While two new lenses are visible, their midpoint is the default camera target only. A chosen progress-card link always takes priority and moves the view to its exact historical cell.
+- If a live Hmm… question is open with its three answers when a historical decision is unfolded, that live neighbourhood and its two associated text actions collapse from the canvas. The session retains it unchanged; settling the historical pair restores the same question, answers, and controls. This keeps exactly one expanded decision neighbourhood readable at a time.
+- If the green reflection lens is currently offered, choosing a discarded historical answer removes that lens and truncates every later decision before the revised route resumes. At the fourth-round pause, the app reveals the next lenses for the revised route instead of immediately re-offering the stale reflection lens.
 - The three suggestions form a compact fan in cells that physically touch the opened question; they must never read as a detached vertical menu. The fan follows the lens placement: an upper lens uses one cell directly above and two forward neighbours, while a lower lens uses one cell directly below and two forward neighbours. The selected position still determines the next route bend, so repeated choices create a distinct rising, level, falling, or mixed path.
 - Semantic connectors join only selected relationships. Empty substrate cells never receive decorative cross-links.
 
 ## 2. Journey from arrival to ending
 
-### 2.1 Welcome
+### 2.1 Landing and dilemma entry
 
-The first screen is quiet and nearly empty. A small **Hmm…** wordmark sits above a soft seed cell. The seed has a slow, almost imperceptible breathing motion and contains the invitation:
+The first screen opens directly on a compact, centred search-style writing surface, without a separate page header. It uses a small Hmm… wordmark, a clear prompt, and one generous but lightweight input rather than a giant cellular card. Once the session begins, the **Hmm…** wordmark lives inside the progress card rather than in a fixed top-left header:
 
-> What are you thinking through?
+> Clarify your next move
 
-A short supporting line sets expectations:
-
-> Bring one question. We’ll follow it for a few turns.
-
-The only prominent action is **Start with a thought**. An example sits beneath it as low-emphasis text, not as a second call to action.
-
-### 2.2 Enter the dilemma
-
-Activating the seed expands it into a focused writing surface rather than opening a separate form page. The user types a question or short description. The cell grows within limits as text wraps. A character counter appears only near the limit.
+The user types a question or short description immediately. The cell grows within limits as text wraps. A character counter appears only near the limit.
 
 The primary action is **Think it through**. It stays disabled until the input contains meaningful non-whitespace text. `Enter` submits when the field is a single line; `Shift+Enter` creates a new line. The user can also click the action.
 
 After submission, the user’s wording becomes the permanent seed node for the session. It is never silently rewritten.
 
-At the same moment, a compact card titled **Your thread** appears in a stable side area. It shows the original dilemma and starts with **0 of up to 5 · Starting out**. This card remains throughout exploration and the ending.
+At the same moment, a compact progress card appears in a stable side area. Its prominent status bar starts with **Starting out**, while its details show the original dilemma. This card remains throughout exploration and the ending.
 
 ### 2.3 Generate the first turn
 
-The seed contracts slightly and focus shifts toward a nearby empty cell. A fine connector grows toward its violet inner outline. Inside it, a short status cycles no more than once:
+The landing search surface resolves directly into the persistent grid: the submitted thought becomes the amber seed node, the progress card appears, and the two first lens cells begin their textless violet preview. There is no separate loading page. The progress-card status carries the brief request state:
 
 > Hmm… where’s the useful edge?
 
@@ -104,7 +99,7 @@ The user can:
 
 Selecting an answer is a commitment for this linear MVP. The occupied cell changes from a suggestion into a user-marked cell, receives a check mark, and becomes connected to the question. The two unchosen texts soften and dissolve while their cells return to the neutral field. The question and selected answer then draw together into a larger amber decision cell, and nearby quiet cells make room. The settled decision becomes the launch point for the next question in a nearby existing cell.
 
-When the selection commits, the progress card appends that answer once under **What you’ve chosen so far** and updates its round/status line. The card never updates on hover, focus, or the temporary pressed state. Each listed answer is activatable for trail review: activating it focuses the matching marked cell on the canvas without changing the session.
+When the selection commits, the progress card appends that answer once under **Your thoughts** and updates its qualitative status. The card never updates on hover, focus, or the temporary pressed state. Each listed answer is activatable for trail review: activating it focuses the matching marked cell on the canvas without changing the session.
 
 ### 2.5 Progress through the path
 
@@ -147,29 +142,27 @@ The result remains framed as a reflection of the user’s path, never as the mod
 The ending actions are:
 
 - **Continue in ChatGPT** — copies the prepared context and opens ChatGPT;
-- **Keep exploring** — only when the next round was prepared before the recap; dismisses the result and returns to those lenses without rewriting history;
-- **Explore one remaining doubt** — when no prepared core round remains and fewer than five answers have been committed, adds exactly one user-initiated question and then returns to an updated ending;
+- **Continue exploring** — always present on a normal final reflection. It dismisses into a prepared next round when one exists; otherwise Hmm… directly generates the next two lenses from the committed path;
 - **Start over** — asks for confirmation before clearing the current in-memory path.
 
-An explicitly resumed question does not violate the five-round automatic stop: Hmm… has already paused and will not continue without the user asking it to.
+An explicitly resumed question does not violate the soft ending: Hmm… has paused and will not continue without the user asking it to. Resuming always presents two app-generated lenses, never an input bubble. The future route limit remains a separate technical decision.
 
-The progress card remains visible beside the result lens, changes its status to **Ready to reflect**, and preserves the exact ordered choices. It does not repeat the generated summary.
+The progress card remains visible beside the result lens, changes its status to **A reflection is ready**, and preserves the exact ordered choices. It does not repeat the generated summary.
 
 ## 3. Required states
 
 | State | What is visible | Available action | Exit condition |
 | --- | --- | --- | --- |
-| **Welcome** | Wordmark, empty seed cell, invitation, one-line promise, example | Start with a thought | Opens the input state |
-| **Entering dilemma** | Expanded seed with text area, submit action, quiet cancel action | Type, submit, cancel | Valid submission starts generation |
-| **Generation** | Submitted seed, growing connector, one empty/pulsing violet cell, short status | Wait; retry only after timeout | Valid response fills the active cells; failure uses fallback or error state |
+| **Entering dilemma** | Wordmark, focused seed with text area and submit action | Type and submit | Valid submission starts generation |
+| **Generation** | Persistent grid, submitted seed, progress card, two textless warming lens cells, short status | Wait; retry only after timeout | Valid response fills those lens cells; failure uses fallback or error state |
 | **Active question** | One dominant violet occupied cell, marked trail, quiet cellular field, session controls | Read, choose an answer, finish when eligible | Answer selection or finish action |
 | **Three possible answers** | Exactly three neutral cells holding suggestions around/below the question | Hover/focus, select, open custom answer | One suggestion is selected or custom input opens |
 | **Different answer** | Suggestions remain visible but subdued; attached input cell or narrow-window sheet | Enter up to 160 characters, use answer, cancel | Valid custom text becomes the selected answer |
 | **Selected answer** | One amber occupied cell with check mark; stronger connector to its question | None during the brief committed animation | Automatically enters transition |
 | **Transition** | Chosen cells remain marked; unused text clears; focus moves as existing cells receive the next content | Wait | Next question becomes active, or a reflection lens appears |
-| **Reflection lens** | One tappable violet bubble touching the latest amber answer | See what’s emerging | Ending generation; or remain on the path until tapped |
+| **Reflection lens** | One tappable violet bubble touching the latest amber answer | Open the reflection | Ending generation; or remain on the path until tapped |
 | **Ending generation** | Entire path, dimmed but readable; gathering copy; forming result lens | Wait; retry after failure | Final result becomes available |
-| **Ending** | Result lens, subdued full path, four-part reflection, contextual actions | Continue in ChatGPT, keep exploring when available, explore one doubt, start over | External handoff, resumed path, one extra round, or reset |
+| **Ending** | Result lens, subdued full path, four-part reflection, contextual actions | Continue in ChatGPT, continue exploring, start over | External handoff, resumed path, one extra round, or reset |
 | **API unavailable** | Existing context stays visible; calm inline recovery message; fallback begins automatically | Wait for demo path; try live again | Fallback succeeds, retry succeeds, or user restarts |
 | **Unrecoverable error** | Existing path plus concise error card | Try again; start over; copy current path if any | Retry, reset, or manual preservation |
 
@@ -179,15 +172,17 @@ The progress card remains visible beside the result lens, changes its status to 
 
 The progress card is a stable UI control, not a node and not a separate state. Its content is derived from the canonical dilemma, committed history, current phase, and ending signal.
 
-Content:
+When Hmm… is gathering the first turn, following a committed choice, or preparing the final reflection, this card—not the canvas—carries the loading motion. Its status bar uses a restrained moving violet wash and pulse; no large blurred, temporary, or end-of-journey thinking bubble is added to the cellular field.
 
-- heading: **Your thread**;
-- label: **You’re thinking through**;
-- the original dilemma, unchanged;
-- label: **What you’ve chosen so far**;
+During a route transition only, the two deterministic cells that will receive the next question lenses may quietly warm with a textless violet inner pulse. This is a spatial preview, not a second loading message: the progress-card banner remains the single source of loading copy, and the same two cells transform into the generated lenses once content arrives.
+
+Content, in order:
+
+- the **Hmm…** title;
+- the original dilemma, unchanged and set larger than the detail labels;
+- label: **Your thoughts**;
 - an ordered list of committed answer text, using a small check marker; each item focuses its trail cell for review when activated;
-- a factual round count: **{completed} of up to 5**;
-- one qualitative session status;
+- a prominent, live qualitative status bar;
 - while reviewing a past cell, a quiet **Back to now** action restores the active neighbourhood focus.
 
 Status rules:
@@ -198,7 +193,10 @@ Status rules:
 | One committed answer | **Exploring** |
 | Two, three, or four committed answers without an ending signal | **Connecting the dots** |
 | Four answers and `suggestEnding` is true | **A direction is forming** |
-| Ending or summary is visible | **Ready to reflect** |
+| A new round is loading | **Hmm… where’s the useful edge?** |
+| A committed route is loading | The generated transition whisper, or **Following that thread…** |
+| Summary generation is visible | **Let me gather the thread…** |
+| Ending is visible | **A reflection is ready** |
 | One user-requested extension is active | **Looking once more** |
 
 These labels describe where the session is, not how certain the user is or how good the decision may be. The card must never show a certainty, confidence, clarity, completion, or probability score.
@@ -230,7 +228,7 @@ Technical error details never replace the user’s path. In diagnostic live mode
 
 > I lost the thread for a moment. Your path is still here.
 
-For retryable failures with a valid mock continuation, actions are **Try again**, **Continue with prepared questions**, and a quieter **Start over**. **Try again** repeats the exact failed operation with a new request ID. **Continue with prepared questions** runs that operation through the mock provider without changing committed history. For refusals or other non-retryable boundaries, show the boundary message and **Start over** only; never route sensitive content into generic mock reflection.
+For retryable failures, a compact recovery panel sits beside the progress card, keeping the canvas and trail visible. It offers **Try again** and a quieter **Start over**. **Try again** repeats the exact failed operation with a new request ID; normal automatic mock fallback remains the reliable path whenever it is safe. For refusals or other non-retryable boundaries, show the boundary message and **Start over** only; never route sensitive content into generic mock reflection.
 
 In development only, `?simulateError=timeout` and `?simulateError=refusal` deterministically exercise the two variants. These query parameters must be ignored in production builds.
 
@@ -238,9 +236,7 @@ In development only, `?simulateError=timeout` and `?simulateError=refusal` deter
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Welcome
-    Welcome --> Entering: Start with a thought
-    Entering --> Welcome: Cancel
+    [*] --> Entering
     Entering --> Generating: Submit valid dilemma
 
     Generating --> RoundReady: Live or mock round succeeds
@@ -264,15 +260,14 @@ stateDiagram-v2
 
     EndingGeneration --> Ending: Summary succeeds
     EndingGeneration --> ApiUnavailable: Summary generation fails
-    Ending --> RoundReady: Keep exploring (prepared next round)
-    Ending --> Generating: Explore one remaining doubt
-    Ending --> Welcome: Confirm start over
+    Ending --> RoundReady: Continue exploring (prepared next round)
+    Ending --> Generating: Continue exploring (next lenses)
+    Ending --> Entering: Confirm start over
     Ending --> ExternalHandoff: Continue in ChatGPT
     ExternalHandoff --> Ending
 
     Error --> Generating: Try again
-    Error --> Generating: Continue with prepared questions
-    Error --> Welcome: Confirm start over
+    Error --> Entering: Confirm start over
 ```
 
 Implementation should derive the visible interface from one explicit session phase. “Active question,” “three possible answers,” and “selected answer” are visual substates of a round, not independent screens.
@@ -312,7 +307,7 @@ Green is intentionally avoided as the main selected/result colour because it com
 - every selected question/answer pair as a continuous path of the actual semantic nodes;
 - the initial dilemma as the first semantic node in that path on desktop;
 - **I think I’ve got it** from round 2 onward;
-- the **Your thread** progress card, containing the unchanged dilemma, every committed answer exactly once, and a quiet round/status line such as **2 of up to 5 · Connecting the dots**.
+- the progress card, containing the unchanged dilemma, every committed answer exactly once, and a prominent status bar such as **Connecting the dots**.
 
 ### What fades after selection
 
@@ -333,7 +328,7 @@ Green is intentionally avoided as the main selected/result colour because it com
 
 ### At the ending
 
-At the ending, the camera eases back enough to show a compact overview of the selected route where practical; it does not need to force every full-size cell into one viewport. The progress card remains available with **Ready to reflect** and the ordered choices. Both are subdued relative to the result lens, which receives primary focus. Unchosen suggestions are absent.
+At the ending, the camera eases back enough to show a compact overview of the selected route where practical; it does not need to force every full-size cell into one viewport. The progress card remains available with **A reflection is ready** and the ordered choices. Both are subdued relative to the result lens, which receives primary focus. Unchosen suggestions are absent.
 
 ## 7. Complete four-round demo microcopy
 
@@ -341,19 +336,17 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 **Wordmark:** Hmm…
 
-**Invitation:** What are you thinking through?
-
-**Support:** Bring one question. We’ll follow it for a few turns.
+**Invitation:** Clarify your next move
 
 **Example:** For example: “Should I take a role that changes the kind of work I do?”
 
 **Input label:** Your question or dilemma
 
-**Entered text:** Should I accept a team-lead role if it means less hands-on creative work?
+**Entered text:** Would a new camera help me get back into photography?
 
 **Primary action:** Think it through
 
-**Progress card:** Your thread · 0 of up to 5 · Starting out
+**Progress status:** Starting out
 
 ### Initial generation
 
@@ -365,33 +358,33 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 **Possible answers:**
 
-1. I want more influence.
-2. I’m ready to grow.
-3. The recognition matters.
+1. Having a camera ready.
+2. Making time to shoot.
+3. Knowing what to photograph.
 
 **Alternative action:** None quite fit
 
-**Selected:** I want more influence.
+**Selected:** Having a camera ready.
 
-**Progress card:** 1 of up to 5 · Exploring · I want more influence
+**Progress status:** Exploring
 
 **Transition whisper:** So influence matters.
 
 ### Round 2 — surface the cost
 
-**Hmm… asks:** What are you most reluctant to give up?
+**Hmm… asks:** What would make taking photos feel possible this week?
 
 **Possible answers:**
 
-1. Making things myself.
-2. Control of my time.
-3. Being close to the work.
+1. A small outing.
+2. A simple project.
+3. A camera I enjoy using.
 
 **Alternative action:** None quite fit
 
-**Selected:** Making things myself.
+**Selected:** A camera I enjoy using.
 
-**Progress card:** 2 of up to 5 · Connecting the dots · I want more influence · Making things myself
+**Progress status:** Connecting the dots
 
 **Persistent finish action appears:** I think I’ve got it
 
@@ -399,37 +392,37 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 ### Round 3 — test a condition
 
-**Hmm… asks:** If hands-on work were protected, how would the role feel?
+**Hmm… asks:** When you picture your current camera, what gets in the way?
 
 **Possible answers:**
 
-1. Much more appealing.
-2. Still too managerial.
-3. I’m not sure yet.
+1. It feels cumbersome.
+2. It no longer inspires me.
+3. I barely know where it is.
 
 **Alternative action:** None quite fit
 
-**Selected:** Much more appealing.
+**Selected:** It no longer inspires me.
 
-**Progress card:** 3 of up to 5 · Connecting the dots · I want more influence · Making things myself · Much more appealing
+**Progress status:** Connecting the dots
 
 **Transition whisper:** Hmm… then the role itself may not be the problem.
 
 ### Round 4 — make the uncertainty concrete
 
-**Hmm… asks:** What would you need to know before saying yes?
+**Hmm… asks:** What would tell you whether new gear is the missing piece?
 
 **Possible answers:**
 
-1. Whether the role is flexible.
-2. How success is measured.
-3. Who would support me.
+1. Rent one for a weekend.
+2. Borrow one for a walk.
+3. Take mine out first.
 
 **Alternative action:** None quite fit
 
-**Selected:** Whether the role is flexible.
+**Selected:** Rent one for a weekend.
 
-**Progress card:** 4 of up to 5 · A direction is forming · I want more influence · Making things myself · Much more appealing · Whether the role is flexible
+**Progress status:** A direction is forming
 
 ### Reflection lens
 
@@ -437,7 +430,7 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 **Bubble copy:** What is taking shape?
 
-**Action:** Tap the bubble to gather the recap. If a fifth round is prepared, the result includes **Keep exploring** to dismiss it and return to that round.
+**Action:** Tap the bubble to gather the recap. The result always includes **Continue exploring**: it either returns to a prepared fifth round or requests the next two Hmm… lenses directly.
 
 ### Ending generation
 
@@ -447,28 +440,28 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 **Label:** What seems to be emerging
 
-**Direction:** You seem open to the team-lead role—if it can preserve meaningful hands-on work.
+**Direction:** You seem to want a camera that lowers the friction of taking photos and rekindles your curiosity—not simply newer gear.
 
 **What is pulling you there**
 
-- You want broader influence.
-- Making things yourself is an important part of work you value.
-- The role feels more appealing when creative time is protected.
+- Having a camera ready feels like a useful invitation to begin.
+- You want the experience of using it to feel enjoyable again.
+- A short real-world test matters more than comparing specifications.
 
 **What is still unresolved**
 
-- Whether the role is genuinely flexible in practice.
-- How much hands-on time can realistically be protected.
+- Whether a new camera is the real barrier, rather than time or habit.
+- Which size and feel would genuinely make you carry it.
 
 **One next step**
 
-> Ask the hiring manager: “Could we shape this role so I keep one protected day each week for hands-on work?”
+> Borrow or rent one camera for a weekend, then take one unplanned photo walk before deciding whether to buy.
 
 **Actions:** Continue in ChatGPT · Explore one remaining doubt · Start over
 
 **Handoff confirmation:** Context copied. Paste it into ChatGPT when the new tab opens.
 
-**Progress card:** 4 of up to 5 · Ready to reflect · I want more influence · Making things myself · Much more appealing · Whether the role is flexible
+**Progress status:** A reflection is ready
 
 ## 8. Motion specification
 
@@ -503,21 +496,21 @@ Avoid continuous floating answers, liquid simulation, spring chains, particle cl
 ### Desktop and wide windows (about 900 px and above)
 
 - Use a single full-height stage with generous safe margins.
-- Reserve a stable 280–320 px upper-left area for **Your thread**; the semantic canvas must not render beneath it.
+- Reserve a stable 280–320 px upper-left area for the progress card; the semantic canvas must not render beneath it.
 - Render one authored field whose cell centres remain fixed relative to one another throughout the session.
 - Keep the active question close to the visual centre, not necessarily the geometric centre.
 - Place answer suggestions in three reserved slots—upper right, right, and lower right—chosen to preserve reading order and prevent crossing connectors.
 - Let the selected trail extend primarily leftward or in one shallow arc behind the active cluster.
 - Pan forward across the finite field after each selection instead of adding a new cluster or shrinking everything to fit the whole history.
-- Keep global actions at stable edges: wordmark/restart at the top and finish action near the lower edge.
-- On ending, keep **Your thread** and the compact trail in the left third and place the result lens on the right two-thirds.
+- Keep global actions at stable edges: finish action near the lower edge; the Hmm… brand lives in the progress card rather than in a fixed page header.
+- On ending, keep the progress card and compact trail in the left third and place the result lens on the right two-thirds.
 
 ### Narrow windows (below about 900 px)
 
 The experience uses an alternate authored view of the same logical cell slots rather than a squeezed radial diagram.
 
 - A compact horizontal trail strip sits beneath the header and can scroll to the active end automatically.
-- **Your thread** becomes a disclosure below the header: its status row remains visible, its dilemma and answer list can expand, and it opens automatically at the ending.
+- The progress card becomes a disclosure below the header: its prominent status row remains visible, its dilemma and answer list can expand, and it opens automatically at the ending.
 - The active question occupies the full safe width below the strip.
 - The three suggestions stack vertically in a fixed reading order with comfortable touch targets.
 - Connectors become short vertical or gently curved segments and never cross.
@@ -556,7 +549,7 @@ At no width should the layout simply scale the desktop canvas down. Body text re
 - Selecting an answer marks its existing cell, clears rejected content without removing those cells, and focuses an adjacent existing neighbourhood.
 - Upper, middle, and lower selection sequences generate predictably different routes, and the camera follows each route away from the origin.
 - After four rounds, the initial dilemma and complete selected route remain identifiable, but the active content still dominates.
-- After every committed answer, **Your thread** matches the trail exactly and never includes an unchosen suggestion.
+- After every committed answer, the progress card matches the trail exactly and never includes an unchosen suggestion.
 - The status label is derived from session phase and ending signal; no numeric certainty or decision-quality score appears.
 - Live-generation failure preserves the user’s path and continues automatically with mock content.
 - Reduced-motion mode conveys every state change without relying on travel, pulsing, blur, or morphing.

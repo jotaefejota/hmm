@@ -17,7 +17,7 @@ import {
 export type CanvasOccupancy = {
   cellId: string;
   semanticId: string;
-  kind: "dilemma" | "lens" | "question" | "suggestion" | "answer" | "decision" | "fortune" | "finish" | "continue";
+  kind: "dilemma" | "lens" | "preview" | "question" | "suggestion" | "answer" | "decision" | "fortune" | "finish" | "continue";
   status: "active" | "selected" | "previous" | "clearing";
   text: string;
   label: string;
@@ -31,7 +31,15 @@ export type CanvasOccupancy = {
 };
 
 export type CanvasEdge = { id: string; from: CellSlot; to: CellSlot; status: "origin" | "active" | "previous" };
-export type CanvasProjection = { cells: readonly CellSlot[]; occupancy: CanvasOccupancy[]; edges: CanvasEdge[]; focusCellId: string };
+export type CanvasProjection = {
+  cells: readonly CellSlot[];
+  occupancy: CanvasOccupancy[];
+  edges: CanvasEdge[];
+  /** The anchor for local pressure. */
+  focusCellId: string;
+  /** A compact group which should be kept together in the viewport. */
+  frameCellIds?: readonly string[];
+};
 
 type ProjectCanvasInput = {
   dilemma: string;
@@ -42,13 +50,14 @@ type ProjectCanvasInput = {
   selectedAnswer: SelectedAnswer | null;
   focusOverrideCellId?: string | null;
   expandedDecisionStepIndex?: number | null;
+  suppressCurrentDiscovery?: boolean;
 };
 
 const edge = (id: string, fromCellId: string, toCellId: string, status: CanvasEdge["status"]): CanvasEdge =>
   ({ id, from: getCellSlot(fromCellId), to: getCellSlot(toCellId), status });
 
 export function projectCanvas({
-  dilemma, history, currentDiscovery, selectedLensIndex, phase, selectedAnswer, focusOverrideCellId = null, expandedDecisionStepIndex = null,
+  dilemma, history, currentDiscovery, selectedLensIndex, phase, selectedAnswer, focusOverrideCellId = null, expandedDecisionStepIndex = null, suppressCurrentDiscovery = false,
 }: ProjectCanvasInput): CanvasProjection {
   const occupancy: CanvasOccupancy[] = [{
     cellId: DILEMMA_CELL_ID, semanticId: "dilemma", kind: "dilemma", status: "previous",
@@ -68,7 +77,7 @@ export function projectCanvas({
         ? step.options
         : [step.answer, "", ""];
       occupancy.push(
-        { cellId: questionCellId, semanticId: `question-${step.round}`, kind: "question", status: "previous", text: step.question, label: `${step.lensTheme} · ${step.round}`, age, interactive: true, lensIndex: step.lensIndex, stepIndex: index, reviewKind: "question" },
+        { cellId: questionCellId, semanticId: `question-${step.round}`, kind: "question", status: "active", text: step.question, label: step.lensTheme, age, interactive: true, lensIndex: step.lensIndex, stepIndex: index, reviewKind: "question" },
       );
       getSuggestionCellIds(step.round, completed, step.lensIndex).forEach((cellId, optionIndex) => {
         const indexAsChoice = optionIndex as 0 | 1 | 2;
@@ -76,10 +85,10 @@ export function projectCanvas({
         occupancy.push({
           cellId,
           semanticId: isChosen ? `answer-${step.round}` : `revision-option-${step.round}-${optionIndex + 1}`,
-          kind: isChosen ? "answer" : "suggestion",
+          kind: "suggestion",
           status: isChosen ? "selected" : "active",
           text: isChosen ? step.answer : options[indexAsChoice],
-          label: isChosen ? `You chose · ${step.round}` : `Possibility ${optionIndex + 1}`,
+          label: isChosen ? "Your answer" : `Possibility ${optionIndex + 1}`,
           age: age - 1,
           interactive: isChosen || Boolean(options[indexAsChoice]),
           optionIndex: indexAsChoice,
@@ -113,7 +122,7 @@ export function projectCanvas({
     completed.push({ lensIndex: step.lensIndex, choiceIndex: step.choiceIndex });
   });
 
-  const showsDiscovery = currentDiscovery && ["lens-ready", "round-ready", "writing-custom-answer", "answer-selected"].includes(phase);
+  const showsDiscovery = !suppressCurrentDiscovery && currentDiscovery && ["lens-ready", "round-ready", "writing-custom-answer", "answer-selected"].includes(phase);
   if (showsDiscovery && currentDiscovery) {
     const round = history.length + 1;
     const lensCells = getLensCellIds(round, completed);
@@ -138,6 +147,22 @@ export function projectCanvas({
         if (!isClearing) edges.push(edge(`edge-${questionCellId}-${cellId}`, questionCellId, cellId, isSelected ? "previous" : "active"));
       });
     }
+  }
+
+  if (phase === "generating-round" || (phase === "transitioning" && history.length > 0)) {
+    const previewCells = getLensCellIds(history.length + 1, completed);
+    previewCells.forEach((cellId, index) => {
+      occupancy.push({
+        cellId,
+        semanticId: `lens-preview-${history.length + 1}-${index + 1}`,
+        kind: "preview",
+        status: "active",
+        text: "",
+        label: "",
+        age: 0,
+        interactive: false,
+      });
+    });
   }
 
   if (phase === "finish-offered" && history.length > 0) {
@@ -167,13 +192,24 @@ export function projectCanvas({
     }
   }
 
+  const expandedFrameCellIds = expandedDecisionStepIndex === null
+    ? []
+    : occupancy
+      .filter((item) => item.stepIndex === expandedDecisionStepIndex && (item.kind === "question" || item.kind === "suggestion"))
+      .map((item) => item.cellId);
   const nextRound = Math.min(history.length + 1, 5);
   const lensCells = getLensCellIds(nextRound, completed);
   const finishCellId = phase === "finish-offered" && history.length > 0 ? getFinishCellId(history) : null;
   const settlesOnTrailEnd = phase === "generating-summary" || phase === "ending";
-  const derivedFocusCellId = finishCellId ?? (settlesOnTrailEnd ? previousCellId : selectedLensIndex === null ? lensCells[0] : lensCells[selectedLensIndex]);
+  const defaultFocusCellId = finishCellId ?? (settlesOnTrailEnd ? previousCellId : selectedLensIndex === null ? lensCells[0] : lensCells[selectedLensIndex]);
+  const expandedQuestionCellId = expandedFrameCellIds.find((cellId) => occupancy.some((item) => item.cellId === cellId && item.kind === "question"));
+  const derivedFocusCellId = expandedQuestionCellId ?? defaultFocusCellId;
+  const requestedFocusCellId = focusOverrideCellId && CELL_SLOTS.some((slot) => slot.id === focusOverrideCellId)
+    ? focusOverrideCellId
+    : derivedFocusCellId;
   return {
     cells: CELL_SLOTS, occupancy, edges,
-    focusCellId: focusOverrideCellId && CELL_SLOTS.some((slot) => slot.id === focusOverrideCellId) ? focusOverrideCellId : derivedFocusCellId,
+    focusCellId: expandedQuestionCellId ?? requestedFocusCellId,
+    frameCellIds: expandedFrameCellIds.length > 1 ? expandedFrameCellIds : [requestedFocusCellId],
   };
 }

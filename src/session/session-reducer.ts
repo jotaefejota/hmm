@@ -22,7 +22,7 @@ const committedStep = (state: SessionState): ReflectionStep | null => {
 
 const revealPendingDiscovery = (state: SessionState): SessionState => {
   if (!state.pendingDiscovery) return { ...state, transitionFinished: true };
-  const offerFinish = state.history.length > 0 && state.history.length % 4 === 0 && !state.extensionUsed;
+  const offerFinish = state.history.length > 0 && state.history.length % 4 === 0 && !state.extensionUsed && !state.skipNextFinishOffer;
   return {
     ...state,
     phase: offerFinish ? "finish-offered" : "lens-ready",
@@ -31,15 +31,12 @@ const revealPendingDiscovery = (state: SessionState): SessionState => {
     selectedLensIndex: null,
     selectedAnswer: null,
     transitionFinished: false,
+    skipNextFinishOffer: false,
   };
 };
 
 export function sessionReducer(state: SessionState, event: SessionEvent): SessionState {
   switch (event.type) {
-    case "OPEN_ENTRY":
-      return state.phase === "welcome" ? { ...state, phase: "entering" } : state;
-    case "CANCEL_ENTRY":
-      return state.phase === "entering" ? createInitialSessionState(state.activeRequestId) : state;
     case "SUBMIT_DILEMMA": {
       if (state.phase !== "entering") return state;
       const dilemma = event.dilemma.trim();
@@ -66,7 +63,7 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
         ? { ...state, phase: "answer-selected", selectedAnswer: event.answer, pendingDiscovery: null, transitionFinished: false, activeRequestId: event.requestId }
         : state;
     case "REVISE_HISTORY_SELECTION": {
-      if ((state.phase !== "lens-ready" && state.phase !== "round-ready") || event.stepIndex < 0 || event.stepIndex >= state.history.length) return state;
+      if ((state.phase !== "lens-ready" && state.phase !== "round-ready" && state.phase !== "finish-offered") || event.stepIndex < 0 || event.stepIndex >= state.history.length) return state;
       const previous = state.history[event.stepIndex];
       const revised = {
         ...previous,
@@ -88,8 +85,10 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
         summary: null,
         finishReason: reachedCoreLimit ? "max_rounds" : null,
         extensionUsed: false,
-        extensionFocus: null,
         transitionFinished: false,
+        // A revised fourth answer is a fresh route, not an immediate re-offer
+        // of the stale finish lens that led into this edit.
+        skipNextFinishOffer: state.phase === "finish-offered" && !reachedCoreLimit,
         activeRequestId: event.requestId,
       };
     }
@@ -133,13 +132,12 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
         ? { ...state, phase: "generating-summary", pendingDiscovery: null, selectedLensIndex: null, selectedAnswer: null, finishReason: event.reason, activeRequestId: event.requestId }
         : state;
     case "REQUEST_EXTENSION": {
-      if (state.phase !== "ending" || state.history.length >= MAX_CORE_ROUNDS || state.extensionUsed || !state.summary) return state;
-      const focus = event.focus.trim();
-      return focus ? {
+      if (state.phase !== "ending" || state.extensionUsed || !state.summary) return state;
+      return {
         ...state, phase: "generating-round", summary: null, currentDiscovery: null, pendingDiscovery: null,
-        selectedLensIndex: null, selectedAnswer: null, extensionUsed: true, extensionFocus: focus,
+        selectedLensIndex: null, selectedAnswer: null, extensionUsed: true,
         finishReason: null, activeRequestId: event.requestId,
-      } : state;
+      };
     }
     case "SUMMARY_LOADED":
       return state.phase === "generating-summary" && event.requestId === state.activeRequestId

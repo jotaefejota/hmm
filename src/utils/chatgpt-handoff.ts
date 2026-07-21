@@ -32,9 +32,6 @@ export function buildChatGptPrompt(
     "",
     "Possible next step:",
     summary.nextStep,
-    "",
-    "Continue as a curious thinking companion. Ask one useful question at a time,",
-    "help me test assumptions, and do not decide for me.",
   ].join("\n");
 }
 

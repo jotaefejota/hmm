@@ -10,7 +10,7 @@ type ResultLensProps = {
   history: ReflectionStep[];
   canExtend?: boolean;
   canContinue?: boolean;
-  onExploreDoubt?: (focus: string) => void;
+  onContinueExploring?: () => void;
   onRestart: () => void;
   onDismiss?: () => void;
 };
@@ -21,14 +21,13 @@ export function ResultLens({
   history,
   canExtend = false,
   canContinue = false,
-  onExploreDoubt,
+  onContinueExploring,
   onRestart,
   onDismiss,
 }: ResultLensProps) {
   const [confirmingRestart, setConfirmingRestart] = useState(false);
   const [handoffMessage, setHandoffMessage] = useState<string | null>(null);
   const [manualPrompt, setManualPrompt] = useState<string | null>(null);
-  const primaryDoubt = summary.doubts[0];
 
   const continueInChatGpt = async () => {
     const result = await handoffToChatGpt(dilemma, history, summary);
@@ -85,20 +84,17 @@ export function ResultLens({
             <button className="primary-action" type="button" onClick={() => void continueInChatGpt()}>
               Continue in ChatGPT
             </button>
-            {canContinue && onDismiss ? (
-              <button className="quiet-action" type="button" onClick={onDismiss}>
-                Keep exploring
-              </button>
-            ) : null}
-            {canExtend && !canContinue && primaryDoubt && onExploreDoubt ? (
-              <button
-                className="quiet-action"
-                type="button"
-                onClick={() => onExploreDoubt(primaryDoubt)}
-              >
-                Explore one remaining doubt
-              </button>
-            ) : null}
+            <button
+              className="quiet-action"
+              type="button"
+              disabled={!canContinue && !canExtend}
+              onClick={() => {
+                if (canContinue && onDismiss) onDismiss();
+                else if (canExtend) onContinueExploring?.();
+              }}
+            >
+              Continue exploring
+            </button>
             <button className="quiet-action restart-action" type="button" onClick={() => setConfirmingRestart(true)}>
               Start over
             </button>

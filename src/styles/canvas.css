@@ -1,19 +1,9 @@
 .reflection-stage {
-  height: calc(100vh - 5.25rem);
+  height: 100vh;
   min-height: 42rem;
   position: relative;
   overflow: hidden;
   isolation: isolate;
-}
-
-.stage-kicker {
-  margin: 0;
-  position: absolute;
-  left: clamp(1.5rem, 4vw, 4rem);
-  bottom: 1.75rem;
-  z-index: 8;
-  color: var(--ink-soft);
-  font-size: 0.78rem;
 }
 
 .cell-field {
@@ -73,6 +63,25 @@
 .field-cell.is-occupied { z-index: 3; opacity: 1; }
 .field-cell.is-question { border-color: rgba(118, 87, 220, 0.38); background: rgba(238, 232, 255, 0.7); }
 .field-cell.is-lens { z-index: 5; border-color: rgba(118, 87, 220, 0.34); background: rgba(245, 241, 255, 0.78); box-shadow: 0 0 0 0.3rem rgba(118, 87, 220, 0.05), 0 14px 34px rgba(72, 54, 112, 0.1); }
+.field-cell.is-preview {
+  z-index: 4;
+  border-color: rgba(118, 87, 220, 0.58);
+  background: rgba(245, 241, 255, 0.5);
+  box-shadow: 0 0 0 0.18rem rgba(118, 87, 220, 0.07), 0 12px 28px rgba(72, 54, 112, 0.1);
+  animation: preview-cell-medusa 1.8s cubic-bezier(0.36, 0, 0.2, 1) infinite;
+}
+.field-cell.is-preview::before,
+.field-cell.is-preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1.5px solid rgba(141, 106, 232, 0.62);
+  opacity: 0;
+  animation: preview-border-ripple 1.8s ease-out infinite;
+}
+.field-cell.is-preview::after { animation-delay: 0.9s; }
 .field-cell.is-fortune { z-index: 4; border-color: rgba(215, 143, 54, 0.3); background: rgba(250, 232, 201, 0.5); }
 .field-cell.is-finish {
   z-index: 7;
@@ -123,6 +132,18 @@
 }
 .cell-content.content-suggestion { cursor: pointer; }
 .cell-content.content-lens { color: var(--violet-deep); cursor: pointer; font-weight: 700; }
+.lens-preview-content { padding: 0; }
+@keyframes preview-cell-medusa {
+  0%, 100% { scale: 0.93 0.97; border-radius: 48% 52% 50% 50% / 54% 46% 54% 46%; }
+  38% { scale: 1.07 1.025; border-radius: 54% 46% 55% 45% / 46% 56% 44% 54%; }
+  66% { scale: 0.985 1.04; border-radius: 49% 51% 46% 54% / 56% 45% 55% 44%; }
+}
+@keyframes preview-border-ripple {
+  0% { scale: 1.34; opacity: 0; }
+  16% { opacity: 0.52; }
+  72% { opacity: 0.14; }
+  100% { scale: 0.86; opacity: 0; }
+}
 .cell-content.content-lens:hover, .history-cell-action:hover { background: rgba(238, 232, 255, 0.5); }
 .history-cell-action { cursor: pointer; }
 .cell-content.content-suggestion:hover { background: rgba(255,255,255,0.28); }
@@ -143,12 +164,14 @@
 .cell-content.content-question.status-active {
   position: relative;
 }
-.cell-content h1 {
+.cell-content h1,
+.cell-content.content-question.status-active .node-copy-question {
   margin: 0;
   max-width: 100%;
   font-size: clamp(0.72rem, 0.95vw, 0.98rem);
   line-height: 1.12;
   letter-spacing: -0.03em;
+  font-weight: 700;
 }
 .cell-content h1:focus { outline: none; }
 .cell-content .node-label { margin-bottom: 0.25rem; font-size: clamp(0.38rem, 0.45vw, 0.52rem); }
@@ -229,10 +252,12 @@
 .custom-answer-hint { min-height: 2.75rem; position: absolute; right: clamp(1.5rem, 4vw, 4rem); bottom: 5.4rem; z-index: 8; padding: 0.5rem 0.75rem; color: var(--ink-soft); border: 0; background: transparent; cursor: pointer; font-size: 0.78rem; text-decoration: underline; text-decoration-color: rgba(40, 36, 45, 0.24); text-underline-offset: 0.25rem; }
 .other-angle-action { min-height: 2.75rem; position: absolute; right: clamp(1.5rem, 4vw, 4rem); bottom: 8.2rem; z-index: 8; padding: 0.5rem 0.75rem; color: var(--violet-deep); border: 0; background: transparent; cursor: pointer; font-size: 0.78rem; text-decoration: underline; text-underline-offset: 0.25rem; }
 
-.trail-review-card { width: min(21rem, calc(100vw - 2rem)); position: absolute; right: clamp(1.5rem, 4vw, 4rem); top: 1rem; z-index: 12; padding: 1.25rem; border: 1px solid rgba(118, 87, 220, 0.24); border-radius: 1.6rem 2.2rem 1.8rem 1.4rem; background: rgba(255, 253, 248, 0.95); box-shadow: var(--shadow-soft); backdrop-filter: blur(16px); }
-.trail-review-card h2 { margin: 0.2rem 0 0.65rem; color: var(--violet-deep); font-size: 1.05rem; }
-.trail-review-card p { margin: 0.3rem 0 0.8rem; line-height: 1.4; }
-.trail-review-card strong { color: var(--amber-deep); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.trail-review-card { width: 100%; padding: 1.2rem 1.3rem 1.3rem; border: 1px solid rgba(40, 36, 45, 0.12); border-radius: 1.45rem 2.1rem 1.6rem 2.35rem; background: var(--panel); box-shadow: 0 14px 45px rgba(60, 48, 70, 0.08); backdrop-filter: blur(16px); }
+.trail-review-card .node-label { color: var(--ink-soft); font-size: 0.58rem; }
+.trail-review-card h2 { margin: 0.55rem 0 0.45rem; color: var(--violet-deep); font-size: clamp(1rem, 1.18vw, 1.15rem); line-height: 1.25; }
+.trail-review-card p { margin: 0.35rem 0 0.75rem; color: var(--ink-soft); font-size: 0.78rem; line-height: 1.45; }
+.trail-review-card strong { color: var(--amber-deep); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.trail-review-card .quiet-action { min-height: 2.4rem; padding: 0.35rem 0; color: var(--violet-deep); font-size: 0.72rem; text-decoration: underline; text-underline-offset: 0.18rem; }
 
 .fortune-cookie { width: 100%; height: 100%; padding: 0.8rem; display: grid; place-content: center; gap: 0.35rem; color: var(--amber-deep); border: 0; border-radius: inherit; background: rgba(250, 232, 201, 0.52); cursor: pointer; text-align: center; font-size: clamp(0.5rem, 0.64vw, 0.7rem); }
 .fortune-cookie span:first-child { font-size: 1rem; }
@@ -251,15 +276,33 @@
   box-shadow: 0 14px 45px rgba(60, 48, 70, 0.08);
   backdrop-filter: blur(16px);
 }
-.progress-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
-.progress-heading h2 { margin: 0; font-size: 1rem; letter-spacing: -0.02em; }
-.progress-heading > span { color: var(--ink-soft); font-size: 0.7rem; }
-.status-pill { width: fit-content; margin: 0.8rem 0 0.55rem; padding: 0.35rem 0.6rem; display: flex; align-items: center; gap: 0.4rem; color: var(--violet-deep); border-radius: 999px; background: var(--violet-wash); font-size: 0.68rem; font-weight: 700; }
-.status-pill i { width: 0.38rem; height: 0.38rem; background: var(--violet); border-radius: 50%; }
+.progress-stack {
+  width: clamp(16rem, 21vw, 19rem);
+  position: absolute;
+  left: clamp(1.5rem, 4vw, 4rem);
+  top: 1rem;
+  z-index: 12;
+  display: grid;
+  gap: 0.75rem;
+}
+.progress-stack .progress-card {
+  width: 100%;
+  position: relative;
+  left: auto;
+  top: auto;
+}
+.progress-brand { margin: 0 0 1rem; color: var(--ink); font-size: 1.45rem; font-weight: 750; letter-spacing: -0.06em; line-height: 1; }
+.progress-brand span { color: var(--violet); }
+.status-pill { min-height: 3.2rem; margin: 1rem 0 0; padding: 0.7rem 0.8rem; display: flex; align-items: center; gap: 0.55rem; color: var(--violet-deep); border: 1px solid rgba(118, 87, 220, 0.2); border-radius: 1rem; background: linear-gradient(135deg, rgba(238, 232, 255, 0.92), rgba(248, 245, 255, 0.72)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45); font-size: 0.82rem; font-weight: 750; letter-spacing: -0.01em; line-height: 1.2; }
+.status-pill i { width: 0.5rem; height: 0.5rem; flex: 0 0 auto; background: var(--violet); border-radius: 50%; box-shadow: 0 0 0 0.26rem rgba(118, 87, 220, 0.11); }
+.status-pill.is-thinking { background: linear-gradient(110deg, rgba(228, 218, 255, 0.96), rgba(251, 248, 255, 0.96), rgba(228, 218, 255, 0.96)); background-size: 220% 100%; animation: status-thinking 1.8s ease-in-out infinite; }
+.status-pill.is-thinking i { animation: status-pulse 1.2s ease-in-out infinite; }
+@keyframes status-thinking { 0%, 100% { background-position: 100% 50%; } 50% { background-position: 0 50%; } }
+@keyframes status-pulse { 0%, 100% { scale: 0.86; opacity: 0.7; } 50% { scale: 1; opacity: 1; } }
 .progress-toggle {
   display: none;
   min-height: 2.75rem;
-  margin: 0 0 0.6rem;
+  margin: 0.25rem 0 0;
   padding: 0.4rem 0;
   color: var(--ink-soft);
   border: 0;
@@ -271,7 +314,7 @@
   font-size: 0.78rem;
 }
 .progress-label { margin: 0.85rem 0 0.4rem; color: var(--ink-soft); font-size: 0.58rem; }
-.progress-dilemma { margin: 0; font-family: Georgia, serif; font-size: 0.84rem; line-height: 1.42; }
+.progress-dilemma { margin: 0; font-family: Georgia, serif; font-size: clamp(1rem, 1.22vw, 1.2rem); line-height: 1.32; }
 .progress-empty { margin: 0; color: var(--ink-soft); font-size: 0.76rem; font-style: italic; }
 .progress-card ol { max-height: 8.5rem; margin: 0.3rem 0 0; padding-left: 1.1rem; overflow: auto; color: var(--ink-soft); font-size: 0.72rem; line-height: 1.45; }
 .progress-answers { list-style: decimal; }
@@ -347,29 +390,13 @@
 .custom-actions button { min-height: 2.4rem; padding: 0.55rem 0.8rem; font-size: 0.72rem; }
 .input-error { margin: 0.45rem 0 0; color: #9b4a42; font-size: 0.72rem; }
 
-.transition-moment, .clarity-prompt {
+.clarity-prompt {
   position: absolute;
   inset: 0;
   z-index: 7;
   display: grid;
   place-items: center;
 }
-.transition-moment { padding-left: 36%; }
-.transition-cell {
-  width: min(22rem, 60vw);
-  min-height: 15rem;
-  padding: 2.5rem;
-  display: grid;
-  place-content: center;
-  text-align: center;
-  color: var(--violet-deep);
-  border: 1px solid rgba(118, 87, 220, 0.35);
-  border-radius: var(--shape-1);
-  background: rgba(238, 232, 255, 0.86);
-  box-shadow: 0 0 0 0.8rem rgba(118, 87, 220, 0.04), 0 22px 70px rgba(93, 65, 174, 0.16);
-}
-.transition-cell span { width: 2.2rem; height: 2.2rem; margin: 0 auto 1rem; display: grid; place-items: center; color: white; background: var(--violet); border-radius: 50%; }
-.transition-cell p { margin: 0; font-family: Georgia, serif; font-size: 1.2rem; line-height: 1.4; }
 
 .clarity-prompt {
   inset: 50% auto auto 66%;
@@ -391,6 +418,8 @@
 
 @media (max-width: 900px) {
   .reflection-stage { min-height: auto; height: auto; overflow: visible; padding: 0 1rem 3rem; }
+  .progress-stack { width: 100%; position: relative; left: auto; top: auto; margin: 0 0 1rem; }
+  .progress-stack .progress-card { margin: 0; }
   .progress-card { width: 100%; position: relative; left: auto; top: auto; margin: 0 0 1rem; }
   .progress-toggle { display: inline-flex; align-items: center; min-height: 2.75rem; }
   .progress-card:not(.is-open) .progress-details { display: none; }
@@ -422,13 +451,11 @@
   .cell-content.content-decision .node-copy { font-size: 1rem; }
   .custom-answer-hint { position: static; width: 100%; min-height: 2.75rem; padding: 0.75rem; text-align: center; }
   .other-angle-action { position: static; width: 100%; min-height: 2.75rem; padding: 0.75rem; text-align: center; }
-  .trail-review-card { position: fixed; left: 1rem; right: 1rem; top: auto; bottom: 1rem; width: auto; }
+  .trail-review-card { position: relative; width: 100%; }
   .finish-action { position: sticky; right: auto; bottom: 0.75rem; width: 100%; min-height: 2.75rem; margin-top: 1rem; }
   .custom-answer-composer { width: calc(100% - 2rem); position: fixed; right: 1rem; bottom: 1rem; }
   .clarity-prompt { position: relative; inset: auto; translate: none; width: 100%; padding: 2.4rem 1.5rem; }
   .clarity-stage { display: flex; flex-direction: column; }
-  .transition-moment { position: relative; min-height: 25rem; padding-left: 0; }
-  .stage-kicker { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -438,4 +465,5 @@
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+  .status-pill.is-thinking, .status-pill.is-thinking i { animation: none; }
 }

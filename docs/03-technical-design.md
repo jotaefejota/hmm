@@ -2,7 +2,7 @@
 
 > **Contract v2 revision:** A round request returns one discovery payload containing exactly two complete lenses. Each lens includes a short theme, one question, and exactly three answers. Lens switching is local state work and never performs a second request. The stable lattice route is derived from both the chosen lens index and answer index.
 
-> **Revisable settled decisions:** Canonical history retains the question, selected answer, and original three options. The canvas derives either a single enlarged decision occupancy at the answer slot or an expanded question plus three options for one review step. Choosing an unselected historical option is an explicit branch replacement: it truncates later history, replaces the selected answer at that step, then requests the next discovery with only the revised canonical path.
+> **Revisable settled decisions:** Canonical history retains the question, selected answer, and original three options. The canvas derives either a single enlarged decision occupancy at the answer slot or the original violet active-question treatment plus three suggestion-style options for one review step. Choosing an unselected historical option is an explicit branch replacement: it truncates later history, replaces the selected answer at that step, then requests the next discovery with only the revised canonical path.
 
 The validated discovery payload includes one contextual `fortune` string. Projection maps it to a deterministic nearby cell-slot ID; opened state remains component-local and deliberately absent from canonical session history. Mock and live providers return the same field.
 
@@ -109,7 +109,6 @@ No package versions are specified before the project is scaffolded. Install curr
 │   │   │   ├── AnswerCluster.tsx
 │   │   │   ├── CustomAnswerComposer.tsx
 │   │   │   ├── ProgressCard.tsx
-│   │   │   ├── GenerationStatus.tsx
 │   │   │   └── SessionActions.tsx
 │   │   ├── ending/
 │   │   │   └── ResultLens.tsx
@@ -155,8 +154,8 @@ This is an intended boundary map, not a requirement to create an empty file for 
 | Component | Responsibility | Must not own |
 | --- | --- | --- |
 | `App` | Creates the provider and session context; selects the current top-level experience | Cell coordinates or API details |
-| `AppShell` | Stable page frame, wordmark, global controls, live announcements | Session transitions |
-| `WelcomeSeed` | Welcome and dilemma entry states | Network calls |
+| `AppShell` | Stable page frame and live announcements | Session transitions |
+| `WelcomeSeed` | Initial dilemma-entry state | Network calls |
 | `ThoughtCanvas` | Composes the stable field, connections, semantic occupancy, and active answer controls | Canonical session history |
 | `CellField` | Renders the complete authored set of stable cell slots and applies stage focus | Semantic history or provider calls |
 | `Cell` | Owns one stable slot identity, geometry, shape, and state-independent membrane | Semantic content identity or its own occupancy |
@@ -165,8 +164,8 @@ This is an intended boundary map, not a requirement to create an empty file for 
 | `FieldAtmosphere` | Adds restrained colour/blur behind the same cell field | A second decorative cell grid or continuously simulated motion |
 | `AnswerCluster` | Renders exactly three suggestions and the separate custom-answer action | Generating new content |
 | `CustomAnswerComposer` | Captures and validates the 160-character custom answer | A fourth suggested answer |
-| `ProgressCard` | Displays the original dilemma, committed answers, round count, and derived qualitative status | Duplicate history state, AI confidence, or graph navigation |
-| `GenerationStatus` | Shows initial/next/summary loading state | Fake percentages |
+| `ProgressCard` | Displays the original dilemma, committed answers, and derived qualitative status | Duplicate history state, AI confidence, or graph navigation |
+| Progress-card status banner | Shows initial, next-round, and summary loading state while the persistent canvas remains visible | Fake percentages or a separate loading page |
 | `CellField` reflection lens occupancy | Offers the explicit recap action beside the latest answer | Automatically generating or deciding that clarity exists |
 | `ResultLens` | Displays the four-part summary and handoff actions | Reconstructing the summary from canvas nodes |
 | `RecoveryNotice` | Explains live failure, fallback, and retry without losing context | Raw provider error details |
@@ -180,7 +179,6 @@ Use a discriminated phase plus small semantic data. Do not store rendered nodes,
 
 ```ts
 type SessionPhase =
-  | "welcome"
   | "entering"
   | "generating-round"
   | "lens-ready"
@@ -228,14 +226,23 @@ type SessionState = {
 - Derive round number as `history.length + 1`; do not trust a visual component to count rounds.
 - After every fourth committed answer, expose one derived `finish` occupancy in a stable touching neighbour of the latest answer. It is a sea-glass shell with roughly five standard-cell areas and uses the same geometry and local-pressure pass as any other occupied node; do not render an SVG overlay or reserve a four-cell footprint. A normal-sized derived `continue` bubble starts in its immediate authored neighbour; the same local collision pass settles the two membranes together after the large bubble’s final geometry is known. Neither is an automatic summary request. Keep the prepared discovery in state so both the bubble and recap dismissal can restore its two lenses.
 - After a fifth core answer, expose the same final reflection lens rather than generating a summary automatically; no next discovery exists in that case.
-- `extensionUsed` permits exactly one post-ending question only while fewer than five answers are committed; after its answer, regenerate the summary immediately. The action is absent and the reducer rejects it once the five-round ceiling is reached.
+- `extensionUsed` permits the current direct post-ending continuation. The result lens always displays **Continue exploring**: it returns to a prepared core round when present, otherwise hides the result and requests round six in `extension` mode with no user-authored focus. No temporary extension cell is projected into the canvas.
+- Do not raise the continuation limit or introduce an open-ended route without expanding the field, route invariants, mock fixtures, and provider contract together.
 - Restart creates the initial state in one reducer event.
 
 `useReducer` is sufficient because this state is local, synchronous except for two service methods, and never shared between browser tabs or persisted.
 
 The progress card adds no canonical state. A selector derives its items and status from `dilemma`, `history`, `phase`, `currentRound.suggestEnding`, and `extensionUsed`. Tests must prove that it never includes `selectedAnswer` before commitment or an unchosen suggestion.
 
-Trail review is local presentation state only: activating a committed answer in the card sets a temporary `focusOverrideCellId` resolved from history + `choiceIndex` via the same occupancy helpers. That ID is also the settled-decision slot, so panel activation focuses the merged node without changing its occupancy. Only a direct canvas activation sets the separate unfolded-decision presentation state. Clearing the review override (next selection, phase change, or **Back to now**) restores the derived active focus. This is not stored in the session reducer and must not change history.
+Trail review is local presentation state only: activating a committed answer in the card sets a temporary `focusOverrideCellId` resolved from history + `choiceIndex` via the same occupancy helpers. That ID is also the settled-decision slot, so panel activation focuses the merged node without changing its occupancy. Only a direct canvas activation sets the separate unfolded-decision presentation state. The review key is derived from canonical history only, so it survives harmless generation and transition phase changes; a committed selection, history revision, or **Back to now** clears it. This is not stored in the session reducer and must not change history.
+
+When `lens-ready` exposes two lenses, their midpoint is the default camera position. `focusOverrideCellId` takes precedence over that midpoint so a progress-card anchor always moves to the requested historical node rather than appearing to do nothing.
+
+When an unfolded historical decision overlaps an open live round, `ThoughtCanvas` passes a presentation-only `suppressCurrentDiscovery` flag to projection. The current full question, its three suggestions, contextual fortune, and round actions are omitted from the canvas while the unfolded pair is active; no reducer phase, discovery payload, or selected lens changes. Re-settling the pair removes that flag and restores the exact live round.
+
+`REVISE_HISTORY_SELECTION` is valid in `finish-offered` as well as the normal live phases. It truncates history, clears the prepared discovery and finish offer, then requests the next discovery from the revised path. A one-shot reducer flag suppresses the automatic fourth-round finish offer when that replacement route first becomes ready, so the green lens does not reappear before the user can continue.
+
+The client’s rapid-selection guard must reset in every interactive resting phase, including `finish-offered`; otherwise a fourth-round selection could leave the green finish lens visible but unable to dispatch a historical revision.
 
 ## 5. Representation of cells, occupancy, and connections
 
@@ -306,7 +313,7 @@ Use four authored irregular `border-radius` presets assigned to stable cell IDs.
 
 For windows at least 900 px wide:
 
-- reserve a 280–320 px upper-left rectangle for the progress card and keep semantic nodes outside it;
+- reserve a 280–320 px upper-left panel column for the progress card and its optional review card beneath it; keep semantic nodes outside it;
 - render the full packed soup of empty cells so neighbours appear to touch; only occupied cells carry readable meaning;
 - place the active question near the desktop focal area while its world position advances along the packed route;
 - place the three suggestions in a touching upper or lower fan selected by the opened lens position;
@@ -458,7 +465,7 @@ This protects the key from appearing in the bundle or browser requests. It does 
 - A user-triggered **Try live again** starts one fresh request with a new request ID.
 - Aborted and stale requests never change state.
 - A failed operation is retained outside the visual components as a small typed descriptor: round versus summary, validated request payload, and the success event it must produce. The reducer retains the pre-error phase so recovery can restore the same semantic point without reconstructing it from the UI.
-- **Try again** replays that descriptor through the configured provider. **Continue with prepared questions** replays it through `MockReflectionProvider`. Both allocate a new request ID, and neither edits committed history.
+- **Try again** replays that descriptor through the configured provider with a new request ID and never edits committed history. The resilient provider remains responsible for safe automatic mock fallback; the UI does not expose a second, confusing manual fallback route.
 - Development builds may inject timeout or refusal failures through documented query parameters. Production builds ignore them.
 
 ### Failure mapping
@@ -466,7 +473,7 @@ This protects the key from appearing in the bundle or browser requests. It does 
 | Failure | App behavior | Retry |
 | --- | --- | --- |
 | No API key / endpoint unavailable | Automatic mock response; small persistent notice | Manual live retry only if configuration changes |
-| Network error or timeout | Automatic mock response in `auto`; in-context error cell in diagnostic `live` mode | **Try again** or **Continue with prepared questions** |
+| Network error or timeout | Automatic mock response in `auto`; compact in-context recovery panel in diagnostic `live` mode | **Try again** or **Start over** |
 | Non-2xx provider response | Map to public code; automatic mock | User-triggered retry |
 | Model refusal | Show the appropriate static boundary message; do not feed sensitive text into generic mock reflection | No automatic retry |
 | JSON/schema invalid | Reject immediately; use mock; log server-side diagnostic | User-triggered retry during development only |
@@ -490,8 +497,8 @@ The server may log a request ID, error code, duration, and model name. It should
 | Physical selection | A small press-and-expand transform, not collision or mass simulation |
 | Camera movement | Translate the fixed world so the active question stays near the focal point; optional one-shot review focus from the progress card; no free pan/zoom or physics camera |
 | Trail compression | Reduce content emphasis from semantic age while keeping stable slot geometry |
-| Clarity detection | Strict model boolean after round 4 plus a hard round-5 stop, not a confidence score |
-| Sense of progress | Client-derived round count and named status in a stable card, not an AI-generated certainty score |
+| Clarity detection | Strict model boolean after round 4 plus an explicit final reflection lens after round 5, not a confidence score |
+| Sense of progress | Named session status in a stable card, not an AI-generated certainty or visible score |
 | Demo intelligence | One curated fixture and one generic fixture through the production data interface |
 | ChatGPT handoff | Build text locally, copy it, and open a new tab; no cross-product session transfer |
 

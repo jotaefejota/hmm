@@ -8,9 +8,9 @@ Hmm… is a curious companion for thinking through a bounded decision. It offers
 
 - a complete four-to-five-round reflection session;
 - one persistent cellular field whose camera follows choice-dependent routes;
-- a stable **Your thread** card containing the original dilemma and committed answers;
+- a stable **Progress** card containing the original dilemma and committed answers;
 - two question lenses per round, direct trail-bubble review, and contextual fortune-cookie reframes;
-- early finishing, a structured summary, one optional remaining-doubt extension, and restart;
+- early finishing, a structured summary, direct continuation into more Hmm… lenses, and restart;
 - deterministic mock content, live OpenAI generation, and automatic fallback;
 - a local, deterministic **Continue in ChatGPT** handoff;
 - recoverable timeout and refusal states that preserve session context.
@@ -26,7 +26,7 @@ npm install
 VITE_CONTENT_MODE=mock npm run dev
 ```
 
-Open [http://127.0.0.1:5173/](http://127.0.0.1:5173/). Forced mock mode completes the curated team-lead journey without a network request or API key.
+Open [http://127.0.0.1:5173/](http://127.0.0.1:5173/). Forced mock mode completes the curated camera journey without a network request or API key.
 
 ### Run with live generation
 
@@ -52,10 +52,9 @@ npm run dev:full
 
 ## Demo path
 
-1. Select **Start with a thought**.
-2. Keep the prefilled team-lead dilemma and select **Think it through**.
+1. Start with the prefilled camera dilemma and select **Think it through**.
 3. Choose one of the three bubbles in each of four rounds; different positions create different routes.
-4. Select **See what’s emerging**.
+4. Select **What is taking shape?**.
 5. Show the direction, reasons, remaining doubts, and next step.
 6. Demonstrate **Continue in ChatGPT** or **Start over**.
 

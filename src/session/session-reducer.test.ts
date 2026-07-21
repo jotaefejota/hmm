@@ -5,8 +5,7 @@ import { initialSessionState, type SessionState } from "./session-types";
 
 const discoveries = mockDataset.scenarios[0].discoveries;
 const ready = (): SessionState => {
-  let state = sessionReducer(initialSessionState, { type: "OPEN_ENTRY" });
-  state = sessionReducer(state, { type: "SUBMIT_DILEMMA", dilemma: "A dilemma", requestId: 1 });
+  const state = sessionReducer(initialSessionState, { type: "SUBMIT_DILEMMA", dilemma: "A dilemma", requestId: 1 });
   return sessionReducer(state, { type: "DISCOVERY_LOADED", discovery: discoveries[0], requestId: 1 });
 };
 
@@ -57,9 +56,33 @@ describe("session reducer discovery flow", () => {
     expect(revised.history[0]).toMatchObject({ answer: discoveries[0].lenses[0].answers[2], choiceIndex: 2 });
   });
 
+  it("revises from the green finish offer, clears it, and resumes the new route", () => {
+    const history = Array.from({ length: 4 }, (_, index) => ({
+      round: index + 1,
+      lensTheme: discoveries[index].lenses[0].theme,
+      lensIndex: 0 as const,
+      question: discoveries[index].lenses[0].question,
+      answer: discoveries[index].lenses[0].answers[0],
+      answerSource: "suggested" as const,
+      choiceIndex: 0 as const,
+      options: discoveries[index].lenses[0].answers,
+    }));
+    const offered = { ...ready(), phase: "finish-offered" as const, history, currentDiscovery: discoveries[4], activeRequestId: 7 };
+    let revised = sessionReducer(offered, {
+      type: "REVISE_HISTORY_SELECTION", stepIndex: 1,
+      answer: { text: discoveries[1].lenses[0].answers[2], source: "suggested", choiceIndex: 2 }, requestId: 8,
+    });
+    expect(revised).toMatchObject({ phase: "transitioning", currentDiscovery: null, pendingDiscovery: null, skipNextFinishOffer: true });
+    expect(revised.history).toHaveLength(2);
+
+    revised = sessionReducer(revised, { type: "NEXT_DISCOVERY_LOADED", discovery: discoveries[2], requestId: 8 });
+    revised = sessionReducer(revised, { type: "TRANSITION_COMPLETE" });
+    expect(revised).toMatchObject({ phase: "lens-ready", currentDiscovery: discoveries[2], skipNextFinishOffer: false });
+  });
+
   it("restart clears lens selection and invalidates the request", () => {
     const restarted = sessionReducer(sessionReducer(ready(), { type: "OPEN_LENS", lensIndex: 0 }), { type: "RESTART", requestId: 9 });
-    expect(restarted).toMatchObject({ phase: "welcome", history: [], currentDiscovery: null, selectedLensIndex: null, activeRequestId: 9 });
+    expect(restarted).toMatchObject({ phase: "entering", history: [], currentDiscovery: null, selectedLensIndex: null, activeRequestId: 9 });
   });
 
   it("offers a finish lens after four answers and preserves the prepared next discovery", () => {

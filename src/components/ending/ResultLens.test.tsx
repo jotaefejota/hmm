@@ -7,14 +7,14 @@ describe("ResultLens", () => {
   it("renders every summary section and confirms restart", () => {
     const summary = mockDataset.scenarios[0].summary;
     const onRestart = vi.fn();
-    const onExploreDoubt = vi.fn();
+    const onContinueExploring = vi.fn();
     render(
       <ResultLens
         summary={summary}
         dilemma={mockDataset.scenarios[0].dilemma}
         history={[]}
         canExtend
-        onExploreDoubt={onExploreDoubt}
+        onContinueExploring={onContinueExploring}
         onRestart={onRestart}
       />,
     );
@@ -27,8 +27,8 @@ describe("ResultLens", () => {
     for (const reason of summary.reasons) expect(screen.getByText(reason)).toBeInTheDocument();
     for (const doubt of summary.doubts) expect(screen.getByText(doubt)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Explore one remaining doubt" }));
-    expect(onExploreDoubt).toHaveBeenCalledWith(summary.doubts[0]);
+    fireEvent.click(screen.getByRole("button", { name: "Continue exploring" }));
+    expect(onContinueExploring).toHaveBeenCalledOnce();
 
     fireEvent.click(screen.getByRole("button", { name: "Start over" }));
     expect(onRestart).not.toHaveBeenCalled();
@@ -36,17 +36,32 @@ describe("ResultLens", () => {
     expect(onRestart).toHaveBeenCalledOnce();
   });
 
-  it("hides the extension action after it has been used", () => {
+  it("keeps the continuation action visible but unavailable after the extension has been used", () => {
     render(
       <ResultLens
         summary={mockDataset.scenarios[0].summary}
         dilemma={mockDataset.scenarios[0].dilemma}
         history={[]}
         canExtend={false}
-        onExploreDoubt={vi.fn()}
         onRestart={vi.fn()}
       />,
     );
-    expect(screen.queryByRole("button", { name: "Explore one remaining doubt" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Continue exploring" })).toBeDisabled();
+  });
+
+  it("uses the same action to return to a prepared core round", () => {
+    const onDismiss = vi.fn();
+    render(
+      <ResultLens
+        summary={mockDataset.scenarios[0].summary}
+        dilemma={mockDataset.scenarios[0].dilemma}
+        history={[]}
+        canContinue
+        onDismiss={onDismiss}
+        onRestart={vi.fn()}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Continue exploring" }));
+    expect(onDismiss).toHaveBeenCalledOnce();
   });
 });

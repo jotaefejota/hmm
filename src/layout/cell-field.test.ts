@@ -46,6 +46,17 @@ describe("cell-field packed discovery world", () => {
     }
   });
 
+  it("keeps one post-summary extension inside the authored field", () => {
+    const upper = Array.from({ length: 6 }, (_, index) => ({ round: index + 1, lensIndex: 0 as const, choiceIndex: 0 as const }));
+    const lower = Array.from({ length: 6 }, (_, index) => ({ round: index + 1, lensIndex: 1 as const, choiceIndex: 2 as const }));
+    for (const route of [upper, lower]) {
+      const prior = route.slice(0, 5) as RouteStep[];
+      getLensCellIds(6, prior).forEach((id) => expect(() => getCellSlot(id)).not.toThrow());
+      expect(() => getCellSlot(getQuestionCellId(6, prior, route[5].lensIndex))).not.toThrow();
+      getSuggestionCellIds(6, prior, route[5].lensIndex).forEach((id) => expect(() => getCellSlot(id)).not.toThrow());
+    }
+  });
+
   it("derives different routes from lens and answer choices", () => {
     expect(getQuestionCellId(1, [], 0)).not.toBe(getQuestionCellId(1, [], 1));
     expect(getQuestionCellId(2, [{ lensIndex: 0, choiceIndex: 0 }], 0))

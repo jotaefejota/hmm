@@ -91,7 +91,7 @@ Each set of three answers should be distinct, plausible, and written in the firs
 
 ### 4.1 Arrive and begin
 
-The landing state contains one clear invitation: **“What are you thinking through?”** The user enters a question or short description and starts the session. A single example prompt can reduce blank-page anxiety.
+The landing state contains one clear invitation: **“Clarify your next move.”** The user enters a question or short description and starts the session. A single example prompt can reduce blank-page anxiety.
 
 The product sets the expectation that this is a brief reflection, not an answer machine.
 
@@ -105,7 +105,7 @@ The question cell has the strongest hierarchy. Answer cells are visibly smaller 
 
 The user selects one answer. Its cell becomes active, grows slightly, receives a lasting user mark, and determines whether the route bends upward, continues forward, or bends downward. The next question occupies the following existing cell in that direction. The two rejected answers clear from their cells, which return to the quiet substrate. The camera follows the new neighbourhood instead of pulling the route back into the original viewport.
 
-A stable progress card also keeps the original dilemma, the selected answers in order, the current round count, and a qualitative session status visible. It is a readable index of the visual path, not a second conversation or navigation tree.
+A stable progress card also keeps the original dilemma, the selected answers in order, and a qualitative session status visible. It is a readable index of the visual path, not a second conversation or navigation tree.
 
 This repeats for **at least 3 and at most 5 answered questions**:
 
@@ -117,7 +117,7 @@ Only the active question and its three answers are interactive. The previous pat
 
 ### 4.4 Choose to finish
 
-From the second answered question onward, the user can select **“I think I’ve got it.”** After the fourth answer, Hmm… may suggest that a direction is forming. After the fifth answer, the session moves to the ending automatically rather than continuing indefinitely.
+From the second answered question onward, the user can select **“I think I’ve got it.”** After the fourth answer, Hmm… may suggest that a direction is forming. The ending is always a suggestion, not a terminal verdict: **Continue exploring** asks Hmm… for the next two lenses using the same discovery rhythm as the main journey.
 
 The app may propose ending based on the generated response, but it must never claim certainty or hide the user-controlled finish action.
 
@@ -129,7 +129,7 @@ The network settles into the background and a concise ending appears with:
 2. **What is pulling you there** — 2–3 reasons grounded in selected answers;
 3. **What is still unresolved** — 1–2 doubts, assumptions, or missing facts;
 4. **One next step** — a concrete, proportionate action, preferably reversible;
-5. **Continue exploring** — return to reflection if the user is not done.
+5. **Continue exploring** — return to a prepared reflection round when one exists, or ask Hmm… for the next two lenses directly.
 
 The summary uses language such as “You seem to be leaning toward…” and “Based on what you chose…” It must not convert the reflection into a command.
 
@@ -139,7 +139,7 @@ The progress card remains alongside the result so the user can compare the emerg
 
 The ending also offers **“Continue in ChatGPT.”** For the MVP this action:
 
-1. prepares a plain-text prompt containing the original question, selected path, summary, unresolved doubts, and a request to continue as a curious thinking companion;
+1. prepares a plain-text prompt containing the original question, selected path, summary, unresolved doubts, and next step;
 2. copies that prompt to the clipboard;
 3. opens ChatGPT in a new tab;
 4. clearly tells the user to paste the copied context.
@@ -168,12 +168,12 @@ The MVP is a single-user, responsive web experience designed for a reliable 2–
 - a separate “None quite fit” action for entering one brief custom answer;
 - selection animation that promotes the chosen answer and reveals the next question;
 - a persistent, non-interactive trail made from marked cells and selected-path connectors;
-- a persistent progress card showing the original dilemma, ordered selected answers, round count, and qualitative session status;
+- a persistent progress card showing the original dilemma, ordered selected answers, and qualitative session status;
 - a standard 3–5 answered-question journey, with an explicit user-controlled finish available after round 2;
 - a user-controlled “I think I’ve got it” finish action from round 2;
-- an automatic finish after round 5;
+- a final reflection lens after round 5, opened only when the user taps it;
 - a final reflection containing an emerging direction, reasons, remaining doubts, and one next step;
-- “Continue exploring,” “Start over,” and “Continue in ChatGPT” actions;
+- “Continue exploring” on every normal final reflection, plus “Start over” and “Continue in ChatGPT” actions;
 - clipboard generation for the ChatGPT continuation prompt;
 - loading, generation-error, and clipboard-success feedback;
 - one polished, deterministic mock journey for the recommended demo scenario;
@@ -256,29 +256,29 @@ For each round, generation returns one concise question, exactly three concise a
 
 ### Scenario
 
-**“Should I accept a team-lead role if it means less hands-on creative work?”**
+**“Would a new camera help me get back into photography?”**
 
-This scenario works well because it is relatable, has no universally correct answer, contains a clear trade-off, and can reveal a satisfying shift from a binary question to a more actionable condition.
+This scenario works well because it is relatable, has no universally correct answer, and can reveal whether the missing ingredient is new gear, a lower-friction habit, or a renewed creative ritual.
 
 ### Curated demo path
 
 The exact wording may evolve, but the deterministic demo should support this narrative:
 
-1. **Question:** “What makes the role appealing right now?”
-   - **Selected answer:** “I want more influence.”
-2. **Question:** “What are you most reluctant to give up?”
-   - **Selected answer:** “Making things myself.”
-3. **Question:** “Would leadership still appeal if you protected some creative time?”
-   - **Selected answer:** “Yes, that changes it.”
-4. **Question:** “What would you need to know before saying yes?”
-   - **Selected answer:** “Whether the role is flexible.”
+1. **Question:** “What feels furthest away from photography right now?”
+   - **Selected answer:** “Having a camera ready.”
+2. **Question:** “What would make taking photos feel possible this week?”
+   - **Selected answer:** “A camera I enjoy using.”
+3. **Question:** “When you picture your current camera, what gets in the way?”
+   - **Selected answer:** “It no longer inspires me.”
+4. **Question:** “What would tell you whether new gear is the missing piece?”
+   - **Selected answer:** “Rent one for a weekend.”
 
 ### Expected ending
 
-- **Emerging direction:** The user appears open to the role, but not to a version that removes hands-on work entirely.
-- **Reasons:** They want greater influence and still value making things directly.
-- **Remaining doubt:** The actual role design and flexibility are unknown.
-- **Next step:** Ask the hiring manager whether one day per week can remain protected for hands-on work before deciding.
+- **Emerging direction:** The user appears to want a camera that lowers friction and renews curiosity, rather than simply newer gear.
+- **Reasons:** They want a camera ready to hand, enjoyable to use, and worth testing in the real world.
+- **Remaining doubt:** Whether the camera is the real barrier, rather than time or habit.
+- **Next step:** Borrow or rent one camera for a weekend and take an unplanned photo walk before buying.
 
 ### Suggested video beat
 
@@ -292,10 +292,10 @@ The MVP is successful when all of the following can be demonstrated in a clean b
 
 - A first-time viewer can identify the active question, the three possible answers, and the previously selected path without explanation.
 - A user can start from a blank landing state and reach a final reflection in no more than 5 answered questions.
-- “I think I’ve got it” is available after the second answer, and the session always ends after the fifth.
+- “I think I’ve got it” is available after the second answer, and a reflection can be resumed through another pair of Hmm… lenses.
 - At no point is more than one question or more than three generated answer suggestions presented as active; the separate custom-answer action does not create a fourth suggestion.
 - A user can choose “None quite fit,” enter a brief answer in their own words, and continue through the same selected-answer transition.
-- The progress card always shows the exact original dilemma, every committed answer once and in order, and a round count consistent with the visible trail.
+- The progress card always shows the exact original dilemma and every committed answer once and in order.
 - The recommended demo path can be completed in 90 seconds or less by a presenter.
 
 ### Output quality
@@ -340,7 +340,8 @@ None of these decisions blocks initial design or implementation; the defaults be
 | Live AI provider/model | **Confirmed for the deployed prototype:** use `gpt-4.1-mini`, configurable through the server-only `OPENAI_MODEL` variable. | Revisit only if event latency, access, or cost makes the live path unreliable; mock mode remains the demo-safe default. |
 | Hosting target | **Confirmed:** one Vercel project hosts the Vite client and `/api/reflect` function at [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). | Custom domain and longer-term ownership are post-hackathon decisions. |
 | Custom-answer length | P0 allows a custom answer of up to 160 characters through a separate “None quite fit” action. | The limit should be validated with real prompts so it stays expressive without breaking node layouts. |
-| Automatic ending logic | Offer a soft ending after round 4 and force the summary after round 5. | Live testing may show that 3 or 4 rounds feels better. |
+| Automatic ending logic | Offer a soft ending after round 4 and a final reflection lens after round 5; the summary opens only on tap. | Live testing may show that 3 or 4 rounds feels better. |
+| Continuation length | Continue exploring now requests the next two Hmm… lenses directly, with no user-authored extension bubble. | The longer-term maximum route length still needs confirmation before raising the authored field and fixture limits. |
 | Sensitive-topic handling | Display a brief boundary message and avoid guidance for crisis or professional-advice scenarios. | Exact wording and whether to block or redirect such sessions require a product decision. |
 | ChatGPT handoff | Copy context, open ChatGPT in a new tab, and instruct the user to paste. | Browser behaviour and the preferred ChatGPT destination URL should be verified. |
 | Data posture | Keep the session in memory and send only required context for generation; do not persist it. | The prototype is publicly reachable, so a user-facing privacy statement remains necessary before promoting it beyond the hackathon demo. |

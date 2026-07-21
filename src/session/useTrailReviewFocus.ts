@@ -5,7 +5,10 @@ import type { SessionState } from "./session-types";
 export type TrailReview = { stepIndex: number; focusKind: "question" | "answer"; cellId: string };
 
 const sessionKeyFor = (state: SessionState) =>
-  `${state.phase}|${state.history.length}|${state.activeRequestId}|${state.currentDiscovery?.lenses[0]?.question ?? ""}`;
+  // A review anchor is derived solely from the canonical trail. It must remain
+  // stable while the canvas transitions, unfolds another decision, or loads
+  // the next discovery; it becomes invalid only when the actual trail changes.
+  state.history.map((step) => `${step.round}:${step.lensIndex}:${step.choiceIndex}:${step.answer}`).join("|");
 
 export function useTrailReviewFocus(state: SessionState) {
   const sessionKey = sessionKeyFor(state);

@@ -1,6 +1,6 @@
 import type { RoundRequest, SummaryRequest } from "../../shared/ai-contract";
 import { discoveryPayloadSchema, summaryPayloadSchema } from "../../shared/ai-contract";
-import { mockDataset, TEAM_LEAD_DILEMMA } from "../content/mock-dataset";
+import { CAMERA_DILEMMA, mockDataset } from "../content/mock-dataset";
 import type { ContentResult, ReflectionProvider } from "./reflection-provider";
 
 const findScenario = (dilemma: string) =>
@@ -48,4 +48,4 @@ export class MockReflectionProvider implements ReflectionProvider {
 }
 
 export const reflectionProvider: ReflectionProvider = new MockReflectionProvider();
-export { TEAM_LEAD_DILEMMA };
+export { CAMERA_DILEMMA };

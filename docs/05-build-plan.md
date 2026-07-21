@@ -85,7 +85,7 @@ P1 work may use only remaining buffer after the entire P0 journey passes. P2 wor
 
 **Observable outcome**
 
-Opening the development URL shows a warm pearl canvas with the **Hmm…** wordmark and a small “Preparing the thought space…” placeholder. The repository has one lockfile and all standard commands work.
+Opening the development URL shows a warm pearl canvas and a small “Preparing the thought space…” placeholder. During a session, the **Hmm…** wordmark appears in the progress card rather than in a fixed page header. The repository has one lockfile and all standard commands work.
 
 **Files likely to be affected**
 
@@ -125,7 +125,7 @@ Opening the development URL shows a warm pearl canvas with the **Hmm…** wordma
 
 **Observable outcome**
 
-The app can load the curated `team-lead-demo` round and summary data through a `MockReflectionProvider`; fixture tests prove there are exactly three answers per round.
+The app can load the curated `camera-demo` round and summary data through a `MockReflectionProvider`; fixture tests prove there are exactly three answers per round.
 
 **Files likely to be affected**
 
@@ -160,19 +160,20 @@ The app can load the curated `team-lead-demo` round and summary data through a `
 
 ## 2. Initial screen
 
-### Task 2.1 — P0: Welcome, dilemma entry, and first mock round ✅
+### Task 2.1 — P0: Direct dilemma entry and first mock round ✅
 
 **Implementation status:** Complete — 2026-07-20
 
 **Observable outcome**
 
-A user opens the seed, enters the recommended dilemma, presses **Think it through**, sees the short generation state, and arrives at the first mock question.
+A user lands directly in the seed’s text area, enters the recommended dilemma, presses **Think it through**, and moves straight into the persistent grid. The original thought becomes the amber seed, the progress card carries the brief generation state, and two textless lens cells warm before the first mock lenses arrive.
 
 **Files likely to be affected**
 
 - `src/app/AppShell.tsx`
 - `src/components/session/WelcomeSeed.tsx`
-- `src/components/session/GenerationStatus.tsx`
+- `src/components/session/ProgressCard.tsx`
+- `src/components/canvas/ThoughtCanvas.tsx`
 - `src/session/session-types.ts`, `src/session/session-reducer.ts`
 - welcome/session tests and relevant styles
 
@@ -182,7 +183,7 @@ A user opens the seed, enters the recommended dilemma, presses **Think it throug
 
 **Acceptance criteria**
 
-- Welcome and entry copy matches `02-experience-design.md`.
+- Landing and entry copy matches `02-experience-design.md`.
 - Empty or whitespace-only dilemmas cannot submit.
 - The input accepts at most 400 characters and preserves the submitted wording.
 - Submit is possible by button and documented keyboard behavior.
@@ -192,16 +193,16 @@ A user opens the seed, enters the recommended dilemma, presses **Think it throug
 
 **Checks Codex must run**
 
-- Reducer tests for welcome → entering → generating → round-ready.
+- Reducer tests for entering → generating → round-ready.
 - Input validation and keyboard interaction tests.
 - `npm run check`
 - Manual mock-mode pass with empty, short, and near-limit inputs.
 
-### Task 2.2 — P1: Seed-opening continuity
+### Task 2.2 — P1: Entry-surface continuity
 
 **Observable outcome**
 
-The welcome seed expands into the input surface rather than swapping abruptly.
+The landing seed holds the input surface without an intervening screen.
 
 **Files likely to be affected**
 
@@ -233,7 +234,7 @@ The welcome seed expands into the input surface rather than swapping abruptly.
 
 **Observable outcome**
 
-The submitted dilemma, first Hmm… question, exactly three suggestions, their relationships, and a stable **Your thread** progress card appear as a clear desktop composition.
+The submitted dilemma, first Hmm… question, exactly three suggestions, their relationships, and a stable progress card appear as a clear desktop composition.
 
 **Files likely to be affected**
 
@@ -258,7 +259,7 @@ The submitted dilemma, first Hmm… question, exactly three suggestions, their r
 - SVG connections are behind nodes and do not cross.
 - Colour is reinforced by label, scale, border, and/or marker.
 - Decorative cells are textless, non-interactive, and visually subordinate.
-- **Your thread** shows the exact original dilemma, **0 of up to 5**, and **Starting out** without overlapping the graph.
+- The progress card shows the exact original dilemma and a prominent **Starting out** status without overlapping the graph.
 - The card contains no certainty, confidence, clarity, or completion score.
 - No graph library, random coordinates, confidence score, or pan/zoom behavior exists.
 
@@ -379,7 +380,7 @@ Selecting an answer marks its existing cell amber, clears the two unused possibi
 - The next question loads from `MockReflectionProvider`.
 - After round 2, **I think I’ve got it** is available.
 - After answer 5, the session routes toward summary generation.
-- Each committed answer appears in **Your thread** exactly once and the qualitative status changes from the documented state rules.
+- Each committed answer appears in the progress card exactly once and the qualitative status changes from the documented state rules.
 - Reduced motion can complete the same state sequence without travel or pulsing.
 
 **Checks Codex must run**
@@ -445,7 +446,7 @@ Choosing **None quite fit** opens **Say it your way**; a valid custom response b
 
 **Observable outcome**
 
-After four selections, the initial dilemma and every selected question/answer pair remain marked in their original occupied cells as one continuous quieter trail, while **Your thread** lists the same committed answers in order and the current question remains dominant.
+After four selections, the initial dilemma and every selected question/answer pair remain marked in their original occupied cells as one continuous quieter trail, while the progress card lists the same committed answers in order and the current question remains dominant.
 
 **Files likely to be affected**
 
@@ -470,7 +471,7 @@ After four selections, the initial dilemma and every selected question/answer pa
 - Different `choiceIndex` sequences produce different marked cell routes; replaying the same sequence produces the same route.
 - The active neighbourhood remains legible at the longest P0 history.
 - The card is derived from canonical history and never stores its own copy.
-- Its round count matches committed answers and it never displays the pressed-but-uncommitted answer.
+- It lists committed answers in order and never displays the pressed-but-uncommitted answer.
 - At the curated fourth answer it shows **A direction is forming** only when the held round has `suggestEnding: true`.
 - No AI-generated or numeric certainty score exists.
 
@@ -488,7 +489,7 @@ After four selections, the initial dilemma and every selected question/answer pa
 
 **Observable outcome**
 
-Activating an item under **What you’ve chosen so far** pans the desktop camera (or scrolls the narrow thread) to that committed amber answer cell. **Back to now** or the next session advance restores the active neighbourhood. History is not edited.
+Activating an item under **Your thoughts** pans the desktop camera (or scrolls the narrow thread) to that committed amber answer cell. **Back to now** or the next session advance restores the active neighbourhood. History is not edited.
 
 **Files likely to be affected**
 
@@ -520,7 +521,7 @@ Activating an item under **What you’ve chosen so far** pans the desktop camera
 
 **Observable outcome**
 
-After the curated fourth answer, a violet **What is taking shape?** bubble appears beside the last amber answer. The user can tap it to reveal the four-part mock summary, dismiss that panel to continue with the preloaded fifth round, start over, or explore one remaining doubt where applicable.
+After the curated fourth answer, a violet **What is taking shape?** bubble appears beside the last amber answer. The user can tap it to reveal the four-part mock summary, dismiss that panel to continue with the preloaded fifth round, or start over. The result always offers **Continue exploring**; when no prepared round remains, it asks Hmm… for a fresh pair of lenses.
 
 **Files likely to be affected**
 
@@ -539,11 +540,11 @@ After the curated fourth answer, a violet **What is taking shape?** bubble appea
 - The curated round-5 payload is held while the reflection lens is shown.
 - Tapping **What is taking shape?** displays direction, 2–3 reasons, 1–2 doubts, and one next step.
 - The result is tentative and contains no confidence score.
-- **Keep exploring** dismisses the result and reveals the held fifth round.
-- **Explore one remaining doubt** permits exactly one extension only when no prepared core round remains; it is absent while **Keep exploring** can resume that core path and after round five.
+- **Continue exploring** dismisses the result and reveals the held fifth round when present; otherwise it requests a fresh lens pair.
+- **Continue exploring** is present on every normal result. It resumes a prepared core round when one exists; otherwise it asks Hmm… for the next two lenses directly, including after round five.
 - **Start over** confirms, clears in-memory state, and returns to welcome.
 - The complete chosen trail remains marked on the same cellular field, visible but subordinate at the ending.
-- **Your thread** remains visible with **Ready to reflect**, the original dilemma, and the ordered committed answers.
+- The progress card remains visible with **A reflection is ready**, the original dilemma, and the ordered committed answers.
 
 **Checks Codex must run**
 
@@ -551,6 +552,10 @@ After the curated fourth answer, a violet **What is taking shape?** bubble appea
 - Summary component tests for required section counts.
 - `npm run check`
 - Manual runs for finish after round 2, reflection lens after round 4, dismissal into round 5, and final reflection lens after round 5.
+
+### Future scope decision — Longer continuation after a reflection
+
+**Status:** Direct continuation is implemented: there is no user-written extension bubble. Before allowing substantially longer or open-ended routes, expand the lattice, provider contract, mock fixtures, reducer limits, and route-invariant coverage together.
 
 ---
 
@@ -729,7 +734,7 @@ At a narrow viewport the current question and three answers become a readable ve
 - State changes and errors are announced in a restrained live region.
 - Reduced motion removes large travel, blur, morph, and continuous pulsing.
 - Error, retry, and mock-fallback notices never replace the existing path.
-- Retryable explicit errors offer **Try again** and **Continue with prepared questions**; refusals offer no generic fallback.
+- Retryable explicit errors use a compact companion panel beside progress and offer **Try again** and **Start over**; refusals offer no generic fallback.
 - Development-only timeout and refusal simulations make both error variants deterministic without changing production behavior.
 - The full mock session works at both desktop and narrow widths.
 
