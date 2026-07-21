@@ -19,7 +19,7 @@ Every stable canvas slot has an authored footprint. A footprint defines its size
 | `orb` | Available lens or compact answer | Medium near-circle with a soft inner halo. |
 | `shell` | Full Hmm… question | Large, rounded semi-circle / inflated capsule; clear internal room for text. |
 | `capsule` | Longer answer or contextual angle | Horizontal or vertical rounded lobe, never a sharp card. |
-| `pool` | Reflection / ending state | One large sea-glass shell, roughly five normal-cell areas, using the same authored geometry as the rest of the field. |
+| `pool` | Reflection / ending state | One large gold shell, roughly five normal-cell areas, using the same authored geometry as the rest of the field. |
 
 No footprint is perfectly geometric. Each uses one of a small set of stable border-radius profiles, chosen from its slot ID. The variation is deterministic: the same session position always looks like the same cell.
 
@@ -62,7 +62,7 @@ Colour reinforces semantic state; label, icon, border, size, and focus treatment
 
 Selection has a defined semantic end state: after commitment, the question and selected answer settle into one larger decision cell. This is not a liquid dissolve; it is a deterministic occupancy transformation that lets the pressure field make room:
 
-1. selected answer gains amber treatment and a bounded scale lift;
+1. selected answer gains coral treatment and a bounded scale lift;
 2. unselected answers fade back into their quiet authored footprints;
 3. the chosen question and answer settle as one readable, persistent decision node; activating it temporarily restores the original pair for review;
 4. the next two lenses emerge in the next authored region;
@@ -120,7 +120,7 @@ Any future fluid transition must preserve this same semantic end state. It must 
 
 **Proof:** the complete mock journey feels coherent without any liquid effect.
 
-**Implementation note (2026-07-21):** Started. Opening a lens now enlarges the active question footprint, and an answer gains a short, visible semantic lift while its neighbours settle under local pressure. Rejected suggestions retreat to quiet substrate treatment before the next lenses emerge. SVG connectors interpolate to the same settled endpoints, so the path moves with the cells. Remaining work is route-specific transition timing and full mock/reduced-motion rehearsal.
+**Implementation note (2026-07-21):** Implemented on `feat-liquid`. Opening a lens enlarges the active question footprint, an answer gains a visible semantic lift, and nearby cells settle under bounded local pressure. Rejected suggestions retreat to quiet substrate treatment before the next lenses emerge. SVG connectors interpolate to the same settled endpoints, so the path moves with the cells. The remaining work is final mock/reduced-motion rehearsal and release QA, not a new animation system.
 
 ### Slice F — optional material experiment
 

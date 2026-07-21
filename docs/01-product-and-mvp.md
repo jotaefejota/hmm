@@ -2,9 +2,9 @@
 
 > **Discovery revision:** Each reflection round now begins with exactly two short question lenses. The user chooses which angle to open, then answers one of exactly three suggestions. Only the opened-and-answered lens joins the permanent path; the unused lens returns to the quiet substrate.
 
-A fortune-cookie cell may appear near each active discovery. Its reframing is generated from the dilemma and committed path—or supplied by the matching mock round—while opening it remains optional and never changes history, later generation context, or the final summary.
+A fortune-cookie cell may appear near each active discovery. Its reframing is generated from the dilemma and committed path—or supplied by the matching mock round—while opening it remains optional and never changes history or later generation context. Opened reframes are listed as **Fresh angles** in the final summary.
 
-**Status:** Initial product definition
+**Status:** Living product contract, reconciled with the current `feat-liquid` implementation
 
 **Purpose:** Align the hackathon team on what to build, what to demonstrate, and what not to build
 
@@ -97,7 +97,7 @@ The product sets the expectation that this is a brief reflection, not an answer 
 
 ### 4.2 First question
 
-The user’s original thought occupies the seed cell in a persistent authored cellular field. Hmm… places one follow-up question and three answers into nearby existing cells and brings that neighbourhood into focus.
+The user’s original thought occupies the seed cell in a persistent authored cellular field. Hmm… reveals two nearby question lenses, each named with a short theme. Opening one transforms that existing cell into the full follow-up question and reveals three answers plus a fourth neutral **Enter your own answer…** action cell. The user can try the other lens until they commit an answer.
 
 The question cell has the strongest hierarchy. Answer cells are visibly smaller and differentiated through shape treatment, typography, border, colour, and subtle motion. Connecting lines make the relationship legible.
 
@@ -105,7 +105,7 @@ The question cell has the strongest hierarchy. Answer cells are visibly smaller 
 
 The user selects one answer. Its cell becomes active, grows slightly, receives a lasting user mark, and determines whether the route bends upward, continues forward, or bends downward. The next question occupies the following existing cell in that direction. The two rejected answers clear from their cells, which return to the quiet substrate. The camera follows the new neighbourhood instead of pulling the route back into the original viewport.
 
-A stable progress card also keeps the original dilemma, the selected answers in order, and a qualitative session status visible. It is a readable index of the visual path, not a second conversation or navigation tree.
+A stable progress card also keeps the original dilemma, the selected answers in order, and a qualitative session status visible. It is a readable index of the visual path: selecting a committed answer focuses its settled cell for review without creating free canvas navigation.
 
 This repeats for **at least 3 and at most 5 answered questions**:
 
@@ -113,7 +113,7 @@ This repeats for **at least 3 and at most 5 answered questions**:
 - rounds 3–4 test trade-offs, assumptions, reversibility, or consequences;
 - round 5, when needed, converts the emerging insight into a direction or experiment.
 
-Only the active question and its three answers are interactive. The previous path is visual context, not a navigable decision tree in P0.
+The active question, its three answers, and the neutral custom-answer action are interactive. Previous decisions are reviewable from their bubbles or the progress card; unfolding a settled decision exposes its original question and options. Choosing a previously discarded option is the one explicit history-editing action: it replaces that decision and removes the later route. This remains a single chosen path, not a branching graph.
 
 ### 4.4 Choose to finish
 
@@ -165,13 +165,13 @@ The MVP is a single-user, responsive web experience designed for a reliable 2–
 - one stable deterministic field of reusable cell slots extending beyond the viewport, packed so empty neighbours appear to touch; rounds change content occupancy and camera focus rather than adding new bubble geometry;
 - a choice-dependent route in which selecting the upper, middle, or lower possibility produces a different next segment;
 - one active central question with exactly three suggested answer options per round;
-- a fourth neutral **Enter your own** bubble for entering one brief custom answer; it is an action, not an AI suggestion;
+- a fourth neutral **Enter your own answer…** bubble for entering one brief custom answer; it is an action, not an AI suggestion;
 - selection animation that promotes the chosen answer and reveals the next question;
-- a persistent, non-interactive trail made from marked cells and selected-path connectors;
+- a persistent, reviewable trail made from marked settled decisions and selected-path connectors; progress-card anchors focus trail locations, while direct bubble activation can unfold one decision for review or explicit revision;
 - a persistent progress card showing the original dilemma, ordered selected answers, and qualitative session status;
 - a standard 3–5 answered-question journey, with an explicit user-controlled finish available after round 2;
 - a user-controlled “I think I’ve got it” finish action from round 2;
-- a final reflection lens after round 5, opened only when the user taps it;
+- an optional reflection lens after round 4 and at the round-5 cap, opened only when the user taps **Discover**;
 - a final reflection containing an emerging direction, reasons, remaining doubts, and one next step;
 - “Continue exploring” on every normal final reflection, plus “Start over” and “Continue in ChatGPT” actions;
 - clipboard generation for the ChatGPT continuation prompt;
@@ -193,7 +193,7 @@ For each round, generation returns one concise question, exactly three concise a
 
 - The path is linear: only the chosen answer persists; unchosen branches disappear.
 - A previous step cannot be edited or revisited.
-- The user chooses one of three suggestions or opens the adjacent **Enter your own** bubble to write one brief custom answer.
+- The user chooses one of three suggestions or opens the adjacent **Enter your own answer…** bubble to write one brief custom answer.
 - Refreshing the page resets the session.
 - English is the only supported language for the hackathon build.
 - The visual network uses authored transitions, not a physics engine.
@@ -267,16 +267,16 @@ The exact wording may evolve, but the deterministic demo should support this nar
 1. **Question:** “What feels furthest away from photography right now?”
    - **Selected answer:** “Having a camera ready.”
 2. **Question:** “What would make taking photos feel possible this week?”
-   - **Selected answer:** “A camera I enjoy using.”
+   - **Selected answer:** “A small outing.”
 3. **Question:** “When you picture your current camera, what gets in the way?”
-   - **Selected answer:** “It no longer inspires me.”
+   - **Selected answer:** “It feels cumbersome.”
 4. **Question:** “What would tell you whether new gear is the missing piece?”
    - **Selected answer:** “Rent one for a weekend.”
 
 ### Expected ending
 
 - **Emerging direction:** The user appears to want a camera that lowers friction and renews curiosity, rather than simply newer gear.
-- **Reasons:** They want a camera ready to hand, enjoyable to use, and worth testing in the real world.
+- **Reasons:** They want a camera ready to hand, a small outing that makes return feel possible, and a real-world test before buying.
 - **Remaining doubt:** Whether the camera is the real barrier, rather than time or habit.
 - **Next step:** Borrow or rent one camera for a weekend and take an unplanned photo walk before buying.
 
@@ -294,7 +294,7 @@ The MVP is successful when all of the following can be demonstrated in a clean b
 - A user can start from a blank landing state and reach a final reflection in no more than 5 answered questions.
 - “I think I’ve got it” is available after the second answer, and a reflection can be resumed through another pair of Hmm… lenses.
 - At no point is more than one question or more than three generated answer suggestions presented as active; the separate custom-answer action does not create a fourth suggestion.
-- A user can open **Enter your own**, enter a brief answer in their own words, and continue through the same selected-answer transition.
+- A user can open **Enter your own answer…**, enter a brief answer in their own words, and continue through the same selected-answer transition.
 - The progress card always shows the exact original dilemma and every committed answer once and in order.
 - The recommended demo path can be completed in 90 seconds or less by a presenter.
 
@@ -339,7 +339,7 @@ None of these decisions blocks initial design or implementation; the defaults be
 | Visual palette | Use a warm off-white cellular field, ink text, cobalt for Hmm…, coral for the user, gold for invitations and fresh angles, and neutral suggestions. | Exact colour values and contrast need validation in the first visual prototype. |
 | Live AI provider/model | **Confirmed for the deployed prototype:** use `gpt-4.1-mini`, configurable through the server-only `OPENAI_MODEL` variable. | Revisit only if event latency, access, or cost makes the live path unreliable; mock mode remains the demo-safe default. |
 | Hosting target | **Confirmed:** one Vercel project hosts the Vite client and `/api/reflect` function at [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). | Custom domain and longer-term ownership are post-hackathon decisions. |
-| Custom-answer length | P0 allows a custom answer of up to 160 characters through an **Enter your own** action bubble. | The limit should be validated with real prompts so it stays expressive without breaking node layouts. |
+| Custom-answer length | P0 allows a custom answer of up to 160 characters through an **Enter your own answer…** action bubble. | The limit should be validated with real prompts so it stays expressive without breaking node layouts. |
 | Automatic ending logic | Offer a soft ending after round 4 and a final reflection lens after round 5; the summary opens only on tap. | Live testing may show that 3 or 4 rounds feels better. |
 | Continuation length | Continue exploring now requests the next two Hmm… lenses directly, with no user-authored extension bubble. | The longer-term maximum route length still needs confirmation before raising the authored field and fixture limits. |
 | Sensitive-topic handling | Display a brief boundary message and avoid guidance for crisis or professional-advice scenarios. | Exact wording and whether to block or redirect such sessions require a product decision. |

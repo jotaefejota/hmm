@@ -2,7 +2,7 @@
 
 Hmm… is a curious companion for thinking through a bounded decision. It offers two question lenses, opens the chosen one into exactly three possible responses, and leaves the selected path visible without deciding for the user.
 
-**Live 0.1 demo:** [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). The `dev` branch contains the contract-v2 discovery-lens experience described below and requires a new deployment before it appears at that URL.
+**Live 0.1 demo:** [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). The current `feat-liquid` branch contains the discovery-lens experience and latest visual refinements described below; it requires a new deployment before those changes appear at that URL.
 
 ## What is implemented
 
@@ -53,7 +53,7 @@ npm run dev:full
 ## Demo path
 
 1. Start with the prefilled camera dilemma and select **Hmm…**.
-3. Choose one of the three bubbles in each of four rounds; different positions create different routes.
+2. Open one question lens, then choose one of the three suggestion bubbles in each of four rounds; different positions create different routes.
 4. Select **Something is taking shape** and then **Discover**.
 5. Show the direction, reasons, remaining doubts, and next step.
 6. Demonstrate **Continue in ChatGPT** or **Start again**.
@@ -88,7 +88,7 @@ These parameters are deliberately ignored by production builds.
 The app is deployed as one Vercel project: Vite serves the client and `api/reflect.ts` runs as a serverless function. Configure these environment variables in Vercel:
 
 - `OPENAI_API_KEY` — encrypted, server-side only;
-- `OPENAI_MODEL` — currently `gpt-4.1-mini`;
+- `OPENAI_MODEL` — currently `gpt-5.6-terra`;
 - `VITE_CONTENT_MODE` — `auto` for the live demo or `mock` for a deterministic deployment.
 
 Production has been smoke-tested through two consecutive live rounds. The complete API-free journey remains the reliable presentation path.

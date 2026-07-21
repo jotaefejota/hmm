@@ -2,7 +2,7 @@
 
 > **Contract v2 revision:** A round request returns one discovery payload containing exactly two complete lenses. Each lens includes a short theme, one question, and exactly three answers. Lens switching is local state work and never performs a second request. The stable lattice route is derived from both the chosen lens index and answer index.
 
-> **Revisable settled decisions:** Canonical history retains the question, selected answer, and original three options. The canvas derives either a single enlarged decision occupancy at the answer slot or the original violet active-question treatment plus three suggestion-style options for one review step. Choosing an unselected historical option is an explicit branch replacement: it truncates later history, replaces the selected answer at that step, then requests the next discovery with only the revised canonical path.
+> **Revisable settled decisions:** Canonical history retains the question, selected answer, and original three options. The canvas derives either a single enlarged decision occupancy at the answer slot or the original cobalt active-question treatment plus three suggestion-style options for one review step. Choosing an unselected historical option is an explicit route replacement: it truncates later history, replaces the selected answer at that step, then requests the next discovery with only the revised canonical path.
 
 The validated discovery payload includes one contextual `fortune` string. A random seed is captured once on dilemma submission and selects one fortune appearance in rounds 2–4 (never the opening round), one in rounds 5–7, then one in each subsequent two-round window; it remains stable throughout the session. When scheduled, projection maps the cookie to the nearest quiet cell around the two live lenses, while reserving both possible answer fans and settled trail cells. Opening a cookie records its round and text in canonical session state so the final summary can render **Angles you opened**; it is not included in committed AI history or sent to the summary model. Mock and live providers return the same field.
 
@@ -224,7 +224,7 @@ type SessionState = {
 - Increment `activeRequestId` for each generation request. Ignore any response whose identifier is not current.
 - An `AbortController` cancels the previous request on restart or retry.
 - Derive round number as `history.length + 1`; do not trust a visual component to count rounds.
-- After every fourth committed answer, expose one derived `finish` occupancy in a stable touching neighbour of the latest answer. It is a sea-glass shell with roughly five standard-cell areas and uses the same geometry and local-pressure pass as any other occupied node; do not render an SVG overlay or reserve a four-cell footprint. A normal-sized derived `continue` bubble starts in its immediate authored neighbour; the same local collision pass settles the two membranes together after the large bubble’s final geometry is known. Neither is an automatic summary request. Keep the prepared discovery in state so both the bubble and recap dismissal can restore its two lenses.
+- After every fourth committed answer, expose one derived `finish` occupancy in a stable touching neighbour of the latest answer. It is a gold shell with roughly five standard-cell areas and uses the same geometry and local-pressure pass as any other occupied node; do not render an SVG overlay or reserve a four-cell footprint. A normal-sized derived `continue` bubble starts in its immediate authored neighbour; the same local collision pass settles the two membranes together after the large bubble’s final geometry is known. Neither is an automatic summary request. Keep the prepared discovery in state so both the bubble and recap dismissal can restore its two lenses.
 - After a fifth core answer, expose the same final reflection lens rather than generating a summary automatically; no next discovery exists in that case.
 - `extensionUsed` permits the current direct post-ending continuation. The result lens always displays **Continue exploring**: it returns to a prepared core round when present, otherwise hides the result and requests round six in `extension` mode with no user-authored focus. No temporary extension cell is projected into the canvas.
 - Do not raise the continuation limit or introduce an open-ended route without expanding the field, route invariants, mock fixtures, and provider contract together.
@@ -359,10 +359,10 @@ Use state-driven animation, not a timeline that independently mutates the DOM.
 
 1. Dispatch `SELECT_ANSWER`; enter `answer-selected` immediately.
 2. Start fetching the next round in parallel to hide latency.
-3. Animate the chosen cell treatment into amber, grow its emphasis, add its permanent mark, and strengthen its connector.
+3. Animate the chosen cell treatment into coral, grow its emphasis, add its permanent mark, and strengthen its connector.
 4. Fade the two unused suggestion contents and return those slots to neutral.
 5. On exit completion, append the step and enter `transitioning`.
-6. Move focus to the next authored neighbourhood, draw its connector, and place the next violet question into its reserved cell.
+6. Move focus to the next authored neighbourhood, draw its connector, and place the next cobalt question into its reserved cell.
 7. If content is ready, enter `round-ready`; otherwise keep that existing question cell pulsing.
 
 Do not coordinate this with a chain of arbitrary `setTimeout` calls. Use phase changes and animation-completion callbacks, with one short maximum-duration safety fallback so a cancelled animation cannot trap the session.
@@ -376,7 +376,7 @@ Read the system preference through Motion/CSS. Replace travel, morphing, repeate
 The decision trail is a projection of `dilemma + history + currentRound` onto stable cell slots, rebuilt on every state change.
 
 - The seed always occupies the first route cell.
-- Each completed step leaves one violet question cell and one amber user-answer cell marked along the route.
+- Each completed step leaves one cobalt question cell and one coral user-answer cell marked along the route.
 - The current question occupies the next reserved route cell and is styled active.
 - Current suggestions occupy three adjacent stable cells and their spokes exist only temporarily.
 - On desktop, `ThoughtCanvas` renders the complete marked field directly. A separate bead-only `TrailView` must not replace committed question and answer content.
@@ -387,7 +387,7 @@ The decision trail is a projection of `dilemma + history + currentRound` onto st
 - The narrow `TrailStrip` is a compact overview of the same projection, not separate state and not the only visible history.
 - `ProgressCard` reads the same ordered `history` selector as the trail; it is a textual index, not a parallel record.
 
-No marked cell is draggable or editable in P0. Clicking old content may expose its full label for accessibility, but it does not navigate or mutate the session.
+No marked cell is draggable and there is no free pan or zoom in P0. Clicking a committed bubble or progress-card anchor focuses that settled trail location. Directly activating a settled bubble unfolds its original question and three options for review; selecting a discarded option explicitly replaces that historical decision, truncates later history, and resumes the single route from there. The review itself never creates a branch or invents coordinates.
 
 ## 9. Mock and real data through one interface
 

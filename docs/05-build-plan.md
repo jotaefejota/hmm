@@ -4,17 +4,17 @@
 
 ## 12. Authored organic-canvas reset
 
-**Status:** In progress — 2026-07-21. The directed node and material-overlay experiments were reverted because their temporary merge had no coherent semantic end state. The replacement plan is `docs/07-authored-organic-canvas.md`.
+**Status:** Implemented on `feat-liquid` — 2026-07-21. The directed node and material-overlay experiments were reverted because their temporary merge had no coherent semantic end state. The resulting authored field now uses deterministic varied cells, bounded local pressure, merged settled decisions, direct review, and controlled transitions.
 
 **Completed foundation:** Slices A, B, and D are complete: the persistent field has deterministic, varied footprints, scales, aspect ratios, and offsets; semantic content receives compatible footprints; and a bounded D3 collision pass settles pressure around the active neighbourhood without changing session state or routing.
 
-**Next decision:** Tune authored route regions and the semantic transition choreography against the new pressure field.
+**Remaining release work:** complete the final manual desktop/narrow/keyboard/reduced-motion pass and deploy the current branch. Do not add a new canvas system before that pass.
 
 **Guardrails:** Keep semantic state, accessible HTML interactions, mock mode, history review, and reduced-motion behaviour independent from canvas styling or motion.
 
 ### Task 11.1 — P0: Two-lens discovery rhythm
 
-**Implementation status:** Complete on `dev` — 2026-07-20.
+**Implementation status:** Complete on `feat-liquid` — 2026-07-20.
 
 **Observable outcome:** Every round begins with two short question lenses. Opening either reveals its full question and exactly three answers without another request; the user can try the other angle until answering.
 
@@ -22,7 +22,7 @@
 
 ### Task 11.2 — P0: Choice-dependent discovery route
 
-**Implementation status:** Complete on `dev` — 2026-07-20.
+**Implementation status:** Complete on `feat-liquid` — 2026-07-20.
 
 **Observable outcome:** The chosen lens creates an upper/lower bend, the chosen answer creates the next upper/middle/lower bend, and unused lenses return to the unchanged substrate.
 
@@ -30,21 +30,21 @@
 
 ### Task 11.3 — P0: Direct trail review
 
-**Implementation status:** Complete on `dev` — 2026-07-20.
+**Implementation status:** Complete on `feat-liquid` — 2026-07-20.
 
-**Observable outcome:** A committed question or answer bubble can be activated to focus it and open a read-only detail card. Escape and **Back to now** restore the active neighbourhood.
+**Observable outcome:** A committed question or answer bubble can be activated to focus it and open its review state. Escape and **Back to now** restore the active neighbourhood; choosing a discarded option is the explicit revision route.
 
 **Acceptance criteria:** Review is keyboard accessible, does not mutate history, and shares the same focus state as progress-card anchors. A progress-card anchor focuses the collapsed settled decision; only direct canvas activation unfolds its question-and-answer pair.
 
 ### Task 11.4 — P1: Contextual fortune-cookie reframes
 
-**Implementation status:** Complete on `dev` — 2026-07-20.
+**Implementation status:** Complete on `feat-liquid` — 2026-07-20.
 
-**Observable outcome:** Each discovery includes an amber cookie that reveals a short, path-specific refreshing angle.
+**Observable outcome:** Each discovery may include a gold cookie that reveals a short, path-specific refreshing angle.
 
-**Acceptance criteria:** Live and mock providers return the same validated fortune field; cookies open once, remain visually secondary, and never affect history, summaries, or routing.
+**Acceptance criteria:** Live and mock providers return the same validated fortune field; cookies open once, remain visually secondary, and never affect history or routing. Opened cookies are listed as **Fresh angles** in the final summary.
 
-**Status:** Release 0.1 remains deployed. The contract-v2 discovery experience, contextual fortunes, direct trail review, deterministic mock journey, checks, and desktop/narrow inspection are complete on `dev`; the live v2 model smoke test and deployment remain pending.
+**Status:** Release 0.1 remains deployed. The current `feat-liquid` branch contains the discovery-lens experience, contextual fortunes, direct trail review, deterministic mock journey, and the latest visual refinements. Its deployment is pending. Automated checks and focused browser inspections are complete; the final comprehensive desktop/narrow/keyboard/reduced-motion release pass remains pending.
 
 **Purpose:** Build the smallest complete, visually memorable session through demonstrable vertical slices.
 
@@ -107,7 +107,7 @@ Opening the development URL shows a warm pearl canvas and a small “Preparing t
 - TypeScript strict mode is enabled.
 - `.env.local` and secret-bearing environment files are ignored.
 - The placeholder renders without console errors.
-- The base page already uses the agreed pearl, ink, violet, and amber tokens.
+- The base page already uses the agreed pearl, ink, cobalt, coral, and gold tokens.
 
 **Checks Codex must run**
 
@@ -166,7 +166,7 @@ The app can load the curated `camera-demo` round and summary data through a `Moc
 
 **Observable outcome**
 
-A user lands directly in the seed’s text area, optionally replaces the rotating starter dilemma, presses **Hmm…**, and moves straight into the persistent grid. The original thought becomes the amber seed, the progress card carries the brief generation state, and two textless lens cells warm before the first mock lenses arrive.
+A user lands directly in the seed’s text area, optionally replaces the rotating starter dilemma, presses **Hmm…**, and moves straight into the persistent grid. The original thought becomes the coral seed, the progress card carries the brief generation state, and two textless lens cells warm before the first mock lenses arrive.
 
 **Files likely to be affected**
 
@@ -254,7 +254,7 @@ The submitted dilemma, first Hmm… question, exactly three suggestions, their r
 **Acceptance criteria**
 
 - The dilemma uses the coral user treatment and shows the original thought without a redundant eyebrow.
-- The active question is the largest node, violet, and labelled **Hmm… asks**.
+- The active question is the largest node, cobalt, and labelled **Hmm… asks**.
 - Exactly three equal-weight neutral answer buttons appear in fixed non-overlapping slots.
 - SVG connections are behind nodes and do not cross.
 - Colour is reinforced by label, scale, border, and/or marker.
@@ -356,7 +356,7 @@ At approximately 1440×900 the empty cellular field reads as a packed soup: neig
 
 **Observable outcome**
 
-Selecting an answer marks its existing cell amber, clears the two unused possibility texts while leaving their cells in place, shows the transition whisper, and moves focus to the next mock question in an adjacent authored cell. This works through all five possible rounds.
+Selecting an answer marks its existing cell coral, clears the two unused possibility texts while leaving their cells in place, shows the transition whisper, and moves focus to the next mock question in an adjacent authored cell. This works through all five possible rounds.
 
 **Files likely to be affected**
 
@@ -396,7 +396,7 @@ Selecting an answer marks its existing cell amber, clears the two unused possibi
 
 **Observable outcome**
 
-Choosing the fourth **Enter your own** bubble opens **Say it your way**; a valid custom response becomes the selected amber answer and follows the same transition.
+Choosing the fourth **Enter your own answer…** bubble opens **Say it your way**; a valid custom response becomes the selected coral answer and follows the same transition.
 
 **Files likely to be affected**
 
@@ -411,7 +411,7 @@ Choosing the fourth **Enter your own** bubble opens **Say it your way**; a valid
 
 **Acceptance criteria**
 
-- **Enter your own** is a fourth neutral action bubble, not a fourth AI suggestion.
+- **Enter your own answer…** is a fourth neutral action bubble, not a fourth AI suggestion.
 - Empty custom input is rejected with the documented copy.
 - Input is limited to 160 characters.
 - Cancel restores the three suggestions without losing the active question.
@@ -430,13 +430,13 @@ Choosing the fourth **Enter your own** bubble opens **Say it your way**; a valid
 
 ### P1 — Settled decision cells
 
-**Observable outcome:** After an answer is committed, its question and selected answer visibly settle into one larger amber decision cell. The cell contains the selected answer and moves nearby quiet cells through the existing bounded pressure pass. Activating it unfolds the original question/answer pair for read-only review; the next commitment settles that pair again.
+**Observable outcome:** After an answer is committed, its question and selected answer visibly settle into one larger coral decision cell. The cell contains the selected answer and moves nearby quiet cells through the existing bounded pressure pass. Activating it unfolds the original question/answer pair for review; the next commitment settles that pair again.
 
 **Likely files:** `src/layout/projectCanvas.ts`, `src/layout/cell-geometry.ts`, `src/components/canvas/CellField.tsx`, `src/components/canvas/ThoughtCanvas.tsx`, `src/styles/canvas.css`, layout/component tests.
 
 **Dependencies:** Stable history projection and bounded local pressure layout.
 
-**Acceptance criteria:** History retains the original three options as well as the canonical question and selected answer. Exactly one step can be unfolded; an unfolded step shows its selected amber answer and two discarded white options. Tapping the question or selected answer re-settles it; choosing a discarded option explicitly truncates later history, updates progress, and requests the next discovery from the revised path. Keyboard focus and reduced-motion fallback are testable.
+**Acceptance criteria:** History retains the original three options as well as the canonical question and selected answer. Exactly one step can be unfolded; an unfolded step shows its selected coral answer and two discarded white options. Tapping the question returns to the current lenses; tapping the selected answer re-settles the pair; choosing a discarded option explicitly truncates later history, updates progress, and requests the next discovery from the revised path. Keyboard focus and reduced-motion fallback are testable.
 
 **Checks:** `npm test -- --run`, forced mock session through at least two commitments, desktop/narrow keyboard and reduced-motion visual inspection, then `npm run check`.
 
@@ -463,7 +463,7 @@ After four selections, the initial dilemma and every selected question/answer pa
 **Acceptance criteria**
 
 - Occupancy, marks, and edges are derived from dilemma, history, and current round; cell geometry is stable configuration and is not stored in session state.
-- The trail alternates violet question and amber user answer.
+- The trail alternates cobalt question and coral user answer.
 - Desktop history uses the actual text-bearing dilemma, question, and selected-answer cells; a bead-only strip does not satisfy this task.
 - Only chosen semantic content and marks persist; no dead suggestion content or branches remain, but all substrate cells persist.
 - Recent history remains readable; older history scales/fades without breaking continuity.
@@ -489,7 +489,7 @@ After four selections, the initial dilemma and every selected question/answer pa
 
 **Observable outcome**
 
-Activating an item under **Your thoughts** pans the desktop camera (or scrolls the narrow thread) to that committed amber answer cell. **Back to now** or the next session advance restores the active neighbourhood. History is not edited.
+Activating an item under **Your thoughts** pans the desktop camera (or scrolls the narrow thread) to that committed coral answer cell. **Back to now** or the next session advance restores the active neighbourhood. This focus action does not edit history.
 
 **Files likely to be affected**
 
@@ -521,7 +521,7 @@ Activating an item under **Your thoughts** pans the desktop camera (or scrolls t
 
 **Observable outcome**
 
-After the curated fourth answer, a violet **Something is taking shape / Discover** bubble appears beside the last amber answer. Tapping it opens the result panel immediately with a gentle skeleton while the four-part mock summary loads; the user can then dismiss that panel to continue with the preloaded fifth round, or start over. The result always offers **Continue exploring**; when no prepared round remains, it asks Hmm… for a fresh pair of lenses.
+After the curated fourth answer, a gold **Something is taking shape / Discover** bubble appears beside the last coral answer. Tapping it opens the result panel immediately with a gentle skeleton while the four-part mock summary loads; the user can then dismiss that panel to continue with the preloaded fifth round, or start over. The result always offers **Continue exploring**; when no prepared round remains, it asks Hmm… for a fresh pair of lenses.
 
 **Files likely to be affected**
 
@@ -802,7 +802,7 @@ A presenter can open a deterministic demo URL, enter or preload the recommended 
 - The demo makes no live request and cannot be derailed by API state.
 - Essential transition durations stay within the experience specification.
 - No console errors, clipped controls, duplicate answers, focus traps, dead branches, or visible layout jumps occur.
-- The reference-informed pearl/violet/amber visual hierarchy is clear without narration.
+- The reference-informed pearl/cobalt/coral/gold visual hierarchy is clear without narration.
 - The progress card gives the presenter and viewer a stable textual anchor without competing with the active question.
 - Production build loads and completes the session.
 - A cold run and three consecutive rehearsals complete successfully in under 90 seconds.
