@@ -11,6 +11,7 @@ type CellFieldProps = {
   phase: "generating-round" | "lens-ready" | "round-ready" | "writing-custom-answer" | "answer-selected" | "transitioning" | "finish-offered" | "generating-summary" | "ending";
   questionRef?: React.RefObject<HTMLHeadingElement | null>;
   onSelect?: (answer: string) => void;
+  onOpenCustomAnswer?: () => void;
   onReviseSelection?: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
   onOpenLens?: (lensIndex: 0 | 1) => void;
   onOpenFortune?: (round: number, text: string) => void;
@@ -31,6 +32,7 @@ function CellContent({
   phase,
   questionRef,
   onSelect,
+  onOpenCustomAnswer,
   onReviseSelection,
   onOpenLens,
   onReturnToLenses,
@@ -46,6 +48,7 @@ function CellContent({
   phase: CellFieldProps["phase"];
   questionRef?: CellFieldProps["questionRef"];
   onSelect?: (answer: string) => void;
+  onOpenCustomAnswer?: () => void;
   onReviseSelection?: (stepIndex: number, choiceIndex: 0 | 1 | 2) => void;
   onOpenLens?: (lensIndex: 0 | 1) => void;
   onReturnToLenses?: () => void;
@@ -67,8 +70,8 @@ function CellContent({
   const transition = { duration: reducedMotion ? 0.12 : isSelected ? 0.48 : 0.34, ease: [0.22, 1, 0.36, 1] as const };
   const body = (
     <>
-      {isFocusedQuestion || item.kind === "lens" ? <span className="question-pin" aria-hidden="true">?</span> : null}
-      <span className="node-label">{item.label}</span>
+      {isFocusedQuestion ? <span className="question-pin" aria-hidden="true">?</span> : null}
+      {item.label ? <span className="node-label">{item.label}</span> : null}
       {isSelected ? <span className="selection-check" aria-hidden="true">✓</span> : null}
       {isLiveActiveQuestion ? (
         <h1 id="active-question" ref={questionRef} tabIndex={-1}>{item.text}</h1>
@@ -107,6 +110,21 @@ function CellContent({
       >
         {body}
       </motion.button>
+    );
+  }
+
+  if (item.kind === "custom") {
+    return (
+      <button
+        key={item.semanticId}
+        className={className}
+        type="button"
+        aria-label="Possibility: Enter your own answer"
+        disabled={!item.interactive}
+        onClick={onOpenCustomAnswer}
+      >
+        {body}
+      </button>
     );
   }
 
@@ -167,13 +185,12 @@ function CellContent({
         key={item.semanticId}
         className={className}
         type="button"
-        aria-label="Open reflection lens"
+        aria-label="Discover what is taking shape"
         onClick={onOpenFinish}
         initial={{ opacity: 0, scale: 0.82 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={transition}
       >
-        <span className="finish-mark" aria-hidden="true">✦</span>
         {body}
       </motion.button>
     );
@@ -265,6 +282,7 @@ export function CellField({
   phase,
   questionRef,
   onSelect,
+  onOpenCustomAnswer,
   onReviseSelection,
   onOpenLens,
   onOpenFortune,
@@ -386,16 +404,6 @@ export function CellField({
                 >
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.span
-                      key={openedCookies.has(item.semanticId) ? "open" : "closed"}
-                      aria-hidden="true"
-                      initial={{ opacity: 0, scale: 0.45, rotate: -18 }}
-                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                      exit={{ opacity: 0, scale: 0.55, rotate: 18 }}
-                      transition={{ type: "spring", stiffness: 460, damping: 22 }}
-                    >{openedCookies.has(item.semanticId) ? "✦" : "◒"}</motion.span>
-                  </AnimatePresence>
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.span
                       key={openedCookies.has(item.semanticId) ? item.text : item.label}
                       initial={{ opacity: 0, y: 5, scale: 0.92 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -410,6 +418,7 @@ export function CellField({
                   phase={phase}
                   questionRef={questionRef}
                   onSelect={onSelect}
+                  onOpenCustomAnswer={onOpenCustomAnswer}
                   onReviseSelection={onReviseSelection}
                   onOpenLens={onOpenLens}
                   onReturnToLenses={onReturnToLenses}

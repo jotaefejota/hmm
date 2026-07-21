@@ -166,7 +166,7 @@ The app can load the curated `camera-demo` round and summary data through a `Moc
 
 **Observable outcome**
 
-A user lands directly in the seed’s text area, enters the recommended dilemma, presses **Hmm…**, and moves straight into the persistent grid. The original thought becomes the amber seed, the progress card carries the brief generation state, and two textless lens cells warm before the first mock lenses arrive.
+A user lands directly in the seed’s text area, optionally replaces the rotating starter dilemma, presses **Hmm…**, and moves straight into the persistent grid. The original thought becomes the amber seed, the progress card carries the brief generation state, and two textless lens cells warm before the first mock lenses arrive.
 
 **Files likely to be affected**
 
@@ -253,7 +253,7 @@ The submitted dilemma, first Hmm… question, exactly three suggestions, their r
 
 **Acceptance criteria**
 
-- The dilemma is amber and labelled **You brought**.
+- The dilemma uses the coral user treatment and shows the original thought without a redundant eyebrow.
 - The active question is the largest node, violet, and labelled **Hmm… asks**.
 - Exactly three equal-weight neutral answer buttons appear in fixed non-overlapping slots.
 - SVG connections are behind nodes and do not cross.
@@ -396,7 +396,7 @@ Selecting an answer marks its existing cell amber, clears the two unused possibi
 
 **Observable outcome**
 
-Choosing **None quite fit** opens **Say it your way**; a valid custom response becomes the selected amber answer and follows the same transition.
+Choosing the fourth **Enter your own** bubble opens **Say it your way**; a valid custom response becomes the selected amber answer and follows the same transition.
 
 **Files likely to be affected**
 
@@ -411,7 +411,7 @@ Choosing **None quite fit** opens **Say it your way**; a valid custom response b
 
 **Acceptance criteria**
 
-- **None quite fit** is a separate action, not a fourth suggestion node.
+- **Enter your own** is a fourth neutral action bubble, not a fourth AI suggestion.
 - Empty custom input is rejected with the documented copy.
 - Input is limited to 160 characters.
 - Cancel restores the three suggestions without losing the active question.
@@ -521,7 +521,7 @@ Activating an item under **Your thoughts** pans the desktop camera (or scrolls t
 
 **Observable outcome**
 
-After the curated fourth answer, a violet **What is taking shape?** bubble appears beside the last amber answer. The user can tap it to reveal the four-part mock summary, dismiss that panel to continue with the preloaded fifth round, or start over. The result always offers **Continue exploring**; when no prepared round remains, it asks Hmm… for a fresh pair of lenses.
+After the curated fourth answer, a violet **Something is taking shape / Discover** bubble appears beside the last amber answer. Tapping it opens the result panel immediately with a gentle skeleton while the four-part mock summary loads; the user can then dismiss that panel to continue with the preloaded fifth round, or start over. The result always offers **Continue exploring**; when no prepared round remains, it asks Hmm… for a fresh pair of lenses.
 
 **Files likely to be affected**
 
@@ -538,7 +538,7 @@ After the curated fourth answer, a violet **What is taking shape?** bubble appea
 **Acceptance criteria**
 
 - The curated round-5 payload is held while the reflection lens is shown.
-- Tapping **What is taking shape?** displays direction, 2–3 reasons, 1–2 doubts, and one next step.
+- Tapping **Discover** opens the result shell immediately, then displays direction, 2–3 reasons, 1–2 doubts, and one next step.
 - The result is tentative and contains no confidence score.
 - **Continue exploring** dismisses the result and reveals the held fifth round when present; otherwise it requests a fresh lens pair.
 - **Continue exploring** is present on every normal result. It resumes a prepared core round when one exists; otherwise it asks Hmm… for the next two lenses directly, including after round five.

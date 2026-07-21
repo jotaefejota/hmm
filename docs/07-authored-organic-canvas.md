@@ -47,14 +47,14 @@ Semantic role may temporarily raise a slot within its authored allowance. A ques
 
 | Meaning | Footprint treatment |
 | --- | --- |
-| Original dilemma | Warm amber `pebble` or compact `capsule`; persistent but quieter. |
-| Available lens | Violet `orb` / `capsule` with question pin and restrained glow. |
-| Open Hmm… question | Large violet `shell`; this is the local visual centre. |
+| Original dilemma | Warm coral `pebble` or compact `capsule`; persistent but quieter. |
+| Available lens | Cobalt `orb` / `capsule` with question pin and restrained glow. |
+| Open Hmm… question | Large cobalt `shell`; this is the local visual centre. |
 | Suggested answer | Neutral `orb`, `pebble`, or `capsule`, chosen by authored slot and copy length. |
-| Selected answer | Amber version of its footprint during commitment. |
-| Settled decision | Larger amber shell carrying the selected answer in the trail’s largest amber type; it displaces nearby quiet cells and unfolds back into its question/answer pair on activation. Its copy fades and rises independently after the membrane’s size transition, rather than scaling with it. |
-| Previous question | Quieter violet footprint; directly reviewable. |
-| Reflection / ending | Teal `pool` as one large shell; its pressure radius matches its roughly five-cell rendered footprint. |
+| Selected answer | Coral version of its footprint during commitment. |
+| Settled decision | Larger coral shell carrying the selected answer in the trail’s largest coral type; it displaces nearby quiet cells and unfolds back into its question/answer pair on activation. Its copy fades and rises independently after the membrane’s size transition, rather than scaling with it. |
+| Previous question | Quieter cobalt footprint; directly reviewable. |
+| Reflection / ending | Gold `pool` as one large shell; its pressure radius matches its roughly five-cell rendered footprint. |
 
 Colour reinforces semantic state; label, icon, border, size, and focus treatment must still communicate it without colour.
 

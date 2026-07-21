@@ -16,6 +16,31 @@ type ResultLensProps = {
   onDismiss?: () => void;
 };
 
+export function ResultLensSkeleton() {
+  return (
+    <article className="result-lens result-lens-skeleton" aria-label="Gathering your thoughts" aria-busy="true">
+      <p className="skeleton-status">Gathering your thoughts…</p>
+      <span className="skeleton-line skeleton-title" />
+      <section className="skeleton-next-step" aria-hidden="true">
+        <span className="skeleton-line skeleton-kicker" />
+        <span className="skeleton-line skeleton-copy" />
+      </section>
+      <div className="result-grid" aria-hidden="true">
+        <section>
+          <span className="skeleton-line skeleton-kicker" />
+          <span className="skeleton-line skeleton-copy" />
+          <span className="skeleton-line skeleton-copy short" />
+        </section>
+        <section>
+          <span className="skeleton-line skeleton-kicker" />
+          <span className="skeleton-line skeleton-copy" />
+          <span className="skeleton-line skeleton-copy short" />
+        </section>
+      </div>
+    </article>
+  );
+}
+
 export function ResultLens({
   summary,
   dilemma,
@@ -50,28 +75,27 @@ export function ResultLens({
       animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
     >
-      <p className="eyebrow">What seems to be emerging</p>
       <h1 id="result-heading">{summary.direction}</h1>
+
+      <section className="next-step">
+        <h2>Next step</h2>
+        <p>{summary.nextStep}</p>
+      </section>
 
       <div className="result-grid">
         <section>
-          <h2>What is pulling you there</h2>
+          <h2>Why</h2>
           <ul>{summary.reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul>
         </section>
         <section>
-          <h2>What is still unresolved</h2>
+          <h2>Open questions</h2>
           <ul>{summary.doubts.map((doubt) => <li key={doubt}>{doubt}</li>)}</ul>
         </section>
       </div>
 
-      <section className="next-step">
-        <h2>One next step</h2>
-        <p>{summary.nextStep}</p>
-      </section>
-
       {fortunes.length > 0 ? (
         <section className="opened-fortunes" aria-label="Angles you opened">
-          <h2>Angles you opened</h2>
+          <h2>Fresh angles</h2>
           <ul>{fortunes.map((fortune) => <li key={`${fortune.round}-${fortune.text}`}>✦ {fortune.text}</li>)}</ul>
         </section>
       ) : null}
@@ -84,8 +108,8 @@ export function ResultLens({
       <div className="result-actions">
         {confirmingRestart ? (
           <div className="restart-confirmation" role="group" aria-label="Confirm start over">
-            <span>Clear this thread and start over?</span>
-            <button className="primary-action" type="button" onClick={onRestart}>Yes, start over</button>
+            <span>Clear this thread and start again?</span>
+            <button className="primary-action" type="button" onClick={onRestart}>Yes, start again</button>
             <button className="quiet-action" type="button" onClick={() => setConfirmingRestart(false)}>Keep this result</button>
           </div>
         ) : (
@@ -105,7 +129,7 @@ export function ResultLens({
               Continue exploring
             </button>
             <button className="quiet-action restart-action" type="button" onClick={() => setConfirmingRestart(true)}>
-              Start over
+              Start again
             </button>
           </>
         )}

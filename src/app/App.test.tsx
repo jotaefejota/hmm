@@ -5,6 +5,10 @@ import { reflectionProvider } from "../services/resilient-provider";
 import { ReflectionProviderError } from "../services/reflection-provider";
 import { App } from "./App";
 
+const fillDemoDilemma = () => fireEvent.change(screen.getByRole("textbox", { name: "Your thought" }), {
+  target: { value: "Would a new camera help me get back into photography?" },
+});
+
 afterEach(() => {
   vi.restoreAllMocks();
   vi.useRealTimers();
@@ -20,6 +24,7 @@ describe("App interaction guards", () => {
     );
     render(<App />);
 
+    fillDemoDilemma();
     fireEvent.click(screen.getByRole("button", { name: "Hmm…" }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
@@ -43,6 +48,7 @@ describe("App interaction guards", () => {
     }));
     render(<App />);
 
+    fillDemoDilemma();
     fireEvent.click(screen.getByRole("button", { name: "Hmm…" }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 
@@ -67,6 +73,7 @@ describe("App interaction guards", () => {
       .mockImplementation(mockProvider.getRound.bind(mockProvider));
     render(<App />);
 
+    fillDemoDilemma();
     fireEvent.click(screen.getByRole("button", { name: "Hmm…" }));
     await act(async () => { await vi.advanceTimersByTimeAsync(500); });
 

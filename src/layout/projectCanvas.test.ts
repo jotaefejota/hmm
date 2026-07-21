@@ -32,11 +32,14 @@ describe("projectCanvas discovery", () => {
     expect(projection.occupancy.filter((item) => item.kind === "suggestion")).toHaveLength(0);
   });
 
-  it("transforms the chosen lens into one question with three suggestions", () => {
+  it("transforms the chosen lens into one question, three suggestions, and a custom-answer bubble", () => {
     const projection = projectCanvas({ dilemma: "A dilemma", history: [], currentDiscovery: discovery, selectedLensIndex: 1, phase: "round-ready", selectedAnswer: null });
     expect(projection.occupancy.filter((item) => item.kind === "lens")).toHaveLength(0);
     expect(projection.occupancy.filter((item) => item.kind === "question" && item.status === "active")).toHaveLength(1);
     expect(projection.occupancy.filter((item) => item.kind === "suggestion")).toHaveLength(3);
+    expect(projection.occupancy.filter((item) => item.kind === "custom")).toMatchObject([
+      { text: "Enter your own answer…", label: "Possibility", interactive: true },
+    ]);
   });
 
   it("warms the two deterministic next lens cells while a route is transitioning", () => {
@@ -57,7 +60,7 @@ describe("projectCanvas discovery", () => {
     });
     const previews = projection.occupancy.filter((item) => item.kind === "preview");
 
-    expect(projection.occupancy.find((item) => item.kind === "dilemma")?.text).toBe("A dilemma");
+    expect(projection.occupancy.find((item) => item.kind === "dilemma")).toMatchObject({ text: "A dilemma", label: "" });
     expect(previews).toHaveLength(2);
     expect(previews.every((item) => !item.interactive && !item.text)).toBe(true);
   });
@@ -119,7 +122,7 @@ describe("projectCanvas discovery", () => {
     const projection = projectCanvas({ dilemma: "A dilemma", history: fourthHistory, currentDiscovery: discovery, selectedLensIndex: null, phase: "finish-offered", selectedAnswer: null });
     const finish = projection.occupancy.filter((item) => item.kind === "finish");
     expect(finish).toHaveLength(1);
-    expect(finish[0]).toMatchObject({ interactive: true, label: "Reflection lens" });
+    expect(finish[0]).toMatchObject({ interactive: true, label: "Something is taking shape", text: "Discover" });
   });
 
   it("removes the reflection lens while a revised fourth-round route is resuming", () => {

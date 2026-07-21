@@ -27,10 +27,9 @@ export function CustomAnswerComposer({ onSubmit, onCancel }: { onSubmit: (text: 
       />
       {attempted && !valid ? <p className="input-error">Give me a few words to follow.</p> : null}
       <div className="custom-actions">
-        <button type="button" className="quiet-action" onClick={onCancel}>Back to the three</button>
+        <button type="button" className="quiet-action" onClick={onCancel}>Cancel</button>
         <button type="submit" className="primary-action">Use this answer</button>
       </div>
     </form>
   );
 }
-

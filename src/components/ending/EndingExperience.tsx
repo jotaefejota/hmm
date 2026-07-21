@@ -4,7 +4,7 @@ import { useTrailReviewFocus } from "../../session/useTrailReviewFocus";
 import { projectCanvas } from "../../layout/projectCanvas";
 import { ProgressCard } from "../session/ProgressCard";
 import { CellField } from "../canvas/CellField";
-import { ResultLens } from "./ResultLens";
+import { ResultLens, ResultLensSkeleton } from "./ResultLens";
 import { RequestErrorPanel } from "../session/RequestErrorPanel";
 import { TrailReviewCard } from "../session/TrailReviewCard";
 
@@ -68,7 +68,7 @@ export function EndingExperience({ state, onRestart, onExploreDoubt, onRetry, on
           onDismiss={onDismiss}
           onRestart={onRestart}
         />
-      ) : null}
+      ) : state.phase === "generating-summary" ? <ResultLensSkeleton /> : null}
     </section>
   );
 }

@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { CAMERA_DILEMMA } from "../../content/mock-dataset";
+import { LANDING_PROMPTS } from "../../content/landing-prompts";
 import { WelcomeSeed } from "./WelcomeSeed";
 
 describe("WelcomeSeed", () => {
-  it("opens the prefilled demo dilemma and submits with Enter", async () => {
+  it("opens a rotating starter dilemma and submits it with Enter", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(
@@ -16,9 +16,9 @@ describe("WelcomeSeed", () => {
     expect(screen.queryByText("A small place to think")).not.toBeInTheDocument();
     expect(screen.queryByText("Bring one question. We’ll follow it for a few turns.")).not.toBeInTheDocument();
     const input = screen.getByRole("textbox", { name: "Your thought" });
-    expect(input).toHaveValue(CAMERA_DILEMMA);
+    expect(LANDING_PROMPTS).toContain((input as HTMLTextAreaElement).value);
     await user.type(input, "{Enter}");
-    expect(onSubmit).toHaveBeenCalledWith(CAMERA_DILEMMA);
+    expect(onSubmit).toHaveBeenCalledWith((input as HTMLTextAreaElement).value);
   });
 
   it("does not submit whitespace", async () => {
@@ -45,6 +45,7 @@ describe("WelcomeSeed", () => {
     render(<WelcomeSeed phase="entering" onSubmit={vi.fn().mockResolvedValue(undefined)} />);
     const suggestions = screen.getByRole("group", { name: "Try a question" }).getElementsByTagName("button");
     expect(suggestions).toHaveLength(3);
+    expect([...suggestions].map((suggestion) => suggestion.textContent)).not.toContain((screen.getByRole("textbox", { name: "Your thought" }) as HTMLTextAreaElement).value);
     await user.click(suggestions[0]);
     expect(screen.getByRole("textbox", { name: "Your thought" })).toHaveValue(suggestions[0].textContent);
   });

@@ -4,6 +4,7 @@ import {
   CELL_SLOTS,
   DILEMMA_CELL_ID,
   getCellSlot,
+  getCustomAnswerCellId,
   getContinueCellId,
   getFinishCellId,
   getFortuneCellId,
@@ -17,7 +18,7 @@ import {
 export type CanvasOccupancy = {
   cellId: string;
   semanticId: string;
-  kind: "dilemma" | "lens" | "preview" | "question" | "suggestion" | "answer" | "decision" | "fortune" | "finish" | "continue";
+  kind: "dilemma" | "lens" | "preview" | "question" | "suggestion" | "custom" | "answer" | "decision" | "fortune" | "finish" | "continue";
   status: "active" | "selected" | "previous" | "clearing";
   text: string;
   label: string;
@@ -77,7 +78,7 @@ export function projectCanvas({
 }: ProjectCanvasInput): CanvasProjection {
   const occupancy: CanvasOccupancy[] = [{
     cellId: DILEMMA_CELL_ID, semanticId: "dilemma", kind: "dilemma", status: "previous",
-    text: dilemma, label: "You brought", age: history.length * 2 + 1, interactive: false,
+    text: dilemma, label: "", age: history.length * 2 + 1, interactive: false,
   }];
   const edges: CanvasEdge[] = [];
   const completed: RouteStep[] = [];
@@ -164,6 +165,18 @@ export function projectCanvas({
         occupancy.push({ cellId, semanticId: `suggestion-${round}-${index + 1}`, kind: "suggestion", status: isSelected ? "selected" : isClearing ? "clearing" : "active", text: isSelected ? selectedAnswer.text : answerText, label: isSelected ? "Your answer" : "Possibility", age: 0, interactive: phase !== "answer-selected", optionIndex });
         if (!isClearing) edges.push(edge(`edge-${questionCellId}-${cellId}`, questionCellId, cellId, isSelected ? "previous" : "active"));
       });
+      const customCellId = getCustomAnswerCellId(round, completed, selectedLensIndex);
+      occupancy.push({
+        cellId: customCellId,
+        semanticId: `custom-answer-${round}`,
+        kind: "custom",
+        status: "active",
+        text: "Enter your own answer…",
+        label: "Possibility",
+        age: 0,
+        interactive: phase !== "answer-selected",
+      });
+      edges.push(edge(`edge-${questionCellId}-${customCellId}`, questionCellId, customCellId, "active"));
     }
   }
 
@@ -190,8 +203,8 @@ export function projectCanvas({
       semanticId: `finish-${history.length}`,
       kind: "finish",
       status: "active",
-      text: history.length >= 5 ? "Let this settle" : "What is taking shape?",
-      label: "Reflection lens",
+      text: "Discover",
+      label: "Something is taking shape",
       age: 0,
       interactive: true,
     });
@@ -202,8 +215,8 @@ export function projectCanvas({
         semanticId: `continue-${history.length}`,
         kind: "continue",
         status: "active",
-        text: "Keep going",
-        label: "Continue exploring",
+        text: "Keep exploring",
+        label: "",
         age: 0,
         interactive: true,
       });

@@ -166,6 +166,7 @@ export function getFortuneCellId(roundNumber: number, priorSteps: readonly Route
   // authored row that can drift outside the viewport on a bent route.
   for (const lensIndex of [0, 1] as const) {
     getSuggestionCellIds(roundNumber, priorSteps, lensIndex).forEach((id) => reserved.add(id));
+    reserved.add(getCustomAnswerCellId(roundNumber, priorSteps, lensIndex));
   }
   priorSteps.forEach((step, index) => {
     const answerCellId = getSuggestionCellIds(index + 1, priorSteps.slice(0, index), step.lensIndex)[step.choiceIndex];
@@ -208,6 +209,12 @@ export function getSuggestionCellIds(roundNumber: number, priorSteps: readonly R
         idFor(forwardColumn, questionRow + 1),
         idFor(questionColumn, questionRow + 1),
       ] as const;
+}
+
+/** The fourth answer action occupies the remaining direct neighbour of the opened question. */
+export function getCustomAnswerCellId(roundNumber: number, priorSteps: readonly RouteStep[], lensIndex: 0 | 1) {
+  const question = getCellSlot(getQuestionCellId(roundNumber, priorSteps, lensIndex));
+  return idFor(question.column, lensIndex === 0 ? question.row + 1 : question.row - 1);
 }
 
 export function getHistoryCellId(

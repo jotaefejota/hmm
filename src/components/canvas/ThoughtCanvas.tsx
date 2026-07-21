@@ -116,6 +116,7 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
           props.onOpenLens(lensIndex);
         }}
         onOpenFortune={props.onOpenFortune}
+        onOpenCustomAnswer={props.onOpenCustomAnswer}
         onExitExpandedDecision={() => {
           clearReviewFocus();
           setExpandedDecision(null);
@@ -145,9 +146,6 @@ export function ThoughtCanvas(props: ThoughtCanvasProps) {
         <button className="other-angle-action" type="button" onClick={props.onReturnToLenses}>Try the other angle</button>
       ) : null}
 
-      {(state.phase === "round-ready" || state.phase === "writing-custom-answer") && !suppressCurrentDiscovery ? (
-        <button className="custom-answer-hint" type="button" onClick={props.onOpenCustomAnswer}>None quite fit</button>
-      ) : null}
       {state.phase === "writing-custom-answer" ? (
         <CustomAnswerComposer onSubmit={props.onSelectCustomAnswer} onCancel={props.onCloseCustomAnswer} />
       ) : null}

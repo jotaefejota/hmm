@@ -16,5 +16,11 @@ describe("CustomAnswerComposer", () => {
     expect(onSubmit).toHaveBeenCalledOnce();
     expect(onSubmit).toHaveBeenCalledWith("The chance to mentor");
   });
-});
 
+  it("labels the return action as cancel", () => {
+    const onCancel = vi.fn();
+    render(<CustomAnswerComposer onSubmit={vi.fn()} onCancel={onCancel} />);
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(onCancel).toHaveBeenCalledOnce();
+  });
+});

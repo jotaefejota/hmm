@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { DILEMMA_MAX_LENGTH } from "../../../shared/limits";
-import { CAMERA_DILEMMA } from "../../content/mock-dataset";
 import { pickLandingPrompts } from "../../content/landing-prompts";
 import type { SessionPhase } from "../../session/session-types";
 import { projectCanvas } from "../../layout/projectCanvas";
@@ -44,9 +43,10 @@ const firstSeedTarget = (dilemma: string) => {
   return { left: centreX - width / 2, top: centreY - height / 2, width, height };
 };
 
-export function WelcomeSeed({ phase, onSubmit, initialDilemma = CAMERA_DILEMMA }: WelcomeSeedProps) {
-  const [dilemma, setDilemma] = useState(initialDilemma || CAMERA_DILEMMA);
-  const [promptSuggestions] = useState(() => pickLandingPrompts());
+export function WelcomeSeed({ phase, onSubmit, initialDilemma }: WelcomeSeedProps) {
+  const [landingIdeas] = useState(() => pickLandingPrompts(4));
+  const [dilemma, setDilemma] = useState(() => initialDilemma?.trim() || landingIdeas[0]);
+  const promptSuggestions = landingIdeas.slice(1);
   const [isDeparting, setIsDeparting] = useState(false);
   const [handoff, setHandoff] = useState<SeedHandoff | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);

@@ -54,9 +54,9 @@ npm run dev:full
 
 1. Start with the prefilled camera dilemma and select **Hmm…**.
 3. Choose one of the three bubbles in each of four rounds; different positions create different routes.
-4. Select **What is taking shape?**.
+4. Select **Something is taking shape** and then **Discover**.
 5. Show the direction, reasons, remaining doubts, and next step.
-6. Demonstrate **Continue in ChatGPT** or **Start over**.
+6. Demonstrate **Continue in ChatGPT** or **Start again**.
 
 If clipboard access is blocked, the handoff reveals the complete prepared prompt for manual copying.
 

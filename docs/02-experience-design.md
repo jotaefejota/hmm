@@ -2,11 +2,11 @@
 
 ## Discovery-led round rhythm
 
-The active neighbourhood begins with two violet question-lens cells carrying short theme labels, not a fully revealed question. Choosing a lens transforms that same cell into the active Hmm… question and reveals exactly three neighbouring answer cells. Until an answer is committed, **Try the other angle** restores both lenses without another content request. Once an answer is chosen, the unused lens clears back to the substrate and only the chosen question and answer remain marked.
+The active neighbourhood begins with two cobalt question-lens cells carrying short theme labels, not a fully revealed question. Choosing a lens transforms that same cell into the active Hmm… question and reveals exactly three neighbouring answer cells. Until an answer is committed, **Try the other angle** restores both lenses without another content request. Once an answer is chosen, the unused lens clears back to the substrate and only the chosen question and answer remain marked.
 
-Once an answer commits, its violet question and amber answer settle into one larger amber **decision cell**. It carries the user’s chosen answer, while the full question and all three original options remain preserved in semantic history. Its larger footprint makes nearby quiet cells yield through the controlled local-pressure layout. Activating a settled decision expands it into its original question plus three answers using their pre-merge treatments: the question regains its violet pin, full-question type, and active shell; the chosen answer regains its amber selected-suggestion treatment; the two discarded answers return as white possibilities. Tapping the selected answer settles the pair again. Tapping the historical question instead closes that review and returns camera focus to the current two live lenses, matching the active-question toggle rather than trapping the user at the merged cell. Choosing a discarded answer replaces that historical decision, removes every later decision from the path, updates the progress card, and resumes generation from the revised route. Only one trail step may be expanded at a time. Review never edits history except through this explicit replacement action, and never enables free pan or zoom.
+Once an answer commits, its cobalt question and coral answer settle into one larger coral **decision cell**. It carries the user’s chosen answer, while the full question and all three original options remain preserved in semantic history. Its larger footprint makes nearby quiet cells yield through the controlled local-pressure layout. Activating a settled decision expands it into its original question plus three answers using their pre-merge treatments: the question regains its cobalt pin, full-question type, and active shell; the chosen answer regains its coral selected-suggestion treatment; the two discarded answers return as white possibilities. Tapping the selected answer settles the pair again. Tapping the historical question instead closes that review and returns camera focus to the current two live lenses, matching the active-question toggle rather than trapping the user at the merged cell. Choosing a discarded answer replaces that historical decision, removes every later decision from the path, updates the progress card, and resumes generation from the revised route. Only one trail step may be expanded at a time. Review never edits history except through this explicit replacement action, and never enables free pan or zoom.
 
-Fortune cookies are deliberately sparse. Round 1 never receives one, so the core interaction can establish itself cleanly. The session randomly reserves one discovery among rounds 2–4, one among rounds 5–7, and then one in every subsequent two-round window; those positions remain stable for that session. When present, a small sea-glass cookie occupies the nearest unoccupied cell of the live lens neighbourhood, so it remains in the camera frame rather than becoming distant decoration. Its rippled membrane and cool colour distinguish it from amber user choices; opening it reveals a short, surprising reframing grounded in the original dilemma and committed path through a slower manga-like bloom, shine sweep, and a lingering field of spark particles. Opened cookies are remembered as **Angles you opened** in the final summary; they remain out of the progress card, committed AI history, and summary-model request.
+Fortune cookies are deliberately sparse. Round 1 never receives one, so the core interaction can establish itself cleanly. The session randomly reserves one discovery among rounds 2–4, one among rounds 5–7, and then one in every subsequent two-round window; those positions remain stable for that session. When present, a small gold-and-coral cookie occupies the nearest unoccupied cell of the live lens neighbourhood, so it remains in the camera frame rather than becoming distant decoration. Its rippled membrane distinguishes it from coral user choices; opening it reveals a short, surprising reframing grounded in the original dilemma and committed path through a slower manga-like bloom, shine sweep, and a lingering field of spark particles. Opened cookies are remembered as **Angles you opened** in the final summary; they remain out of the progress card, committed AI history, and summary-model request.
 
 **Status:** Experience definition before implementation
 
@@ -17,6 +17,10 @@ Fortune cookies are deliberately sparse. Round 1 never receives one, so the core
 ## 1. Experience north star
 
 The session should feel like a thought becoming visible.
+
+### Visual system update
+
+The interface uses a warm off-white base, inky high-contrast type, rounded panels and pill actions, and a concise bright palette: cobalt for Hmm… prompts and primary actions, gold for the user’s selected path, sea-glass for fortune cookies, and coral as a sparing transition accent. Broad soft colour blooms may sit behind surfaces, but text and interaction states remain crisp, calm, and accessible. Organic cells retain their irregular membranes; supporting cards use more intentional rounded-rectangle geometry so the canvas stays the expressive element.
 
 The user begins with one unresolved dilemma. Hmm… introduces two useful question lenses; the selected lens opens into one question and three possible ways to respond. Each committed answer marks cells in a stable field and adds one short segment to a living path. The interface never displays every possible branch. It shows only the route the user is actually taking, clears unused content from the field, and gently recognizes when the route has produced enough clarity to pause.
 
@@ -41,7 +45,7 @@ The MVP should not copy several elements shown in the references:
 - no promise that sessions remain saved;
 - no use of glow alone to distinguish node meaning.
 
-The recommended direction is therefore a warm off-white cellular field with ink text, violet for Hmm… questions, amber for the user’s words, and neutral suggested answers. This field is not merely decorative background: it is the persistent interface substrate that receives content and records the selected route.
+The recommended direction is therefore a warm off-white cellular field with ink text, cobalt for Hmm… questions, coral for the user’s words, gold for optional invitations, and neutral suggested answers. This field is not merely decorative background: it is the persistent interface substrate that receives content and records the selected route.
 
 ### Persistent field model
 
@@ -73,7 +77,7 @@ The user types a question or short description immediately. The cell grows withi
 
 The primary action is **Hmm…**. It stays disabled until the input contains meaningful non-whitespace text. `Enter` submits when the field is a single line; `Shift+Enter` creates a new line. The user can also click the action.
 
-For someone arriving without a question, the landing surface also shows three compact prompt buttons beneath the action. They are sampled without repetition from a curated bank of 30 short, everyday dilemmas on each landing visit (for example, “Should I learn Korean?” or “Would yoga help me?”). Tapping one fills the text field for review; it never submits automatically.
+For someone arriving without a question, the landing surface starts with one random prompt already in the text field and shows three more compact prompt buttons beneath the action. All four are sampled without repetition from a curated bank of 30 short, everyday dilemmas on each landing visit (for example, “Should I learn Korean?” or “Would yoga help me?”). Tapping a button replaces the text field for review; it never submits automatically. A return from the progress card is the exception: it restores the user’s actual original dilemma instead of a new random prompt.
 
 After submission, the user’s wording becomes the permanent seed node for the session. It is never silently rewritten.
 
@@ -100,7 +104,7 @@ The first Hmm… question resolves inside the dominant cell near the centre. Thr
 The user can:
 
 - select one suggested answer;
-- choose **None quite fit** and write a brief answer;
+- open **Enter your own** and write a brief answer;
 - after round 2, choose **I think I’ve got it**;
 - restart from a quiet menu action.
 
@@ -127,9 +131,9 @@ This alternating rhythm makes authorship readable even when the text is too smal
 
 ### 2.6 Recognize enough clarity
 
-After every fourth committed question/answer pair, the path grows one distinct **reflection lens** beside the last amber answer. It is one large sea-glass bubble with roughly the area of five normal cells: an organic shell governed by the same geometry and local-pressure rules as every other node, not a custom overlay or fixed four-cell shape. It says **What is taking shape?** and is an invitation, not a diagnosis. Nothing is summarised until the user taps it.
+After every fourth committed question/answer pair, the path grows one distinct **reflection lens** beside the last amber answer. It is one large sea-glass bubble with roughly the area of five normal cells: an organic shell governed by the same geometry and local-pressure rules as every other node, not a custom overlay or fixed four-cell shape. Its eyebrow says **Something is taking shape** and its action copy says **Discover**. It is an invitation, not a diagnosis. Nothing is summarised until the user taps it.
 
-Its normal-sized sea-glass **Keep going** neighbour begins in the immediately adjacent cell. The local pressure pass then settles the pair membrane-to-membrane, letting the user decline the pause and reveal the already-prepared next pair of question lenses. It behaves like a fourth optional cell rather than a secondary text control. Opening the lens gathers and reveals the result; **Keep exploring** there offers the same return path. The persistent **I think I’ve got it** action remains available from round 2. At the fifth-round ceiling, a final **Let this settle** lens replaces automatic summary generation; tapping it explicitly opens the recap.
+Its normal-sized gold **Keep exploring** neighbour begins in the immediately adjacent cell. The local pressure pass then settles the pair membrane-to-membrane, letting the user decline the pause and reveal the already-prepared next pair of question lenses. It behaves like a fourth optional cell rather than a secondary text control. Opening the lens immediately opens the result panel with a gentle skeleton while its content gathers; **Keep exploring** there offers the same return path. The persistent **I think I’ve got it** action remains available from round 2. At the fifth-round ceiling, the same **Something is taking shape / Discover** lens replaces automatic summary generation; tapping it explicitly opens the recap.
 
 ### 2.7 End the session
 
@@ -163,7 +167,7 @@ The progress card remains visible beside the result lens, changes its status to 
 | **Entering dilemma** | Wordmark, focused seed with text area and submit action | Type and submit | Valid submission starts generation |
 | **Generation** | Persistent grid, submitted seed, progress card, two textless warming lens cells, short status | Wait; retry only after timeout | Valid response fills those lens cells; failure uses fallback or error state |
 | **Active question** | One dominant violet occupied cell, marked trail, quiet cellular field, session controls | Read, choose an answer, finish when eligible | Answer selection or finish action |
-| **Three possible answers** | Exactly three neutral cells holding suggestions around/below the question | Hover/focus, select, open custom answer | One suggestion is selected or custom input opens |
+| **Three possible answers** | Exactly three neutral cells holding AI suggestions around/below the question, plus one adjacent neutral **Enter your own** action bubble | Hover/focus, select, open custom answer | One suggestion is selected or custom input opens |
 | **Different answer** | Suggestions remain visible but subdued; attached input cell or narrow-window sheet | Enter up to 160 characters, use answer, cancel | Valid custom text becomes the selected answer |
 | **Selected answer** | One amber occupied cell with check mark; stronger connector to its question | None during the brief committed animation | Automatically enters transition |
 | **Transition** | Chosen cells remain marked; unused text clears; focus moves as existing cells receive the next content | Wait | Next question becomes active, or a reflection lens appears |
@@ -211,7 +215,7 @@ These labels describe where the session is, not how certain the user is or how g
 
 #### Writing a different answer
 
-**None quite fit** is not rendered as a fourth answer cell. It is a small text action anchored below the three suggestions. Opening it produces a new user-coloured input cell connected with a dotted preview line to the active question.
+**Enter your own** is a fourth neutral action bubble beside the three suggestions. It is visually part of the answer neighbourhood but semantically distinct from the model’s three options. Opening it produces the same user-coloured input dialog connected with a dotted preview line to the active question.
 
 Copy:
 
@@ -253,7 +257,7 @@ stateDiagram-v2
     ApiUnavailable --> Generating: Try live again
     ApiUnavailable --> Error: Live and fallback fail
 
-    RoundReady --> CustomAnswer: None quite fit
+    RoundReady --> CustomAnswer: Enter your own
     CustomAnswer --> RoundReady: Cancel
     CustomAnswer --> AnswerSelected: Submit valid answer
     RoundReady --> AnswerSelected: Choose suggestion
@@ -264,7 +268,7 @@ stateDiagram-v2
     AnswerSelected --> FinishOffered: Round 5 complete
     Transitioning --> Generating: Continue to next round
 
-    FinishOffered --> EndingGeneration: Open reflection lens
+    FinishOffered --> EndingGeneration: Discover
 
     EndingGeneration --> Ending: Summary succeeds
     EndingGeneration --> ApiUnavailable: Summary generation fails
@@ -286,19 +290,20 @@ Colour reinforces meaning but is never the only signal. Every semantic type also
 
 | Content type | Form and scale | Colour and border | Type and marker | Motion |
 | --- | --- | --- | --- | --- |
-| **User’s initial dilemma** | Large seed-shaped rounded cell; second only to the active question | Warm amber tint, solid amber edge | Small label **You brought**; exact user text; small seed mark | One initial breath, then stable |
+| **User’s initial dilemma** | Large seed-shaped rounded cell; second only to the active question | Warm coral tint, solid coral edge | Exact user text only; no redundant eyebrow | One initial breath, then stable |
 | **Question from Hmm…** | Largest active circular/organic cell; double membrane | Pale violet fill, violet inner ring, soft outer halo | Small label **Hmm… asks**; question mark pin; medium-weight question text | Slow two-beat pulse while active |
 | **Suggested answer** | Three existing medium cells hold content at equal visual weight | Warm white fill, thin neutral ink border | First-person text; no check mark; label exposed to assistive tech as **Possible answer** | Small lift on hover/focus; no ambient bobbing |
 | **Selected answer** | Its cell grows 8–12% and joins the path without changing identity | Amber fill/edge replaces neutral styling | Small check mark; assistive label **Your answer** | Brief press, expand, connector draw |
 | **Previous node** | The same selected cell reduces to 65–80% emphasis according to age | Original semantic hue desaturated; thinner halo | Text remains available; oldest labels may collapse visually but expand on focus/hover | Becomes still; no repeated animation |
-| **Final result** | Large translucent lens/card, not a circle in the chain | Ink text on soft pearl surface; paired violet/amber rim | Label **What seems to be emerging** and four structured sections | Trail settles; lens clarifies from blur to sharp |
+| **Final result** | Large translucent lens/card, not a circle in the chain | Ink text on soft pearl surface; paired cobalt/coral rim | The emerging direction as title, then **Next step**, **Why**, and **Open questions** | Trail settles; lens clarifies from blur to sharp |
 
 ### Palette roles
 
 - **Pearl / warm white:** canvas, neutral possibilities, breathing room.
 - **Ink:** all primary text and structural contrast.
-- **Violet:** Hmm… questions and generated observations.
-- **Amber:** the user’s original and selected words.
+- **Cobalt:** Hmm… questions and generated observations.
+- **Coral:** the user’s original and selected words.
+- **Gold:** invitations to pause, continue, or open a fortune cookie.
 - **Muted graphite:** previous connections and decorative membrane.
 - **Soft coral:** recoverable error only; never used for unselected answers.
 
@@ -311,7 +316,7 @@ Green is intentionally avoided as the main selected/result colour because it com
 - the persistent cellular field, including quiet empty cells around the active neighbourhood;
 - the active question;
 - its three current suggestions;
-- the separate **None quite fit** action;
+- the neutral **Enter your own** action bubble;
 - every selected question/answer pair as a continuous path of the actual semantic nodes;
 - the initial dilemma as the first semantic node in that path on desktop;
 - **I think I’ve got it** from round 2 onward;
@@ -370,7 +375,7 @@ At the ending, the camera eases back enough to show a compact overview of the se
 2. Making time to shoot.
 3. Knowing what to photograph.
 
-**Alternative action:** None quite fit
+**Alternative action:** Enter your own
 
 **Selected:** Having a camera ready.
 
@@ -388,7 +393,7 @@ At the ending, the camera eases back enough to show a compact overview of the se
 2. A simple project.
 3. A camera I enjoy using.
 
-**Alternative action:** None quite fit
+**Alternative action:** Enter your own
 
 **Selected:** A camera I enjoy using.
 
@@ -408,7 +413,7 @@ At the ending, the camera eases back enough to show a compact overview of the se
 2. It no longer inspires me.
 3. I barely know where it is.
 
-**Alternative action:** None quite fit
+**Alternative action:** Enter your own
 
 **Selected:** It no longer inspires me.
 
@@ -426,7 +431,7 @@ At the ending, the camera eases back enough to show a compact overview of the se
 2. Borrow one for a walk.
 3. Take mine out first.
 
-**Alternative action:** None quite fit
+**Alternative action:** Enter your own
 
 **Selected:** Rent one for a weekend.
 
@@ -434,9 +439,9 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 ### Reflection lens
 
-**Label:** Reflection lens
+**Label:** Something is taking shape
 
-**Bubble copy:** What is taking shape?
+**Bubble copy:** Discover
 
 **Action:** Tap the bubble to gather the recap. The result always includes **Continue exploring**: it either returns to a prepared fifth round or requests the next two Hmm… lenses directly.
 
@@ -446,26 +451,26 @@ At the ending, the camera eases back enough to show a compact overview of the se
 
 ### Ending
 
-**Label:** What seems to be emerging
+**Title:** the emerging direction
 
 **Direction:** You seem to want a camera that lowers the friction of taking photos and rekindles your curiosity—not simply newer gear.
 
-**What is pulling you there**
+**Why**
 
 - Having a camera ready feels like a useful invitation to begin.
 - You want the experience of using it to feel enjoyable again.
 - A short real-world test matters more than comparing specifications.
 
-**What is still unresolved**
+**Open questions**
 
 - Whether a new camera is the real barrier, rather than time or habit.
 - Which size and feel would genuinely make you carry it.
 
-**One next step**
+**Next step**
 
 > Borrow or rent one camera for a weekend, then take one unplanned photo walk before deciding whether to buy.
 
-**Actions:** Continue in ChatGPT · Explore one remaining doubt · Start over
+**Actions:** Continue in ChatGPT · Explore one remaining doubt · Start again
 
 **Handoff confirmation:** Context copied. Paste it into ChatGPT when the new tab opens.
 
@@ -522,7 +527,7 @@ The experience uses an alternate authored view of the same logical cell slots ra
 - The active question occupies the full safe width below the strip.
 - The three suggestions stack vertically in a fixed reading order with comfortable touch targets.
 - Connectors become short vertical or gently curved segments and never cross.
-- **None quite fit** stays below the three suggestions.
+- **Enter your own** stays as the fourth neutral bubble in the answer neighbourhood.
 - The custom-answer editor opens as a bottom sheet above the software keyboard.
 - **I think I’ve got it** remains a sticky but non-obscuring action near the bottom safe area from round 2.
 - The ending uses a single column: result first, compact path second, actions last.
@@ -551,7 +556,7 @@ At no width should the layout simply scale the desktop canvas down. Body text re
 
 - Without reading any text, a viewer can distinguish the current Hmm… question, the three neutral possibilities, and the user’s amber chosen path.
 - A user can complete the curated four-round scenario, including the ending, without leaving the canvas or encountering an unexplained screen.
-- A user whose answer is not represented can write a custom answer without creating a fourth competing suggestion node.
+- A user whose answer is not represented can open a fourth action bubble without mistaking it for another AI suggestion.
 - At every round, the relationship between the current question and each answer is visible without crossed lines.
 - The field exposes the same stable cell identities and geometry before and after a round transition; only occupancy, marks, connectors, and focus treatment change.
 - Selecting an answer marks its existing cell, clears rejected content without removing those cells, and focuses an adjacent existing neighbourhood.

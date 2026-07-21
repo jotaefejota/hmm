@@ -163,7 +163,7 @@ This is an intended boundary map, not a requirement to create an empty file for 
 | `ConnectionLayer` | Renders derived SVG paths below nodes | Graph state or hit testing |
 | `FieldAtmosphere` | Adds restrained colour/blur behind the same cell field | A second decorative cell grid or continuously simulated motion |
 | `AnswerCluster` | Renders exactly three suggestions and the separate custom-answer action | Generating new content |
-| `CustomAnswerComposer` | Captures and validates the 160-character custom answer | A fourth suggested answer |
+| `CustomAnswerComposer` | Captures and validates the 160-character custom answer, opened from a fourth neutral action bubble | A fourth suggested answer |
 | `ProgressCard` | Displays the original dilemma, committed answers, and derived qualitative status | Duplicate history state, AI confidence, or graph navigation |
 | Progress-card status banner | Shows initial, next-round, and summary loading state while the persistent canvas remains visible | Fake percentages or a separate loading page |
 | `CellField` reflection lens occupancy | Offers the explicit recap action beside the latest answer | Automatically generating or deciding that clarity exists |

@@ -23,9 +23,10 @@ describe("ThoughtCanvas discovery", () => {
   it("shows exactly two question lenses before answers", async () => {
     const props = callbacks();
     const state = { ...createInitialSessionState(1), phase: "lens-ready" as const, dilemma: TEAM_LEAD_DILEMMA, currentDiscovery: scenario.discoveries[0], dataSource: "mock" as const };
-    render(<ThoughtCanvas state={state} {...props} />);
+    const { container } = render(<ThoughtCanvas state={state} {...props} />);
     const lenses = screen.getAllByRole("button", { name: /Explore/ });
     expect(lenses).toHaveLength(2);
+    expect(container.querySelectorAll(".content-lens .question-pin")).toHaveLength(0);
     expect(screen.queryAllByRole("button", { name: /^Possibility/ })).toHaveLength(0);
     await userEvent.click(lenses[1]);
     expect(props.onOpenLens).toHaveBeenCalledWith(1);
@@ -51,7 +52,9 @@ describe("ThoughtCanvas discovery", () => {
     const state = { ...createInitialSessionState(1), phase: "round-ready" as const, dilemma: TEAM_LEAD_DILEMMA, currentDiscovery: scenario.discoveries[0], selectedLensIndex: 1 as const, dataSource: "mock" as const };
     render(<ThoughtCanvas state={state} {...props} />);
     expect(screen.getByRole("heading", { name: lens.question })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /^Possibility/ })).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /^Possibility/ })).toHaveLength(4);
+    await userEvent.click(screen.getByRole("button", { name: "Possibility: Enter your own answer" }));
+    expect(props.onOpenCustomAnswer).toHaveBeenCalledOnce();
     await userEvent.click(screen.getByRole("button", { name: "Try the other angle" }));
     expect(props.onReturnToLenses).toHaveBeenCalledOnce();
   });
@@ -104,16 +107,16 @@ describe("ThoughtCanvas discovery", () => {
     render(<ThoughtCanvas state={state} {...props} />);
 
     expect(screen.getByRole("heading", { name: currentLens.question })).toBeVisible();
-    expect(screen.getAllByRole("button", { name: /^Possibility/ })).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /^Possibility/ })).toHaveLength(4);
     await userEvent.click(screen.getByRole("button", { name: `Unfold decision from round 1: ${step.answer}` }));
 
     expect(screen.queryByRole("heading", { name: currentLens.question })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Try the other angle" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "None quite fit" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Possibility: Enter your own answer" })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: `Settle decision from round 1: ${step.answer}` }));
 
     expect(screen.getByRole("heading", { name: currentLens.question })).toBeVisible();
-    expect(screen.getAllByRole("button", { name: /^Possibility/ })).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /^Possibility/ })).toHaveLength(4);
   });
 
   it("offers discarded answers as white revision choices when a decision unfolds", async () => {
@@ -189,7 +192,7 @@ describe("ThoughtCanvas discovery", () => {
     const history = Array.from({ length: 4 }, (_, index) => historyStep(index + 1));
     const state = { ...createInitialSessionState(5), phase: "finish-offered" as const, dilemma: TEAM_LEAD_DILEMMA, history, currentDiscovery: scenario.discoveries[4], dataSource: "mock" as const };
     const { container } = render(<ThoughtCanvas state={state} {...props} />);
-    const finish = screen.getByRole("button", { name: "Open reflection lens" });
+    const finish = screen.getByRole("button", { name: "Discover what is taking shape" });
     expect(container.querySelector(".field-cell.is-finish")).toBeTruthy();
     expect(container.querySelector(".finish-membrane")).toBeNull();
     await userEvent.click(finish);

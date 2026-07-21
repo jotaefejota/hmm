@@ -125,10 +125,10 @@ The app may propose ending based on the generated response, but it must never cl
 
 The network settles into the background and a concise ending appears with:
 
-1. **What seems to be emerging** — a tentative statement of the user’s current direction;
-2. **What is pulling you there** — 2–3 reasons grounded in selected answers;
-3. **What is still unresolved** — 1–2 doubts, assumptions, or missing facts;
-4. **One next step** — a concrete, proportionate action, preferably reversible;
+1. the emerging direction as the result title;
+2. **Why** — 2–3 reasons grounded in selected answers;
+3. **Open questions** — 1–2 doubts, assumptions, or missing facts;
+4. **Next step** — a concrete, proportionate action, preferably reversible;
 5. **Continue exploring** — return to a prepared reflection round when one exists, or ask Hmm… for the next two lenses directly.
 
 The summary uses language such as “You seem to be leaning toward…” and “Based on what you chose…” It must not convert the reflection into a command.
@@ -165,7 +165,7 @@ The MVP is a single-user, responsive web experience designed for a reliable 2–
 - one stable deterministic field of reusable cell slots extending beyond the viewport, packed so empty neighbours appear to touch; rounds change content occupancy and camera focus rather than adding new bubble geometry;
 - a choice-dependent route in which selecting the upper, middle, or lower possibility produces a different next segment;
 - one active central question with exactly three suggested answer options per round;
-- a separate “None quite fit” action for entering one brief custom answer;
+- a fourth neutral **Enter your own** bubble for entering one brief custom answer; it is an action, not an AI suggestion;
 - selection animation that promotes the chosen answer and reveals the next question;
 - a persistent, non-interactive trail made from marked cells and selected-path connectors;
 - a persistent progress card showing the original dilemma, ordered selected answers, and qualitative session status;
@@ -193,7 +193,7 @@ For each round, generation returns one concise question, exactly three concise a
 
 - The path is linear: only the chosen answer persists; unchosen branches disappear.
 - A previous step cannot be edited or revisited.
-- The user chooses one of three suggestions or writes one brief custom answer through a separate “None quite fit” action.
+- The user chooses one of three suggestions or opens the adjacent **Enter your own** bubble to write one brief custom answer.
 - Refreshing the page resets the session.
 - English is the only supported language for the hackathon build.
 - The visual network uses authored transitions, not a physics engine.
@@ -294,7 +294,7 @@ The MVP is successful when all of the following can be demonstrated in a clean b
 - A user can start from a blank landing state and reach a final reflection in no more than 5 answered questions.
 - “I think I’ve got it” is available after the second answer, and a reflection can be resumed through another pair of Hmm… lenses.
 - At no point is more than one question or more than three generated answer suggestions presented as active; the separate custom-answer action does not create a fourth suggestion.
-- A user can choose “None quite fit,” enter a brief answer in their own words, and continue through the same selected-answer transition.
+- A user can open **Enter your own**, enter a brief answer in their own words, and continue through the same selected-answer transition.
 - The progress card always shows the exact original dilemma and every committed answer once and in order.
 - The recommended demo path can be completed in 90 seconds or less by a presenter.
 
@@ -336,10 +336,10 @@ None of these decisions blocks initial design or implementation; the defaults be
 | Decision | Recommended MVP default | Why it still merits confirmation |
 | --- | --- | --- |
 | Public name and punctuation | Use **Hmm…** in the interface and `hmm` in technical identifiers. | Trademark/domain checks and final brand styling have not been done. |
-| Visual palette | Use a warm off-white cellular field, ink text, violet for Hmm…, amber for the user, and neutral suggestions. | Exact colour values and contrast need validation in the first visual prototype. |
+| Visual palette | Use a warm off-white cellular field, ink text, cobalt for Hmm…, coral for the user, gold for invitations and fresh angles, and neutral suggestions. | Exact colour values and contrast need validation in the first visual prototype. |
 | Live AI provider/model | **Confirmed for the deployed prototype:** use `gpt-4.1-mini`, configurable through the server-only `OPENAI_MODEL` variable. | Revisit only if event latency, access, or cost makes the live path unreliable; mock mode remains the demo-safe default. |
 | Hosting target | **Confirmed:** one Vercel project hosts the Vite client and `/api/reflect` function at [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/). | Custom domain and longer-term ownership are post-hackathon decisions. |
-| Custom-answer length | P0 allows a custom answer of up to 160 characters through a separate “None quite fit” action. | The limit should be validated with real prompts so it stays expressive without breaking node layouts. |
+| Custom-answer length | P0 allows a custom answer of up to 160 characters through an **Enter your own** action bubble. | The limit should be validated with real prompts so it stays expressive without breaking node layouts. |
 | Automatic ending logic | Offer a soft ending after round 4 and a final reflection lens after round 5; the summary opens only on tap. | Live testing may show that 3 or 4 rounds feels better. |
 | Continuation length | Continue exploring now requests the next two Hmm… lenses directly, with no user-authored extension bubble. | The longer-term maximum route length still needs confirmation before raising the authored field and fixture limits. |
 | Sensitive-topic handling | Display a brief boundary message and avoid guidance for crisis or professional-advice scenarios. | Exact wording and whether to block or redirect such sessions require a product decision. |
