@@ -49,7 +49,7 @@ Then run `npm run dev:full`. Never put the API key in a `VITE_` variable or comm
 
 - [x] Source code — this repository
 - [x] Hosted demo — [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/)
-- [ ] Demo video — add the final link before submitting
+- [x] Demo video — [watch on YouTube](https://youtu.be/xaJKmPVUqwo)
 
 ## Checks
 
