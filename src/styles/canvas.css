@@ -39,25 +39,6 @@
 .connection-previous { stroke: rgba(103, 79, 135, 0.5); stroke-width: 0.3; stroke-dasharray: none; }
 .connection-active { stroke: rgba(82, 65, 123, 0.38); }
 
-.micro-cell-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-.micro-cell {
-  position: absolute;
-  left: var(--cell-x);
-  top: var(--cell-y);
-  width: calc(var(--field-width) * var(--cell-size-ratio, 0.08) * var(--micro-scale, 0.18));
-  aspect-ratio: var(--micro-aspect, 1);
-  translate: -50% -50%;
-  border: 1px solid rgba(67, 60, 72, 0.3);
-  background: rgba(255, 255, 255, 0.17);
-  box-shadow: inset 0 0 0.6rem rgba(255, 255, 255, 0.34);
-  opacity: 0.62;
-}
-
 .field-cell {
   --cell-x: 50%;
   --cell-y: 50%;

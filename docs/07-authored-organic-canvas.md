@@ -15,7 +15,6 @@ Every stable canvas slot has an authored footprint. A footprint defines its size
 | Footprint | Role in the field | Visual character |
 | --- | --- | --- |
 | `seed` | Quiet background cell | Small, almost circular, low contrast. |
-| `pore` | Decorative interstice cell | Tiny, quiet membrane nested in selected gaps between three larger cells; never interactive or routeable. |
 | `pebble` | Quiet or historical cell | Slightly flattened circle; asymmetric radius. |
 | `orb` | Available lens or compact answer | Medium near-circle with a soft inner halo. |
 | `shell` | Full Hmm… question | Large, rounded semi-circle / inflated capsule; clear internal room for text. |
@@ -29,7 +28,6 @@ No footprint is perfectly geometric. Each uses one of a small set of stable bord
 The field has three scale bands before content arrives:
 
 - **quiet:** 0.72–1.0 base scale; mostly `seed` and `pebble` cells;
-- **pore:** 0.15–0.20 base scale; sparse interstice cells that make the resting membrane field feel more densely packed without becoming a second visual layer;
 - **available:** 0.95–1.18 base scale; an available lens becomes noticeable through halo, icon, label, and focus—not just size;
 - **meaningful:** 1.12–1.55 base scale; active question, selected answer, reflection pool, and direct-review target.
 
@@ -83,8 +81,6 @@ Any future fluid transition must preserve this same semantic end state. It must 
 **Proof:** desktop shows a recognisably irregular cellular field before a user begins a session; narrow layout is unchanged.
 
 **Implementation note (2026-07-21):** Complete. Each stable cell now carries a deterministic footprint, scale, aspect ratio, and small positional offset. The reducer, provider, routes, and history model remain unchanged.
-
-**Refinement note (2026-07-21):** A deterministic sparse pore layer now places tiny, non-interactive membranes in selected triangular gaps. Pores sit behind semantic cells and are intentionally omitted from route projection and the pressure pass.
 
 ### Slice B — semantic footprint assignment
 
