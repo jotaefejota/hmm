@@ -1,7 +1,5 @@
 # Hmm…
 
-> A small, visual place to untangle one decision.
-
 Hmm… turns a dilemma into two useful angles, three possible responses, and a living trail of what matters. It never decides for you. It just helps your thinking take shape.
 
 **Live demo:** [hmm-mu-rust.vercel.app](https://hmm-mu-rust.vercel.app/)
